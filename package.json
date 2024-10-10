@@ -1,0 +1,28 @@
+{
+  "name": "@agentskillmesh/docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VibeAgent 官方文档站 (Rspress)",
+  "type": "module",
+  "scripts": {
+    "dev": "rspress dev",
+    "build": "rspress build",
+    "preview": "rspress preview"
+  },
+  "dependencies": {
+    "@rspress/core": "^1.47.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "rspress": "^1.47.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AgentSkillMesh/docs.git"
+  },
+  "license": "MIT"
+}

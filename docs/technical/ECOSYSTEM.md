@@ -1,0 +1,69 @@
+﻿---
+syncSource: VibeAgent MetaRepo spec/
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+---
+
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+# 平台生态与壮大策略
+
+**版本**: v0.1-draft · **最后更新**: 2025-01-14
+
+## 1. 核心目标
+
+| 目标 | 做法 |
+|------|------|
+| **保留平台控制权** | UUPS 升级、Sequencer、费率参数、任务治理（见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)、[TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)） |
+| **降低入场门槛** | 开源 SDK、模板、文档；BYOD IoT（见 [IOT.md](./IOT.md)） |
+| **可扩展治理** | 渐进式去中心化：私募锁仓 → 社区激励 → DAO |
+
+## 2. 参与方激励
+
+| 对象 | 关键激励 | 执行方式 |
+|------|----------|----------|
+| **投资者 / 早期基金** | 潜在回报、代币增值 | 私募/早期轮；锁仓 + 线性/里程碑释放 |
+| **开发者 / Agent 创作者** | 收益分成、流量 | SDK、API、合约模板；交易手续费分成（MasterChef） |
+| **合作团队 / 公司** | 品牌、技术协作 | 联合推广、生态 Grant、API/数据接口、设备白名单联合认证 |
+| **普通用户** | 低交易成本、返还 | 交易返利、推荐奖励；NFT/积分激励（可选） |
+| **IoT 厂商** | 设备上链创收 | 认证白名单、默认市场曝光、稳定币结算 |
+| **人类工作者** | 接单收益 | worker App；任务治理保障安全 |
+
+## 3. 收入模型汇总
+
+| 来源 | 场景 | 文档 |
+|------|------|------|
+| Escrow 协议费 | Agent/Skill/人类任务 | [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) |
+| L2 Gas | 全链交易 | [AGENT_CHAIN.md](./AGENT_CHAIN.md) |
+| 数据市场费 | 传感器微额调用 | [IOT.md](./IOT.md) §3.2 |
+| 能源清算费 | 度电交易 | [IOT.md](./IOT.md) §3.3 |
+| 企业契约 Gas | 冷链 SLA 等 | [IOT.md](./IOT.md) §3.4 |
+
+## 4. 开源与开发者增长
+
+1. **Agent 交易模板**（Python/TS）— 无 App 也能接入  
+2. **IoT SDK** — 设备注册、收款、遥测  
+3. **公开 docs + 测试网水龙头** — 30 分钟跑通第一笔收益  
+4. **Hackathon / Grant** — 垂直场景（充电、气象、冷链）  
+
+## 5. 与产品矩阵关系
+
+| 产品 | 生态角色 |
+|------|----------|
+| wallet | 发任务、发 IoT 服务单、质押 |
+| worker | 人类执行层 |
+| web | Creator / Agent 运营 |
+| admin | 治理与风控（早期中心化运营） |
+| 未来 IoT SDK | 设备与 Agent 机器层 |
+
+## 6. 治理里程碑
+
+| 版本 | 治理状态 |
+|------|----------|
+| v0.1–v0.3 | 团队全控参数；仅 docs 公开 |
+| v0.4–v0.6 | IoT 品类扩展；合作方白名单共治（多签） |
+| v0.7 | MasterChef + 链费率；激励上链 |
+| v1.0 | 审计后 DAO 提案；Sequencer 路线图公开 |
+
+---
+
+*投资者叙事见公开文档 `vision/investors`；版本排期见 [ROADMAP.md](./ROADMAP.md)。*
+

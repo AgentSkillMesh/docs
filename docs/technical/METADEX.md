@@ -1,0 +1,131 @@
+﻿---
+syncSource: VibeAgent MetaRepo spec/
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+---
+
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+# MetaDEX · 轻量 ve 模型 DEX
+
+**版本**: v0.1-draft · **最后更新**: 2025-01-14  
+**路线图**: v0.15（**合约优先**，见 [ROADMAP.md](./ROADMAP.md) § M1b）  
+**合约计划**: [METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md) ← **当前实施入口**  
+**链下架构**: [METADEX_ARCHITECTURE.md](./METADEX_ARCHITECTURE.md)  
+**分析外接**: [DATALUMINARY.md](./DATALUMINARY.md)
+
+## 0. 交付顺序（合约是核心）
+
+| 阶段 | 版本 | 内容 | 阻塞关系 |
+|------|------|------|----------|
+| **A** | v0.15.0 | Solidity Fork、测试、Sepolia 部署、export-abi | — |
+| B | v0.15.1 | api Port 读链报价 | 依赖 A |
+| C | v0.15.2 | web `/dex` | 依赖 B |
+| D | 并行 | DataLuminary 分析 | 不阻塞 A |
+
+**Phase A 未完成前，不启动 DEX 前端主路径。**
+
+## 1. 产品定位
+
+**专注的轻量 MetaDEX**：在 **单一目标链**（首发 **Base**）上提供 **稳定币 / 蓝筹** 高效 Swap 与流动性，用 **ve（vote-escrowed）模型** 捕获协议价值，为 Agent/IoT/任务生态提供 **低滑点结算资产** 与 **协议收入**。
+
+| 做 | 不做（盈利前） |
+|----|----------------|
+| 精选 Pool（USDC/USDbC/ETH/WETH 等） | 全链实时区块扫描 |
+| Swap + Add/Remove LP + Lock → veNFT | 上万 Pool 全量日志解析 |
+| Gauge 投票（简化 UI） | 毫秒级链重组回滚引擎 |
+| 参考 Aerodrome/Velodrome **开源合约** Fork | 自研 AMM 数学 |
+| NestJS **Port 抽象**（TS 实现，可换 Rust） | 在 VibeAgent 内建 TVL/套利/历史分析 |
+| **仅 canonical 桥接资产**（见 [BRIDGE.md](./BRIDGE.md)） | 非官方 wrapped 代币 |
+
+## 2. ve 模型（摘要）
+
+参考 Velodrome/Aerodrome **(3,3)** 思路：
+
+```
+LP Token ──lock──▶ veNFT ──vote──▶ Gauge 权重
+                              └──▶ 交易手续费 + 激励分配
+```
+
+| 组件 | 作用 |
+|------|------|
+| **Pair / Pool** | 稳定/蓝筹交易对（Solidity） |
+| **Router** | Swap 路由 |
+| **VotingEscrow** | 锁仓得 ve，治理/emission 权重 |
+| **Voter** | 向 Gauge 投票 |
+| **Gauge** | 流动性挖矿 / 手续费定向 |
+
+**价值捕获**：协议费进入 `FeeDistributor` / Treasury；ve 持有人投票决定激励流向 → 对齐长期 LP 与协议。
+
+## 3. 合约策略（仅 Solidity）
+
+| 来源 | 链 | 用途 |
+|------|-----|------|
+| [Aerodrome](https://github.com/aerodrome-finance/contracts) | Base | **首选 Fork 参考**（同链） |
+| [Velodrome V2](https://github.com/velodrome-finance/contracts) | Optimism | 架构对照、测试网对照 |
+
+**VibeAgent 改造原则**：
+
+1. 仅 Fork **核心路径**：Factory、Pair、Router、VotingEscrow、Voter、Gauge（按需裁剪）  
+2. 治理 Token / ve 命名与 Agent 生态品牌对齐（`spec/NAMING.md`）  
+3. 与现有 `Escrow`、稳定币结算 **地址配置** 同仓 `deployments.json`  
+4. **不** 在 v0.15 引入复杂 bribe 市场；可 Phase 2  
+
+部署目标：**Base Sepolia 测试网 → Base Mainnet**。
+
+## 4. 链下与应用层（现有技术栈）
+
+| 层 | 技术 | 职责 |
+|----|------|------|
+| 合约 | Solidity / Hardhat | AMM + ve |
+| 索引/报价 | NestJS + **Port/Adapter** | 见 METADEX_ARCHITECTURE |
+| 前端 | web（Rsbuild + wagmi） | Swap / LP / Vote 页 |
+| 重型分析 | **DataLuminary** | TVL、历史费、套利、Dashboard |
+
+## 5. API  surface（MVP）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/dex/pools` | 精选 Pool 列表（链上 + 轻量缓存） |
+| GET | `/dex/quote` | 报价（经 `IDexQuoteEngine`） |
+| GET | `/dex/gauges` | Gauge 元数据 |
+| POST | `/dex/sync` | 手动/定时触发轻量同步（非全链） |
+| GET | `/dex/analytics/*` | **代理或跳转 DataLuminary**（可选配置） |
+
+## 6. 与 VibeAgent 生态关系
+
+| 场景 | 关联 |
+|------|------|
+| wallet/worker 结算 | 稳定币 Swap 入口 |
+| IoT 设备收款 | USDC 流动性深度 |
+| Agent 链 Gas | ve 收入反哺 MasterChef（v0.7+） |
+| Escrow | 可选 DEX 价格 Oracle（TWAP v0.2+） |
+
+## 7. 验收（按 Phase）
+
+### Phase A — 合约（v0.15.0，必达）
+
+- [ ] Factory / Pair / Router 单测通过  
+- [ ] VotingEscrow / Voter / Gauge 单测通过  
+- [ ] Base Sepolia 部署 + `deployments.json`  
+- [ ] 集成测试：Add LP → Swap → Lock → Vote  
+- [ ] `export-abi` 可供 shared/api 使用  
+
+### Phase B/C — api & web（v0.15.1–.2）
+
+- [ ] API `quote/pools` 读真实 Router/Pair  
+- [ ] web Swap 页完成一笔 Swap  
+- [ ] Lock LP → ve → 投 1 个 Gauge  
+
+### Phase D — 分析（可选）
+
+- [ ] 配置 `DATALUMINARY_*` 后 analytics 外接  
+
+## 8. 明确不做（直到盈利后 Rust 阶段）
+
+- 自建 **全链 Indexer**（替代 The Graph / DataLuminary）  
+- **MEV/套利** 执行器（放在 DataLuminary 或第三方）  
+- 跨链 DEX 聚合  
+
+---
+
+*合约 Fork 清单见 [METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)；Port 接口见 [METADEX_ARCHITECTURE.md](./METADEX_ARCHITECTURE.md)。*
+
