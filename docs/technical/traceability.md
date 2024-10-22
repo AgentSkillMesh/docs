@@ -38,9 +38,9 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-IOT-006 | 冷链 SLA | contracts | `ConditionalFreight` | v0.6 |
 | FR-CHAIN-001~006 | Agent L2/激励 | contracts + 链工程 | 见 AGENT_CHAIN.md | v0.7 |
 | FR-ECO-* | 生态激励 | contracts + docs | MasterChef、Grant | v0.7+ |
-| FR-DEX-001a | AMM Factory/Pair/Router | contracts | `metadex/amm` | v0.15.0 |
-| FR-DEX-001b | ve VotingEscrow/Voter/Gauge | contracts | `metadex/ve` | v0.15.0 |
-| FR-DEX-001c | 部署 + export-abi | contracts, shared | `deploy-metadex` | v0.15.0 |
+| FR-DEX-001a | AMM Factory/Pair/Router | contracts | `metadex/amm` | v0.15.0 ✅ |
+| FR-DEX-001b | ve VotingEscrow/Voter/Gauge | contracts | `metadex/ve` | v0.15.0 ✅ |
+| FR-DEX-001c | 部署 + export-abi | contracts, shared | `deploy-metadex` | v0.15.0 🟡 localhost ✅ |
 | FR-DEX-002 | Swap/Router API | api | `dex` Port 层 | v0.15.1 |
 | FR-DEX-003 | 轻量 Pool 同步 | api | `TsDexPoolSync` | v0.15.1 |
 | FR-DEX-004 | Rust Sidecar 替换 | api + dex-engine | `RustDexSidecar` | 盈利后 |
@@ -60,8 +60,10 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ONRAMP-007 | 入金向导 Onramp+Bridge | wallet | v0.7 | v0.7 |
 | FR-PAY-001 | 公链/Rollup only（弃联盟链） | spec, docs | **已定** | **已定** |
 | FR-PAY-002 | EIP-712 Receipt schema | shared, api | v0.2 | v0.2 |
-| FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 |
-| FR-PAY-004 | Session Key 授权 | contracts, wallet | v0.3 | v0.3 |
+| FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 ✅ |
+| FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
+| FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
+| FR-PAY-009 | signReceipt SDK | shared, api/scripts | v0.3 ✅ |
 | FR-PAY-006 | Merkle 批量清算 | contracts | `MicroPaymentSettler` | v0.5 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v0.7 | v0.7 |
 

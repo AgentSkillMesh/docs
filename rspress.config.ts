@@ -1,10 +1,15 @@
+import path from 'node:path';
 import { defineConfig } from 'rspress/config';
 
 export default defineConfig({
   root: 'docs',
   base: '/docs/',
+  globalStyles: path.join(__dirname, 'styles/index.css'),
   title: 'VibeAgent',
   description: 'Agent Economy 去中心化市场 — 让人、设备、技能、企业都能在 AI 时代赚钱',
+  icon: '/logo.png',
+  logo: '/logo.png',
+  logoText: 'VibeAgent',
   themeConfig: {
     nav: [
       { text: '用户赚钱', link: '/users/' },

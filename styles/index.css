@@ -1,0 +1,14 @@
+/* 生态统一主色（见 LuminaryWorks/shared/brand/tokens.css） */
+:root {
+  --rp-c-brand: #1677ff;
+  --rp-c-brand-dark: #0958d9;
+  --rp-c-brand-light: #4593ff;
+}
+
+.rspress-home-hero-name {
+  background: linear-gradient(120deg, #1677ff 20%, #18a0fb 60%, #21d4a8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}

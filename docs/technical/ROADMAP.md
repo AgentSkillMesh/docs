@@ -94,11 +94,11 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 
 | # | 交付 | 仓库 | 状态 |
 |---|------|------|------|
-| A1 | Factory / Pair / Router + 单测 | contracts | ⚪ |
-| A2 | VotingEscrow / Voter / Gauge + 单测 | contracts | ⚪ |
-| A3 | `deploy-metadex` + Base Sepolia 部署 | contracts | ⚪ |
-| A4 | `export-abi` → shared / deployments | contracts, shared | ⚪ |
-| A5 | 集成测试：LP → Swap → Lock → Vote | contracts | ⚪ |
+| A1 | Factory / Pair / Router + 单测 | contracts | ✅ |
+| A2 | VotingEscrow / Voter / Gauge + 单测 | contracts | ✅ |
+| A3 | `deploy-metadex` + Base Sepolia 部署 | contracts | 🟡 localhost ✅ · Sepolia 待部署 |
+| A4 | `export-abi` → shared / deployments | contracts, shared | ✅ |
+| A5 | 集成测试：LP → Swap → Lock → Vote | contracts | ✅ |
 
 **Phase A 验收**（**不依赖 api/web**）：
 
