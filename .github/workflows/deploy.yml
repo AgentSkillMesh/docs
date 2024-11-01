@@ -1,5 +1,7 @@
 name: Deploy docs to GitHub Pages
 
+# Custom domain: docs.doerflow.dev (see docs/public/CNAME, rspress base: '/')
+
 on:
   push:
     branches: [main]

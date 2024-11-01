@@ -1,8 +1,8 @@
-# docs · VibeAgent 官方文档
+# docs · DoerFlow 官方文档
 
-[AgentSkillMesh](https://github.com/AgentSkillMesh) 组织下的公开文档仓库，基于 [Rspress](https://rspress.rs/)。
+[doerflow](https://github.com/doerflow) 组织下的公开文档仓库，基于 [Rspress](https://rspress.rs/)。
 
-**在线地址**：https://agentskillmesh.github.io/docs/
+**在线地址**：https://docs.doerflow.dev
 
 ## 开发
 
@@ -30,12 +30,21 @@ docs/
 ## Clone
 
 ```bash
-git clone https://github.com/AgentSkillMesh/docs.git
+git clone https://github.com/doerflow/docs.git
 cd docs
 pnpm install --ignore-scripts && pnpm dev
 ```
 
-MetaRepo 编排见 [AgentSkillMesh/VibeAgent](https://github.com/AgentSkillMesh/VibeAgent)。
+MetaRepo 编排见 [doerflow/VibeAgent](https://github.com/doerflow/VibeAgent)（私有）。
+
+## 部署（GitHub Pages · docs.doerflow.dev）
+
+### 一次性配置
+
+1. GitHub 仓库 `doerflow/docs` → Settings → Pages → Source: **GitHub Actions**
+2. Settings → Pages → Custom domain：`docs.doerflow.dev`（会写入 `docs/public/CNAME`）
+3. DNS：`docs` CNAME → `doerflow.github.io`（或 GitHub Pages 提示的目标）
+4. `rspress.config.ts` 中 `base: '/'`（自定义域名根路径，非 `/docs/` 子路径）
 
 ## License
 

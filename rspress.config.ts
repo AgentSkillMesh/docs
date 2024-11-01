@@ -3,7 +3,7 @@ import { defineConfig } from 'rspress/config';
 
 export default defineConfig({
   root: 'docs',
-  base: '/docs/',
+  base: '/',
   globalStyles: path.join(__dirname, 'styles/index.css'),
   title: 'VibeAgent',
   description: 'Agent Economy 去中心化市场 — 让人、设备、技能、企业都能在 AI 时代赚钱',
