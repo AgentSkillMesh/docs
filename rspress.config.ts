@@ -18,7 +18,7 @@ export default defineConfig({
       { text: '愿景规划', link: '/vision/' },
       { text: '白皮书', link: '/whitepaper/' },
       { text: '技术文档', link: '/technical/' },
-      { text: 'GitHub', link: 'https://github.com/AgentSkillMesh' },
+      { text: 'GitHub', link: 'https://github.com/doerflow' },
     ],
     sidebar: {
       '/': [
@@ -140,11 +140,11 @@ export default defineConfig({
       {
         icon: 'github',
         mode: 'link',
-        content: 'https://github.com/AgentSkillMesh/docs',
+        content: 'https://github.com/doerflow/docs',
       },
     ],
     footer: {
-      message: 'VibeAgent Protocol · AgentSkillMesh · MIT',
+      message: 'DoerFlow · doerflow.dev · MIT',
     },
   },
 });
