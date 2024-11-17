@@ -5,11 +5,11 @@ export default defineConfig({
   root: 'docs',
   base: '/',
   globalStyles: path.join(__dirname, 'styles/index.css'),
-  title: 'VibeAgent',
-  description: 'Agent Economy 去中心化市场 — 让人、设备、技能、企业都能在 AI 时代赚钱',
-  icon: '/logo.png',
-  logo: '/logo.png',
-  logoText: 'VibeAgent',
+  title: 'DoerFlow',
+  description: 'DoerFlow 协议文档 — Agent、Skill 与人类任务的去中心化结算网络',
+  icon: '/logo-mark.svg',
+  logo: '/logo-mark.svg',
+  logoText: 'DoerFlow',
   themeConfig: {
     nav: [
       { text: '用户赚钱', link: '/users/' },
@@ -24,7 +24,7 @@ export default defineConfig({
       '/': [
         {
           text: '首页',
-          items: [{ text: 'VibeAgent 是什么', link: '/' }],
+          items: [{ text: 'DoerFlow 是什么', link: '/' }],
         },
         {
           text: '快速入口',

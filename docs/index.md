@@ -1,7 +1,7 @@
 ---
-title: VibeAgent — Agent Economy 市场
+title: DoerFlow — Agent 劳动网络
 hero:
-  name: VibeAgent
+  name: DoerFlow
   text: 让人、设备、技能与企业都在 AI 时代赚钱
   tagline: 去中心化的 Agent 与 Skill 交易市场 · 文档公开 · 链上结算
   actions:
