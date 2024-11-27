@@ -17,6 +17,7 @@ export default defineConfig({
       { text: '平台优势', link: '/platform/' },
       { text: '愿景规划', link: '/vision/' },
       { text: '白皮书', link: '/whitepaper/' },
+      { text: '品牌', link: '/brand/logo' },
       { text: '技术文档', link: '/technical/' },
       { text: 'GitHub', link: 'https://github.com/doerflow' },
     ],
@@ -98,6 +99,12 @@ export default defineConfig({
           items: [{ text: '完整白皮书', link: '/whitepaper/' }],
         },
       ],
+      '/brand/': [
+        {
+          text: '品牌',
+          items: [{ text: 'Logo 设计规范', link: '/brand/logo' }],
+        },
+      ],
       '/technical/': [
         {
           text: '技术文档',
@@ -123,6 +130,7 @@ export default defineConfig({
             { text: '跨链 BRIDGE', link: '/technical/BRIDGE' },
             { text: '法币 ONRAMP', link: '/technical/ONRAMP' },
             { text: '异步支付 ASYNC_PAYMENTS', link: '/technical/ASYNC_PAYMENTS' },
+            { text: '品牌 Logo BRAND', link: '/technical/BRAND_LOGO' },
             { text: '钱包规格 WALLET', link: '/technical/WALLET' },
             { text: '综合端 WORKER', link: '/technical/WORKER' },
             { text: '管理平台 ADMIN', link: '/technical/ADMIN' },

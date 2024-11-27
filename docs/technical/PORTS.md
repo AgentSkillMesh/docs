@@ -11,8 +11,9 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | 服务 | 端口 | 环境变量 |
 |------|------|----------|
 | **API** | **13008** | `PORT` |
+| Site 官网 | 13010 | `next dev --port` |
+| Admin 运营台 | 13011 | `next dev --port` |
 | Web DApp | 5174 | Rsbuild dev |
-| Admin | 5175 | Rsbuild dev |
 | Hardhat | 8545 | — |
 | Expo Metro | 8081+ | — |
 

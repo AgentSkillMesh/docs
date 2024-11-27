@@ -6,21 +6,25 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 > **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 仓库关系说明
 
+**品牌**：[DoerFlow](https://doerflow.dev) · **目标组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh）  
 **版本**: v0.1  
-**最后更新**: 2026-06-04  
+**最后更新**: 2025-01-14  
 **清单数据源**: `repos.manifest.json`
+
+> 组织迁移见 [LuminaryWorks/spec/github-org-migration.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/github-org-migration.md)。下文 **AgentSkillMesh** 为迁移前组织名。
 
 ---
 
 ## 1. 三层结构
 
 ```
-AgentSkillMesh（GitHub 组织）
-├── VibeAgent          MetaRepo · 私有 · 本仓库根目录
+doerflow（GitHub 组织，目标名）
+├── platform          MetaRepo · 私有 · 本仓库根目录（现 AgentSkillMesh/VibeAgent）
 │   ├── spec/          规范源（Spec-Driven，不单独成 Git 仓）
 │   ├── scripts/       克隆、初始化、同步规范
 │   └── repos/         子仓库本地工作区
 │       ├── docs       公开 · 文档站 + 同步后的 Spec
+│       ├── site       公开 · 品牌官网 doerflow.dev
 │       ├── contracts  私有 · 智能合约
 │       ├── api        私有 · 索引 API
 │       ├── web        私有 · DApp
@@ -31,19 +35,20 @@ AgentSkillMesh（GitHub 组织）
 │       └── admin      私有 · 运营管理（审核/告警）
 ```
 
-| 层级 | 名称 | Git 仓库 | 可见性 | 职责 |
-|------|------|----------|--------|------|
-| 组织 | AgentSkillMesh | — | — | 品牌、GitHub 托管 |
-| 产品 | VibeAgent | `AgentSkillMesh/VibeAgent` | **私有** | MetaRepo：规范、脚本、清单 |
-| 子仓 | docs | `AgentSkillMesh/docs` | **公开** | Rspress 站点、白皮书、**同步 Spec** |
-| 子仓 | contracts | `AgentSkillMesh/contracts` | 私有 | Solidity、部署脚本、export-abi |
-| 子仓 | api | `AgentSkillMesh/api` | 私有 | 链上事件索引、REST、任务治理 API |
-| 子仓 | web | `AgentSkillMesh/web` | 私有 | React DApp、wagmi（Creator） |
-| 子仓 | p2p | `AgentSkillMesh/p2p` | 私有 | libp2p Beacon（v0.2+） |
-| 子仓 | shared | `AgentSkillMesh/shared` | 私有 | `@vibe-agent/shared` |
-| 子仓 | wallet | `AgentSkillMesh/wallet` | 私有 | RN 纯粹钱包：转账、收益、**发布任务** |
-| 子仓 | worker | `AgentSkillMesh/worker` | 私有 | RN 综合端：众包接单 + 社交平台任务 |
-| 子仓 | admin | `AgentSkillMesh/admin` | 私有 | 运营平台：审批、告警、订单总览 |
+| 层级 | 名称 | Git 仓库（目标） | 可见性 | 职责 |
+|------|------|------------------|--------|------|
+| 组织 | doerflow | — | — | 品牌、GitHub 托管 |
+| 产品 | DoerFlow | `doerflow/platform` | **私有** | MetaRepo：规范、脚本、清单 |
+| 子仓 | docs | `doerflow/docs` | **公开** | Rspress 站点、白皮书、**同步 Spec** |
+| 子仓 | site | `doerflow/site` | **公开** | 品牌官网、产品介绍（**doerflow.dev**） |
+| 子仓 | contracts | `doerflow/contracts` | 私有 | Solidity、部署脚本、export-abi |
+| 子仓 | api | `doerflow/api` | 私有 | 链上事件索引、REST、任务治理 API |
+| 子仓 | web | `doerflow/web` | 私有 | React DApp、wagmi（Creator） |
+| 子仓 | p2p | `doerflow/p2p` | 私有 | libp2p Beacon（v0.2+） |
+| 子仓 | shared | `doerflow/shared` | 私有 | `@doerflow/shared`（原 `@vibe-agent/shared`） |
+| 子仓 | wallet | `doerflow/wallet` | 私有 | RN 纯粹钱包：转账、收益、**发布任务** |
+| 子仓 | worker | `doerflow/worker` | 私有 | RN 综合端：众包接单 + 社交平台任务 |
+| 子仓 | admin | `doerflow/admin` | 私有 | 运营平台：审批、告警、订单总览 |
 
 ---
 
@@ -151,9 +156,21 @@ flowchart TB
 | 技术栈 | Rspress |
 | 与 Spec | `docs/technical/SPEC.md`、`REPOS.md` 由脚本从 `spec/` 同步 |
 | 独有内容 | `users/`、`developers/`、`platform/`、`vision/`、`whitepaper/` |
-| 部署 | GitHub Pages → https://agentskillmesh.github.io/docs/ |
+| 部署 | GitHub Pages → https://docs.doerflow.dev（Cloudflare DNS CNAME → `doerflow.github.io`） |
 
-### 3.3 contracts
+### 3.3 site（品牌官网 · 公开）
+
+| 项 | 内容 |
+|----|------|
+| 路径 | `repos/site` |
+| 技术栈 | Next.js 16 + Tailwind CSS 4 |
+| 域名 | **doerflow.dev**（根域） |
+| 与 docs 区分 | docs = 技术文档；site = 营销官网、产品介绍 |
+| 构建 | `output: "export"` 静态导出（SSG，`out/`） |
+| 部署 | Cloudflare Pages → **doerflow.dev**（`doerflow/site` · GitHub Actions） |
+| 端口 | **13010**（`pnpm dev`） |
+
+### 3.4 contracts
 
 | 项 | 内容 |
 |----|------|
@@ -162,7 +179,7 @@ flowchart TB
 | 输出 | `artifacts/`、ABI → `api`/`web`/`shared` |
 | 关键脚本 | `deploy:mvp`、`deploy:sepolia:full`、`deploy:metadex`、`export-abi` |
 
-### 3.4 api
+### 3.5 api
 
 | 项 | 内容 |
 |----|------|
@@ -171,7 +188,7 @@ flowchart TB
 | 依赖 | `shared`、`deployments.json`、SQLite（MVP） |
 | 端口 | **13008**（见 `PORTS.md`） |
 
-### 3.5 web
+### 3.6 web
 
 | 项 | 内容 |
 |----|------|
@@ -180,7 +197,7 @@ flowchart TB
 | 依赖 | `shared`、`api`、wagmi、链上合约 |
 | 端口 | 5174 |
 
-### 3.6 p2p
+### 3.7 p2p
 
 | 项 | 内容 |
 |----|------|
@@ -188,7 +205,7 @@ flowchart TB
 | 实现 Spec | §5.4 `FR-P2P-*`（v0.2 Alpha） |
 | 状态 | MVP 阶段为 stub |
 
-### 3.7 shared
+### 3.8 shared
 
 | 项 | 内容 |
 |----|------|
@@ -196,7 +213,7 @@ flowchart TB
 | 包名 | `@vibe-agent/shared` |
 | 职责 | 跨仓类型、链 ID、合约地址常量、ABI 重导出 |
 
-### 3.8 wallet（纯粹钱包 · React Native）
+### 3.9 wallet（纯粹钱包 · React Native）
 
 | 项 | 内容 |
 |----|------|
@@ -208,7 +225,7 @@ flowchart TB
 
 **不含**任务大厅与接单 — 见 `worker`。
 
-### 3.9 worker（综合端 · React Native）
+### 3.10 worker（综合端 · React Native）
 
 | 项 | 内容 |
 |----|------|
@@ -218,7 +235,7 @@ flowchart TB
 | 依赖 | `api`（仅 `published` 任务）、`shared`、Escrow |
 | 构建 | Expo · 包名 `@vibe-agent/worker` |
 
-### 3.10 admin（运营管理 · Web）
+### 3.11 admin（运营管理 · Web）
 
 | 项 | 内容 |
 |----|------|
@@ -226,7 +243,7 @@ flowchart TB
 | 规格 | `spec/ADMIN.md`、`spec/TASK_GOVERNANCE.md` |
 | 职责 | 订单总览、简单任务自动过审、复杂人工复审、风控告警 |
 | 依赖 | `api` `/admin/*` |
-| 构建 | Rsbuild · 默认端口 **5175** |
+| 构建 | Next.js + Ant Design · 默认端口 **13011** · 域名 **admin.doerflow.dev** |
 
 与 **web** 区分：web = Creator DApp；admin = 内部运营。
 
@@ -236,15 +253,16 @@ flowchart TB
 
 | 本地 `repos/` | GitHub 远程 | 默认分支 |
 |---------------|-------------|----------|
-| `docs` | `git@github.com:AgentSkillMesh/docs.git` | main |
-| `contracts` | `git@github.com:AgentSkillMesh/contracts.git` | main |
-| `api` | `git@github.com:AgentSkillMesh/api.git` | main |
-| `web` | `git@github.com:AgentSkillMesh/web.git` | main |
-| `p2p` | `git@github.com:AgentSkillMesh/p2p.git` | main |
-| `shared` | `git@github.com:AgentSkillMesh/shared.git` | main |
-| `wallet` | `git@github.com:AgentSkillMesh/wallet.git` | main |
-| `worker` | `git@github.com:AgentSkillMesh/worker.git` | main |
-| `admin` | `git@github.com:AgentSkillMesh/admin.git` | main |
+| `docs` | `git@github.com:doerflow/docs.git` | main |
+| `site` | `git@github.com:doerflow/site.git` | main |
+| `contracts` | `git@github.com:doerflow/contracts.git` | main |
+| `api` | `git@github.com:doerflow/api.git` | main |
+| `web` | `git@github.com:doerflow/web.git` | main |
+| `p2p` | `git@github.com:doerflow/p2p.git` | main |
+| `shared` | `git@github.com:doerflow/shared.git` | main |
+| `wallet` | `git@github.com:doerflow/wallet.git` | main |
+| `worker` | `git@github.com:doerflow/worker.git` | main |
+| `admin` | `git@github.com:doerflow/admin.git` | main |
 
 克隆 MetaRepo 后执行：`./scripts/clone-repos.sh`
 
@@ -254,10 +272,10 @@ flowchart TB
 
 | | 单仓 Monorepo | VibeAgent Polyrepo |
 |--|---------------|---------------------|
-| Git | 一个仓库 | MetaRepo + 9 个子仓库 |
+| Git | 一个仓库 | MetaRepo + 10 个子仓库 |
 | 规范 | 常放 `docs/` 或 `spec/` | **MetaRepo `spec/`** + 同步到 `docs` |
 | 发布 | 统一版本 | 各仓独立 tag |
-| 开源节奏 | 一次公开 | 当前仅 `docs` 公开，代码仓后续开源 |
+| 开源节奏 | 一次公开 | 当前 `docs` 与 `site` 公开，代码仓后续开源 |
 
 ---
 

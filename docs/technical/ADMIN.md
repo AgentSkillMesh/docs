@@ -57,7 +57,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 | 项 | 选型 |
 |----|------|
-| 框架 | React 19 + **Rsbuild** + Ant Design 5 |
+| 框架 | React 19 + **Next.js** + Ant Design 6 |
 | 状态 | TanStack Query + Zustand |
 | 鉴权 | JWT / SIWE（运营钱包可选） |
 | 规范 | Biome |

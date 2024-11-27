@@ -4,11 +4,16 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ---
 
 > **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
-# VibeAgent 技术规格说明书
+# DoerFlow 技术规格说明书
+
+> **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
+> **定位**：The Liquidity Protocol for Autonomous Agents — 自主执行体的价值流动协议
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2026-06-04
+**最后更新**: 2026-06-13
+
+> 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
 ---
 
@@ -36,7 +41,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | **Canonical Token** | 桥接后在 L2 上唯一认可的 wrapped 资产（USDC/USDT/PYUSD/WETH） |
 | **Omnichain** | LayerZero、CCTP、CCIP 等通用跨链协议（扩展，不替代原生桥） |
 | **Onramp** | 第三方合规 Widget（Stripe/MoonPay 等）；VibeAgent 不持牌、不碰法币 |
-| **MetaRepo** | VibeAgent 根仓库（AgentSkillMesh/VibeAgent），含 `spec/` 与各 `repos/*` 子仓库编排 |
+| **MetaRepo** | DoerFlow 根仓库（doerflow/platform），含 `spec/` 与各 `repos/*` 子仓库编排 |
 
 ## 3. 系统边界
 
@@ -70,14 +75,14 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 ### 3.3 LuminaryWorks 跨产品生态（可选）
 
-VibeAgent 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五产品中的 **「赚」** 支柱；可与兄弟产品组合，**非单机部署前提**。跨产品仅 OIDC/REST，无运行时 import。
+DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五产品中的 **「赚」** 支柱；可与兄弟产品组合，**非单机部署前提**。跨产品仅 OIDC/REST，无运行时 import。
 
 | 兄弟产品 | 集成场景 |
 |----------|----------|
-| LuminaryIoTChain | 设备 Agent、微额结算（[IOT.md](./IOT.md)） |
+| SyncroBrain | 设备 Agent、微额结算（[IOT.md](./IOT.md)） |
 | DataLuminary | 交易可视化（[DATALUMINARY.md](./DATALUMINARY.md)） |
-| VibeEdu | Agent / 合约课程 |
-| VistaRemote | Worker 远程调试 |
+| BlockyEdu | Agent / 合约课程 |
+| VistaCast | Worker 远程调试 |
 
 详见 [luminaryworks-ecosystem.md](./luminaryworks-ecosystem.md) · 协议内激励见 [ECOSYSTEM.md](./ECOSYSTEM.md)。
 
@@ -393,7 +398,7 @@ users           -- SIWE 用户映射
 |------|----------|
 | 区块链 | Solidity 0.8.x, Hardhat/Foundry, OpenZeppelin |
 | L2 | Base Sepolia (testnet) → Base Mainnet |
-| 前端 | React 19, Ant Design 5, Zustand, wagmi/viem, Vite |
+| 前端 | React 19, Ant Design 5, Zustand, wagmi/viem, Rsbuild |
 | 后端 | NestJS 10, TypeORM, **SQLite**（better-sqlite3） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
 | 存储 | IPFS (Pinata/web3.storage), Arweave (元数据) |

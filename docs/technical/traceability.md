@@ -15,6 +15,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ID-001 | Agent 铸造 | contracts | `AgentNFT.sol` | v0.1 |
 | FR-ID-002 | Agent 管理 | contracts + api | 合约 + `agents` 模块 | v0.1 |
 | FR-ID-003 | 钱包集成 | web | `wagmi`、连接组件 | v0.1 |
+| FR-ID-003b | SIWE 登录 | api + web | `auth` 模块、`/account` | v0.1 🟡 |
 | FR-SK-001 | Skill 注册 | contracts | `SkillRegistry.sol` | v0.1 |
 | FR-SK-002 | Skill 验证 | contracts | v0.2 EAS | v0.2 |
 | FR-SK-003 | Skill 绑定 | contracts + web | 注册 + Studio UI | v0.1 |

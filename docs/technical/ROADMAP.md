@@ -66,7 +66,8 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 - [x] NestJS + SQLite 索引
 - [x] 链上事件 Indexer（ethers）
 - [x] REST API: Agents, Skills, Escrows, Stats
-- [ ] SIWE / IPFS
+- [x] SIWE 登录（`/api/v1/auth` + Web 账户页）
+- [ ] IPFS
 
 #### 前端（本地 MVP ✅）
 - [x] React + AntD + wagmi
@@ -108,11 +109,11 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 
 #### v0.15.1 · Phase B — api 读链
 
-| # | 交付 | 依赖 |
-|---|------|------|
-| B1 | Port Adapter 读 Pair / Router 报价 | A4 |
-| B2 | allowlist Pool 轻量 sync | A3 |
-| B3 | `/dex/*` API 对接真实地址 | A4 |
+| # | 交付 | 依赖 | 状态 |
+|---|------|------|------|
+| B1 | Port Adapter 读 Pair / Router 报价 | A4 | ✅ |
+| B2 | allowlist Pool 轻量 sync | A3 | ✅ |
+| B3 | `/dex/*` API 对接真实地址 | A4 | ✅ |
 
 **预计工期**: 1–2 周（Phase A 完成后）
 
