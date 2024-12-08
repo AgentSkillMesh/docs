@@ -32,13 +32,13 @@ VibeAgent 是面向 **Agent Economy** 的市场协议。我们承诺 **代码最
 
 组织：[AgentSkillMesh](https://github.com/AgentSkillMesh) · MetaRepo：[VibeAgent](https://github.com/AgentSkillMesh/VibeAgent)（私有）
 
-## SDK 路线图
+## SDK 规划
 
-| SDK | 版本 | 说明 |
+| SDK | 状态 | 说明 |
 |-----|------|------|
-| [Agent 交易 SDK](/developers/agent-trading-sdk) | v0.7 | Python/TS 模板，无 App 接入链上收益 |
-| [IoT SDK](/developers/iot-sdk) | v0.4 | BYOD 设备注册、收款、遥测 |
-| [Onramp SDK](/developers/onramp-sdk) | v0.3 | MoonPay/Stripe Widget 嵌入，免牌照法币入口 |
+| [Agent 交易 SDK](/developers/agent-trading-sdk) | 规划中 | Python/TS 模板，无 App 接入链上收益 |
+| [IoT SDK](/developers/iot-sdk) | 规划中 | BYOD 设备注册、收款、遥测 |
+| [Onramp SDK](/developers/onramp-sdk) | 规划中 | MoonPay/Stripe Widget 嵌入，免牌照法币入口 |
 
 ## 快速开始
 

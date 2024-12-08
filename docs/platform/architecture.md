@@ -110,7 +110,7 @@ api Receipt Vault 累积
 | MVP | 合约 + SQLite 索引 + Web DApp |
 | Alpha | P2P + 验证 + 争议 + **链下 Receipt** |
 | Beta | Device + Human Task + **Session Keys** |
-| v0.5 | IoT 微额 + **批量清算** |
-| v1.0 | 主网 + DAO + 审计 |
+| 物联网扩展 | IoT 微额 + **批量清算** |
+| 主网 | 主网 + DAO + 审计 |
 
 [异步支付 →](/platform/async-payments) · [安全模型 →](/platform/security) · [技术细节 →](/technical/architecture/OVERVIEW)

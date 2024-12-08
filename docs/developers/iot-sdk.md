@@ -4,7 +4,7 @@ title: IoT SDK（规划）
 
 # IoT SDK · Bring Your Own Device
 
-> **状态**：v0.4 规划。当前可先阅读规格 [IOT.md](/technical/IOT)。
+> **状态**：规划中。当前可先阅读规格 [IOT.md](/technical/IOT)。
 
 ## 定位
 
@@ -23,14 +23,14 @@ title: IoT SDK（规划）
 | L1 | 厂商型号白名单 + 固件签名 |
 | L2 | 企业资质（充电桩、冷链等） |
 
-## 目标场景（按版本）
+## 目标场景
 
-| 版本 | 示例 |
+| 方向 | 示例 |
 |------|------|
-| v0.4 | 充电桩收款；车载 Agent 支付 |
-| v0.5 | 气象传感器按秒卖数据 |
-| v0.6 | 光伏余电报价；冷链温湿度 Oracle |
+| 设备支付 | 充电桩收款；车载 Agent 支付 |
+| 数据市场 | 气象传感器按秒卖数据 |
+| 能源与物流 | 光伏余电报价；冷链温湿度 Oracle |
 
 ## 下一步
 
-关注 [路线图](/vision/roadmap) M4–M6；仓库落地后将在 `repos/shared` 或独立 `iot-sdk` 包发布。
+关注 [发展路线图](/vision/roadmap)；仓库落地后将在 `repos/shared` 或独立 `iot-sdk` 包发布。

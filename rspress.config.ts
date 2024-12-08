@@ -113,7 +113,6 @@ export default defineConfig({
             { text: '技术规格 SPEC', link: '/technical/SPEC' },
             { text: '仓库关系 REPOS', link: '/technical/REPOS' },
             { text: '需求追溯', link: '/technical/traceability' },
-            { text: '技术路线图', link: '/technical/ROADMAP' },
             { text: '工具链', link: '/technical/TOOLCHAIN' },
             { text: '客户端总览 CLIENTS', link: '/technical/CLIENTS' },
             { text: '任务系统 TASK_SYSTEM', link: '/technical/TASK_SYSTEM' },

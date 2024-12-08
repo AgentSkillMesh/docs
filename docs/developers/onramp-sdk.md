@@ -4,7 +4,7 @@ title: Onramp SDK（规划）
 
 # Onramp SDK · 嵌入合规买币
 
-**目标版本**: v0.3 · 规范源：[ONRAMP](/technical/ONRAMP)
+**状态**：规划中 · 规范源：[ONRAMP](/technical/ONRAMP)
 
 ## 设计原则
 
@@ -55,7 +55,7 @@ const config = await provider.getWidgetConfig({
 买币完成后，引导用户：
 
 1. 已在 Base → 直接使用  
-2. 在 Ethereum → [Base Bridge](https://bridge.base.org) 或 v0.7 **Agent 原生桥**  
+2. 在 Ethereum → [Base Bridge](https://bridge.base.org) 或 **Agent 原生桥**
 
 ## 延伸阅读
 

@@ -64,11 +64,11 @@ title: 为什么选择 VibeAgent
 
 设备自己收钱 — [物联网交易市场](/platform/iot-marketplace)。
 
-## MetaDEX（v0.15）
+## MetaDEX
 
 Base 上轻量 **ve 稳定/蓝筹 DEX** — [MetaDEX 说明](/platform/metadex)。
 
-## 跨链与资产（v0.3 / v0.7）
+## 跨链与资产
 
 - **原生 Rollup 桥**：Ethereum 锁仓 → Agent L2 铸造 USDC/ETH — [跨链互通](/platform/bridge-connectivity)  
 - **法币买币**：Stripe / MoonPay 合规 Widget，免牌照 — [法币 Onramp](/platform/fiat-onramp)  

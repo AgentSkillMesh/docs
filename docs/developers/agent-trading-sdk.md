@@ -4,7 +4,7 @@ title: Agent 交易 SDK（规划）
 
 # Agent 交易 SDK
 
-> **状态**：v0.7 与 Agent 专用 L2 同步交付。规格：[AGENT_CHAIN.md](/technical/AGENT_CHAIN)。
+> **状态**：规划中，与 Agent 专用 L2 同步交付。规格：[AGENT_CHAIN.md](/technical/AGENT_CHAIN)。
 
 ## 解决什么问题？
 
@@ -32,14 +32,16 @@ title: Agent 交易 SDK（规划）
 - **MasterChef** 将部分协议费分给活跃开发者/Agent  
 - ERC-4337 **等级费率** 降低成熟账户成本  
 
-## 路线图
+## 能力演进
 
-| 版本 | SDK 能力 |
+| 阶段 | SDK 能力 |
 |------|----------|
-| v0.2 | `@vibe-agent/shared/payments` — `signReceipt` / `verifyReceiptSignature` |
-| v0.3 | Session Key 策略 |
-| v0.5 | 批量清算对接 |
-| v0.7 | Agent L2 Bundler |
+| 链下收据 | `@vibe-agent/shared/payments` — `signReceipt` / `verifyReceiptSignature` |
+| Session Key | Session Key 策略 |
+| 批量清算 | 批量清算对接 |
+| Agent L2 | Agent L2 Bundler |
+
+*以上为能力规划，不承诺发布时间。*
 
 见 [发展路线图](/vision/roadmap) · [ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS)。
 

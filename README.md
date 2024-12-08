@@ -1,4 +1,4 @@
-# docs · DoerFlow 官方文档
+﻿# docs · DoerFlow 官方文档
 
 [doerflow](https://github.com/doerflow) 组织下的公开文档仓库，基于 [Rspress](https://rspress.rs/)。
 
@@ -47,4 +47,4 @@ docs/
 
 ## License
 
-MIT
+[Polyform Noncommercial License 1.0.0](LICENSE) (Polyform-NC). Non-commercial use permitted. Commercial use requires a separate license from DoerFlow.

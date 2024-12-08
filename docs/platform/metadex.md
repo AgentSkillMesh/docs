@@ -10,18 +10,18 @@ VibeAgent 在 **Base** 上提供专注的 **稳定币 / 蓝筹** 交易与流动
 
 MetaDEX 的价值在链上：**Factory / Pair / Router + ve 投票** 必须先于 api 与前端完成。
 
-| 阶段 | 版本 | 内容 |
-|------|------|------|
-| **A** | v0.15.0 | Solidity Fork、测试、Sepolia 部署、export-abi |
-| B | v0.15.1 | api Port 读链报价 |
-| C | v0.15.2 | web `/dex` Swap / LP / Vote |
-| D | 并行 | DataLuminary 分析（不阻塞 A） |
+| 阶段 | 内容 |
+|------|------|
+| **合约** | Solidity Fork、测试、测试网部署、export-abi |
+| **API** | api Port 读链报价 |
+| **前端** | web `/dex` Swap / LP / Vote |
+| **分析（并行）** | DataLuminary 分析（不阻塞合约） |
 
-Phase A 未完成前，**不启动 DEX 前端主路径**。
+Phase 合约阶段未完成前，**不启动 DEX 前端主路径**。
 
 ## 做什么 / 不做什么
 
-| ✅ v0.15 | ❌ 盈利前不做 |
+| ✅ 首期范围 | ❌ 盈利前不做 |
 |----------|----------------|
 | 精选 Pool Swap / LP | 全链实时扫块 |
 | Lock LP → ve → 投票 Gauge | 上万 Pool 日志引擎 |
@@ -39,4 +39,4 @@ Phase A 未完成前，**不启动 DEX 前端主路径**。
 ## 技术规格
 
 - [METADEX](/technical/METADEX) · **[MetaDEX 合约计划](/technical/METADEX_CONTRACTS)** · [架构 Port 层](/technical/METADEX_ARCHITECTURE) · [DataLuminary 集成](/technical/DATALUMINARY)  
-- [路线图 v0.15](/vision/roadmap)
+- [发展路线图](/vision/roadmap)
