@@ -21,7 +21,7 @@ pnpm exec rspress build
 pnpm preview
 ```
 
-`main` 分支 push 后由 `.github/workflows/deploy.yml` 自动部署到 GitHub Pages。
+`main` 分支 push 后由 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) 自动构建并部署到 GitHub Pages（Source 须为 **GitHub Actions**）。
 
 ## 目录
 

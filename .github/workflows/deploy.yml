@@ -1,6 +1,7 @@
 name: Deploy docs to GitHub Pages
 
-# Custom domain: docs.doerflow.dev (see docs/public/CNAME, rspress base: '/')
+# Custom domain: docs.doerflow.dev (docs/public/CNAME, rspress base: '/')
+# Requires: Settings → Pages → Source: GitHub Actions
 
 on:
   push:
@@ -28,13 +29,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: pnpm
 
       - name: Install
-        run: pnpm install --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build
-        run: pnpm exec rspress build
+        run: pnpm build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
