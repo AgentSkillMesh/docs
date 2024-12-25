@@ -33,7 +33,7 @@ Phase 合约阶段未完成前，**不启动 DEX 前端主路径**。
 ## 架构亮点
 
 - **仅 Solidity** 上链（Fork 开源合约）  
-- 链下 **Port/Adapter**：现在 TypeScript，盈利后换 **Rust Sidecar**，**业务 API 与前端不改**  
+- 链下 **Port/Adapter**：TypeScript ， **Rust Sidecar**，**TS转Rust， API 与前端不改**  
 - 与 Agent 任务、IoT 结算、Escrow 共用稳定币流动性  
 
 ## 技术规格

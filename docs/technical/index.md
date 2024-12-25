@@ -21,15 +21,15 @@ VibeAgent 采用 **Spec-Driven Development**：主规格维护在 MetaRepo 根�
 | [等级费率 FEE_TIERS_AA](/technical/FEE_TIERS_AA) | ERC-4337 AA 手续费 |
 | [本地端口 PORTS](/technical/PORTS) | API 默认 13008 |
 | [物联网 IOT](/technical/IOT) | 车桩/数据/能源/冷链 |
-| [Agent 专用链 AGENT_CHAIN](/technical/AGENT_CHAIN) | L2 + MasterChef |
+| [Agent 链策略 AGENT_CHAIN](/technical/AGENT_CHAIN) | 现成 L2 + MasterChef；自建链延期 |
 | [生态策略 ECOSYSTEM](/technical/ECOSYSTEM) | 参与方激励与收入 |
 | [MetaDEX](/technical/METADEX) | ve 稳定/蓝筹 DEX |
 | [MetaDEX 合约计划](/technical/METADEX_CONTRACTS) | Fork 清单 · Phase A–D |
 | [MetaDEX 架构](/technical/METADEX_ARCHITECTURE) | Port/Adapter · TS→Rust |
 | [DataLuminary](/technical/DATALUMINARY) | TVL/历史分析外接 |
-| [跨链 BRIDGE](/technical/BRIDGE) | 原生 Rollup 桥 + Omnichain |
+| [跨链 BRIDGE](/technical/BRIDGE) | 官方桥 + Omnichain；自建链桥延期 |
 | [法币 ONRAMP](/technical/ONRAMP) | 第三方合规 Widget |
-| [异步支付 ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) | Session Key · Receipt · 弃联盟链 |
+| [异步支付 ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) | **链下账本 + Merkle** · 弃联盟链/定制 L3 |
 | [钱包规格 WALLET](/technical/WALLET) | 纯粹钱包（发任务） |
 | [综合端 WORKER](/technical/WORKER) | 众包 + 社交平台任务 |
 | [管理平台 ADMIN](/technical/ADMIN) | 运营审核控制台 |

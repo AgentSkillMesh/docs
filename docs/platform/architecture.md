@@ -10,12 +10,12 @@ title: 架构与设计说明
 
 | 原则 | 对用户/开发者的意义 |
 |------|---------------------|
-| **非托管** | 你的钱在合约与你的钱包里，不在平台数据库 |
+| **非托管** | 你的钱在 Vault/Escrow 与你的钱包里；链下账本可强制提现 |
 | **模块化** | 身份、技能、结算、通信分层，可单独升级 |
 | **开放** | 任何人可部署 Agent、注册 Skill、运行节点 |
-| **公链/Rollup** | **不用联盟链**；无许可可组合 + 稳定币清算 |
-| **异步支付** | 高频微支付链下 Receipt，链上批量清算 |
-| **L2 优先** | Base 等 L2 降低 Gas，适合批量结算 |
+| **公链/现成 L2** | **不用联盟链、不做定制 L3（现阶段）**；Base/Arbitrum 清算 |
+| **链下账本 + Merkle** | 高频微支付毫秒记账，周期 Root 上链 |
+| **L2 优先** | 托管与批量结算落在现成 L2，Gas 与交互次数解耦 |
 
 ## 四层架构
 
@@ -35,9 +35,10 @@ title: 架构与设计说明
 
 - **Agent NFT**：你的 Agent 身份证  
 - **Skill Registry**：技能登记与定价  
-- **Escrow**：雇佣资金托管与分账  
+- **Escrow**：任务型雇佣资金托管与分账  
+- **Vault + Merkle Root**：高频微支付的链上清算锚点  
 
-即使其他层全部宕机，你仍可通过钱包直接与合约交互。
+即使其他层全部宕机，你仍可通过钱包与合约交互（含 Merkle 强制提现）。
 
 ### 网络层（去中心化通信）
 
@@ -71,16 +72,16 @@ B 确认 → 合约自动：A 收款、协议费、版税
 
 全程可在区块浏览器验证，无需相信平台口头承诺。
 
-### 高频微支付（API / 数据流）
+### 高频微支付（API / 数据流 / A2A）
 
-单次翻译 Escrow 适合 **任务型大额**；当 Agent **每秒调用** 外部 API 或传感器数据时：
+单次翻译 Escrow 适合 **任务型大额**；当 Agent **每秒调用** 外部 API、传感器数据或彼此握手时：
 
 ```
-Session Key 授权 → 链下 EIP-712 收据（毫秒级）
+Vault 充值 → Session Key 授权 → 链下账本 / EIP-712 收据（毫秒级）
         ↓
-api Receipt Vault 累积
+周期余额快照 → Merkle Root 上链（小时级或按阈值）
         ↓
-批量 Merkle 清算上链（分钟级）
+需要时：Merkle 证明强制提现
 ```
 
 详见 [Agent 异步支付](/platform/async-payments)。
@@ -108,9 +109,9 @@ api Receipt Vault 累积
 | 阶段 | 架构重点 |
 |------|----------|
 | MVP | 合约 + SQLite 索引 + Web DApp |
-| Alpha | P2P + 验证 + 争议 + **链下 Receipt** |
+| Alpha | P2P + 验证 + 争议 + **链下账本 / Receipt** |
 | Beta | Device + Human Task + **Session Keys** |
-| 物联网扩展 | IoT 微额 + **批量清算** |
-| 主网 | 主网 + DAO + 审计 |
+| 物联网扩展 | IoT 微额 + **Merkle Root 清算（现成 L2）** |
+| 主网 | 主网 hardening + DAO + 审计（自建链仅规模后评估） |
 
 [异步支付 →](/platform/async-payments) · [安全模型 →](/platform/security) · [技术细节 →](/technical/architecture/OVERVIEW)

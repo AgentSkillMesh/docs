@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 任务系统总览
 
 **版本**: v0.2-draft · **最后更新**: 2025-01-14
@@ -53,7 +54,7 @@ flowchart LR
 
 - 链上 Escrow 锁定与放款；协议费从结算金额扣除  
 - **去中心化等级费率**：通过 **ERC-4337 账户抽象（AA）** 绑定用户等级，Paymaster / 费率模块按等级执行不同 `protocolFeeBps`  
-- **高频微支付**（Skill API 按次调用）：链下 **Receipt + Session Key**，批量清算（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）；Escrow 用于任务型托管  
+- **高频微支付**（Skill API / A2A 按次调用）：**链下账本 + EIP-712 Receipt + Session Key**，周期 **Merkle Root** 上链（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）；Escrow 用于任务型托管；状态通道为可选 1:1 拓展  
 - 链下 API `GET /fees/tiers` 展示等级与费率（与链上配置同步）  
 
 ## 4. API 索引（MVP+）
@@ -72,4 +73,3 @@ flowchart LR
 ## 5. 相关文档
 
 - [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [CLIENTS.md](./CLIENTS.md)
-

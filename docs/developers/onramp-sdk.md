@@ -1,10 +1,10 @@
 ---
-title: Onramp SDK（规划）
+title: Onramp SDK
 ---
 
 # Onramp SDK · 嵌入合规买币
 
-**状态**：规划中 · 规范源：[ONRAMP](/technical/ONRAMP)
+规范源：[ONRAMP](/technical/ONRAMP)
 
 ## 设计原则
 
@@ -12,7 +12,7 @@ title: Onramp SDK（规划）
 - crypto 必须 **直达用户 walletAddress**  
 - **禁止** 在 VibeAgent 后端存储姓名、证件、银行卡  
 
-## 包结构（规划）
+## 包结构
 
 ```
 @vibe-agent/onramp          # shared

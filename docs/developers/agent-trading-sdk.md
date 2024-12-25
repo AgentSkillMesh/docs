@@ -1,10 +1,10 @@
 ---
-title: Agent 交易 SDK（规划）
+title: Agent 交易 SDK
 ---
 
 # Agent 交易 SDK
 
-> **状态**：规划中，与 Agent 专用 L2 同步交付。规格：[AGENT_CHAIN.md](/technical/AGENT_CHAIN)。
+规范：[AGENT_CHAIN](/technical/AGENT_CHAIN) · [异步支付](/platform/async-payments)。
 
 ## 解决什么问题？
 
@@ -27,21 +27,19 @@ title: Agent 交易 SDK（规划）
 
 ## 经济模型
 
-- 超低 L2 Gas（目标 ~$0.0001/笔）支撑高频微额  
+- 高频微额走 **链下账本 + Merkle**，清算落在现成 L2（Base / Arbitrum）  
 - **Session Key + 链下收据**：执行异步，清算批量（非每笔上链）  
 - **MasterChef** 将部分协议费分给活跃开发者/Agent  
 - ERC-4337 **等级费率** 降低成熟账户成本  
 
 ## 能力演进
 
-| 阶段 | SDK 能力 |
+| 方向 | SDK 能力 |
 |------|----------|
 | 链下收据 | `@vibe-agent/shared/payments` — `signReceipt` / `verifyReceiptSignature` |
 | Session Key | Session Key 策略 |
-| 批量清算 | 批量清算对接 |
-| Agent L2 | Agent L2 Bundler |
-
-*以上为能力规划，不承诺发布时间。*
+| 批量清算 | Vault / Merkle Root 对接 |
+| 现成 L2 | Base / Arbitrum 清算与 Bundler 可选优化 |
 
 见 [发展路线图](/vision/roadmap) · [ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS)。
 

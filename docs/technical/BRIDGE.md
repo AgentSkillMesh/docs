@@ -1,37 +1,39 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
-# 跨链互通 · 原生桥与 Omnichain
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
 
-**版本**: v0.1-draft · **最后更新**: 2026-06-04  
-**关联**: [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [ROADMAP.md](./ROADMAP.md) § M7 · [ONRAMP.md](./ONRAMP.md)
+# 跨链互通 · 官方桥与 Omnichain
+
+**版本**: v0.2-draft · **最后更新**: 2025-01-14  
+**关联**: [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [ROADMAP.md](./ROADMAP.md) · [ONRAMP.md](./ONRAMP.md)
 
 ## 1. 设计原则
 
 | 层级 | 方式 | 定位 |
 |------|------|------|
-| **P0 · 原生 Rollup 桥** | L1 锁仓 → L2 铸造 | **最安全、最底层**；Agent L2 与以太坊主网的主通道 |
-| **P1 · 官方映射资产** | 桥接 USDC/USDT/PYUSD/ETH | 生态结算与 MetaDEX 的 **canonical 资产** |
-| **P2 · Omnichain 协议** | LayerZero / CCTP / CCIP 等 | **扩展**多链 Skill、资产可达性；**不替代**原生桥安全模型 |
+| **P0 · 现成 L2 官方桥** | Base / Arbitrum 等官方桥 | **当前主路径**；Vault / Escrow / Merkle 清算落此 |
+| **P1 · 官方映射资产** | 桥接 USDC/USDT/PYUSD/ETH | 生态结算与 MetaDEX / Vault 的 **canonical 资产** |
+| **P2 · Omnichain 协议** | LayerZero / CCTP / CCIP 等 | **扩展**多链 Skill、资产可达性；**不替代**官方桥安全模型 |
+| **P3 · 自建链原生桥** | L1 锁仓 → 自建 L2 铸造 | **延期**；仅当自建 Agent L2 立项后（非微支付前置） |
 
-**铁律**：用户从以太坊进入 Agent 链的 **主路径** 必须是官方原生桥；Omnichain 仅用于已明确披露风险的快捷通道或 Skill 跨链消息。
+**铁律**：用户进入结算域的主路径必须是 **现成 L2 官方桥**（或经披露的持牌 Onramp）。定制 L3 / 应用专属 Rollup **现阶段不做**（见 ASYNC_PAYMENTS FR-PAY-011）。
 
 ## 2. 链演进三阶段
 
 ```
-Phase 1  v0.1–v0.6   部署在 Base（已有 L2）
-         └─ 用户使用 Base 官方桥（Optimism Standard Bridge）从 Ethereum → Base
-         └─ 文档 + wallet 引导；不自建 L1 桥合约
+Phase 1  当前（主）     部署在 Base / Arbitrum（现成 L2）
+         └─ 用户使用各链官方桥；文档 + wallet 引导
+         └─ 高频微支付：链下账本 + Merkle Root（ASYNC_PAYMENTS）
+         └─ 不自建 L1 桥合约；不做定制 L3
 
-Phase 2  v0.7        Agent 专用 L2 上线
-         └─ OP Stack（或等价 Rollup）+ 团队 Sequencer
-         └─ 部署 L1StandardBridge / L2StandardBridge / OptimismPortal
-         └─ 等量 Mint WETH、USDC、USDT、PYUSD（wrapped canonical）
+Phase 2  延期           仅当规模证明需要自建 Agent L2 时
+         └─ OP Stack（或等价）+ 原生桥评估立项
+         └─ 见 AGENT_CHAIN.md「远期可选」
 
-Phase 3  v0.8–v1.1   Omnichain 扩展
+Phase 3  v0.8–v1.1      Omnichain 扩展
          └─ Circle CCTP（USDC 原生 burn/mint）
          └─ LayerZero OFT / CCIP（Skill 跨链、多链 USDC 可达）
 ```
@@ -201,4 +203,3 @@ infrastructure/
 ---
 
 *法币入口见 [ONRAMP.md](./ONRAMP.md)；链经济见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)。*
-

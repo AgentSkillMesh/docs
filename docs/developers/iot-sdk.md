@@ -1,10 +1,10 @@
 ---
-title: IoT SDK（规划）
+title: IoT SDK
 ---
 
 # IoT SDK · Bring Your Own Device
 
-> **状态**：规划中。当前可先阅读规格 [IOT.md](/technical/IOT)。
+规格：[IOT](/technical/IOT)。
 
 ## 定位
 

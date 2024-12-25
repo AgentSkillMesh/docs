@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # DoerFlow 技术规格说明书
 
 > **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
@@ -11,7 +12,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2026-06-13
+**最后更新**: 2025-02-03
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -34,10 +35,13 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | **Human Task** | 需人类线下完成的辅助任务，由 Agent 发起、人类接单 |
 | **Device Node** | 用户终端（手机/PC）作为算力或服务节点接入网络 |
 | **IoT Device** | 传感器、充电桩、储能等可链上收款的物联网设备 |
-| **Micro-transaction** | 高频微额链上支付（如数据流 $0.00001/次） |
+| **Micro-transaction** | 高频微额支付（如数据流 $0.00001/次）；执行在链下，链上批量清算 |
+| **Off-chain Ledger** | 平台链下记账引擎（NestJS + Redis/PG）；A2A 微交互毫秒级加减法 |
+| **Merkle Settlement** | 周期余额/收据快照生成 Merkle Root，提交现成 L2；可强制提现 |
+| **Vault** | 链上金库：Agent 存入 USDC/USDT 等结算资产，配合账本清算 |
 | **MasterChef** | 协议激励与手续费分配合约（Agent/开发者/设备） |
-| **Sequencer** | L2/L3 排序器；早期由团队运营以支撑超低 Gas |
-| **Native Bridge** | Rollup 官方桥：L1 锁仓 → L2 等量铸造（最安全主通道） |
+| **Sequencer** | （远期可选）自建 L2 排序器；近中期不依赖，微支付走链下账本 |
+| **Native Bridge** | Rollup 官方桥：L1 锁仓 → L2 等量铸造；自建链延期前用 Base 等官方桥 |
 | **Canonical Token** | 桥接后在 L2 上唯一认可的 wrapped 资产（USDC/USDT/PYUSD/WETH） |
 | **Omnichain** | LayerZero、CCTP、CCIP 等通用跨链协议（扩展，不替代原生桥） |
 | **Onramp** | 第三方合规 Widget（Stripe/MoonPay 等）；VibeAgent 不持牌、不碰法币 |
@@ -53,25 +57,30 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 链上 Escrow 托管与自动结算
 - Agent/Skill 的 NFT 化交易（铸造、转让、授权）
 - 设备算力出租与 Agent 服务调用
-- 人类任务 marketplace（Agent 发单 → 人类接单）
+- 人类任务 marketplace（Agent 发单 → 人类接单；人类发单 → Agent 完成）
+- **多形态交易**：Agent↔Agent、Agent→云服务、Agent→客户端 App、人机双向任务
+- **链下账本 + Merkle 批量结算**（A2A 高频微支付主路径，见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）
 - **物联网交易**（设备收款、数据微市场、能源/物流契约，v0.4+）
-- **Agent 专用链经济**（渐进式去中心化 L2/L3，v0.7+）
-- Web 前端 DApp + NestJS 索引/中继后端
-- 以太坊主网及 L2（Base、Arbitrum）部署；远期自建 Agent L2
+- **协议激励与 Trading SDK**（MasterChef 等可部署在现成 L2，v0.7+）
+- Web 前端 DApp + NestJS 索引/中继/链下记账后端
+- 以太坊主网及 **现成 L2（Base、Arbitrum）** 部署
 - **法币入口**：嵌入持牌第三方 Onramp Widget（不自建汇款，见 [ONRAMP.md](./ONRAMP.md)）
-- **跨链**：原生 Rollup 桥（Agent L2）+ 分阶段 Omnichain（见 [BRIDGE.md](./BRIDGE.md)）
+- **跨链**：现阶段 Base/官方桥；自建链原生桥延期；Omnichain 分阶段（见 [BRIDGE.md](./BRIDGE.md)）
 
 ### 3.2 范围外 / 分阶段
 
 | 项 | 阶段 |
 |----|------|
-| Agent L2 原生桥（L1 锁 → L2 mint） | v0.7（见 [BRIDGE.md](./BRIDGE.md)） |
+| 状态通道（1:1 流式微支付拓展） | v0.8+ 可选（非大厅默认，见 ASYNC_PAYMENTS） |
+| 定制 Layer 3 / 应用专属 Rollup | **现阶段不做**（过早优化，FR-PAY-011） |
+| 自建 Agent L2 + 原生桥 | **规模证明后评估**（非微支付前置，见 AGENT_CHAIN） |
 | Omnichain（CCTP / LayerZero Skill 跨链） | v0.8–v1.1 |
-| 完全去中心化 Sequencer | v1.x+（v0.7 起团队运营，见 AGENT_CHAIN.md） |
+| 完全去中心化 Sequencer | 仅随自建链远期 |
 | 链下 AI 模型训练平台 | 范围外 |
 | 重资产硬件制造 | 范围外（BYOD + SDK） |
 | 各国电力现货牌照 | v0.6 仅链上撮合 PoC，合规分地域 |
 | 自建法币支付 / 汇款牌照 | 范围外（Onramp 走第三方，见 ONRAMP.md） |
+| 联盟链 / 许可链 | **明确不做** |
 
 ### 3.3 LuminaryWorks 跨产品生态（可选）
 
@@ -138,6 +147,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 ### 5.3 交易与结算层（Settlement Layer）
 
+> 任务型托管用 **Escrow**；Agent 大厅高频微支付用 **链下账本 + Merkle**（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）。状态通道为可选拓展，非全局默认。
+
 #### FR-ST-001 Escrow 创建
 - Consumer 发起雇佣：指定 Agent、Skill、任务描述 CID、金额、超时时间
 - 资金锁定至 Escrow 合约
@@ -155,6 +166,17 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 平台协议费（默认 2.5%，DAO 可调）
 - Skill Creator 版税（NFT 标准 ERC-2981，最高 10%）
 - Provider 收入自动结算至 TBA
+
+#### FR-ST-005 链下账本与 Merkle 批量清算（主路径）
+- Agent 将结算资产存入链上 **Vault**；微交互在 **链下账本** 毫秒级记账（签名 Receipt）
+- 周期或阈值触发：余额/收据快照 → **Merkle Root** 提交至 Base/Arbitrum 等现成 L2
+- 用户可用 Merkle 证明 **强制提现**（抗平台作恶/宕机）
+- **不做**：以定制 L3 作为微支付底座；以状态通道作为大厅全局架构
+- 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
+
+#### FR-ST-006 交易场景覆盖
+- Agent↔Agent、Agent→云服务、Agent→客户端 App、Agent 下单/人类完成、人类下单/Agent 完成
+- 高频微额走 FR-ST-005；任务型与争议走 FR-ST-001～004
 
 ### 5.4 P2P 通信层（P2P Layer）
 
@@ -226,8 +248,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 - **双通道发布**：`audience=agent`（Agent 发现价格合适自动 claim）与 `audience=human`（worker 自愿接单、可选验收）  
 - **任务管理**：违禁硬拒绝、高频发布限流、L0–L3 审批与 admin 风控  
-- **交易**：Escrow 结算 + **ERC-4337 AA** 等级协议费（`GET /fees/tiers`）  
+- **交易**：Escrow（任务型）+ **链下账本 / Merkle**（高频微支付）+ **ERC-4337 AA** 等级协议费（`GET /fees/tiers`）  
 - 本地 API 默认端口 **13008**  
+ 
 
 ### 5.9 物联网交易（v0.4–v0.6）
 
@@ -243,13 +266,14 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - **BYOD** + IoT SDK；**设备认证白名单**（L0–L2）  
 - 平台收入：Gas + 市场服务费（微额累加 / 企业契约）
 
-### 5.10 Agent 专用链与渐进式去中心化（v0.7+）
+### 5.10 协议激励与链策略（v0.7+ · 自建链延期）
 
-> [AGENT_CHAIN.md](./AGENT_CHAIN.md)
+> [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
-- 自建 L2/L3：**团队 Sequencer**、超低原生 Gas（~$0.0001/笔）  
-- **MasterChef** 激励 + **UUPS** 可升级业务合约  
-- 开源 **Agent Trading SDK**（无 App 亦可接入躺赚）  
+- **近中期**：Vault / Escrow / Merkle 清算部署在 **Base、Arbitrum** 等现成 L2  
+- **MasterChef** 激励 + **UUPS** 可升级业务合约（不依赖自建链）  
+- 开源 **Agent Trading SDK**（无 App 亦可接入）  
+- **定制 L3 / 应用专属 Rollup：现阶段不做**；自建 Agent L2 仅规模证明后评估  
 - 路径：交易费养生态 → DAO 费率治理  
 
 ### 5.11 生态壮大
@@ -268,14 +292,14 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 链下 **NestJS Port 层**：前期 TS，盈利后 **Rust Sidecar** 替换，业务/API/前端不变  
 - **不做** 盈利前全链 Indexer；TVL/套利/历史统计 → **DataLuminary-Platform**
 
-### 5.13 跨链互通 · 原生桥与 Omnichain（v0.3 / v0.7+）
+### 5.13 跨链互通 · 官方桥与 Omnichain（v0.3+ · 自建链桥延期）
 
 > [BRIDGE.md](./BRIDGE.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md)
 
-- **Phase 1（v0.3）**：Base 时代 — 引导 [Base 官方桥](https://bridge.base.org)（Ethereum ↔ Base）；canonical USDC/USDT/WETH  
-- **Phase 2（v0.7）**：Agent L2 — **OP Stack 标准桥**（L1 锁 ETH/ERC20 → L2 mint WETH/USDC/USDT/PYUSD）  
-- **Phase 3（v0.8–v1.1）**：Circle **CCTP**（USDC）、LayerZero **Skill 跨链**；**不替代**原生桥主路径  
-- `CanonicalTokenRegistry`：L2 仅认可官方映射资产；MetaDEX / Escrow 白名单  
+- **Phase 1（当前）**：Base / Arbitrum 时代 — 引导各 L2 **官方桥**；canonical USDC/USDT/WETH；Vault/Merkle 清算落此  
+- **Phase 2（延期）**：仅当自建 Agent L2 立项后 — OP Stack 标准桥（见 AGENT_CHAIN）  
+- **Phase 3（v0.8–v1.1）**：Circle **CCTP**、LayerZero **Skill 跨链**（扩展，不替代官方主通道）  
+- `CanonicalTokenRegistry`：L2 仅认可官方映射资产；MetaDEX / Escrow / Vault 白名单  
 
 ### 5.14 法币入口 · 合规 Onramp（v0.3）
 
@@ -382,6 +406,7 @@ users           -- SIWE 用户映射
 | Escrows | `/api/v1/escrows` | 交易查询、状态同步 |
 | Devices | `/api/v1/devices` | 设备注册、算力查询 |
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
+| Storage | `/api/v1/storage` | 元数据 pin（本地 / Pinata → `ipfs://`） |
 | Stats | `/api/v1/stats` | 市场统计 |
 
 ### 8.2 智能合约接口
@@ -412,19 +437,18 @@ users           -- SIWE 用户映射
 2. v1 以 ETH/ERC-20 稳定币（USDC）作为支付代币
 3. 链下 AI 推理不在协议范围内，协议只负责发现、雇佣、结算
 4. Skill 内容验证在 v1 为信任模型，v2 引入密码学验证
-5. 后端为索引/中继服务，非交易中介，不 custody 用户资产
+5. 后端为索引/中继/链下记账服务；**不托管**用户主私钥。结算资产在链上 Vault；用户可凭 Merkle 证明强制提现（见 ASYNC_PAYMENTS）
 
 ## 11. 验收标准（v0.1 MVP）
 
-- [ ] 用户可铸造 Agent NFT 并在市场展示
+- [x] 用户可铸造 Agent NFT 并在市场展示（本地已冒烟：`smoke-mint.ts`）
 - [ ] 用户可注册 Skill 并绑定 Agent
 - [ ] 用户可通过 Escrow 完成一次完整的雇佣-交付-结算流程
-- [ ] P2P Beacon 广播可被其他节点发现
-- [ ] 前端 DApp 可连接钱包并完成上述操作
-- [ ] 合约部署至 Base Sepolia 测试网
-- [ ] 后端索引服务同步链上事件
-
+- [ ] P2P Beacon 广播可被其他节点发现（**v0.2**，不在 MVP 本地范围）
+- [x] 前端 DApp 可连接钱包并完成上述操作（代码就绪；本地联调）
+- [x] 合约部署至 Base Sepolia 测试网（2024-12-25 · 见 `ROADMAP.md` / `deployments/baseSepolia.json`）
+- [x] 后端索引服务同步链上事件（本地 Indexer + IPFS 元数据解析）
+- [x] 元数据 pin → `ipfs://`（本地 / 可选 Pinata）
 ---
 
 *本文档随项目迭代持续更新。变更请提交 PR 并标注版本号。*
-

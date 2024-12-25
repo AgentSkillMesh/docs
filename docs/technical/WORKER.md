@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 综合端 App 规格（React Native）
 
 **版本**: v0.1-draft  
@@ -44,7 +45,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 可选：无障碍事件序列 hash  
 - API 校验 → 链上/链下确认 → Escrow 放款  
 
-### 支持平台（规划）
+### 支持平台
 
 | 平台 | 任务示例 | 版本 |
 |------|----------|------|
@@ -91,4 +92,3 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ---
 
 *代码可从 `repos/wallet` 众包模块迁移为初始实现。*
-

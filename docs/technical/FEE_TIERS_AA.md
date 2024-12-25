@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 等级费率 · ERC-4337 账户抽象
 
 **版本**: v0.1-draft · **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)（Session Keys）
@@ -62,4 +63,3 @@ Smart Account 持有主密钥；Agent 运行时仅加载 **Session Key**，泄�
 
 - [ ] Sepolia 上 Smart Account 完成一笔带等级费率的 Escrow 结算  
 - [ ] 链下索引与 `GET /fees/tiers` 一致  
-

@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 管理平台规格
 
 **版本**: v0.1-draft  
@@ -90,4 +91,3 @@ admin → shared（类型）
 ---
 
 *审批规则见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)。*
-

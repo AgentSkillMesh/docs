@@ -1,14 +1,15 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 需求追溯矩阵
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2026-06-04
+**最后更新**: 2025-02-10
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -24,6 +25,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ST-002 | 交付 | contracts + api | Escrow 状态、索引 | v0.1 |
 | FR-ST-003 | 争议 | contracts | v0.2 | v0.2 |
 | FR-ST-004 | 分账 | contracts | 协议费 + AA 等级 | v0.1+ |
+| FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata` | v0.1 ✅ |
 | FR-P2P-001~004 | P2P | p2p | Beacon 等 | v0.2 |
 | FR-DV-001~003 | 设备/人类任务 | api + wallet + worker | v0.3 | v0.3 |
 | FR-WLT-* | 纯粹钱包 RN | wallet | 发任务、转账 | v0.3 |
@@ -37,11 +39,11 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-IOT-004 | 数据流微额 | contracts + api | `MicroPaymentStream` | v0.5 |
 | FR-IOT-005 | 能源市场 | contracts | `EnergyMarket` | v0.6 |
 | FR-IOT-006 | 冷链 SLA | contracts | `ConditionalFreight` | v0.6 |
-| FR-CHAIN-001~006 | Agent L2/激励 | contracts + 链工程 | 见 AGENT_CHAIN.md | v0.7 |
+| FR-CHAIN-001~006 | 激励/SDK（现成 L2）；自建链延期 | contracts | 见 AGENT_CHAIN.md | v0.7 / 远期 |
 | FR-ECO-* | 生态激励 | contracts + docs | MasterChef、Grant | v0.7+ |
 | FR-DEX-001a | AMM Factory/Pair/Router | contracts | `metadex/amm` | v0.15.0 ✅ |
 | FR-DEX-001b | ve VotingEscrow/Voter/Gauge | contracts | `metadex/ve` | v0.15.0 ✅ |
-| FR-DEX-001c | 部署 + export-abi | contracts, shared | `deploy-metadex` | v0.15.0 🟡 localhost ✅ |
+| FR-DEX-001c | 部署 + export-abi | contracts, shared | `deploy-metadex` | v0.15.0 🟡 localhost ✅ · Sepolia 核心合约 ✅ MetaDEX 待部署 |
 | FR-DEX-002 | Swap/Router API | api | `dex` Port 层 | v0.15.1 |
 | FR-DEX-003 | 轻量 Pool 同步 | api | `TsDexPoolSync` | v0.15.1 |
 | FR-DEX-004 | Rust Sidecar 替换 | api + dex-engine | `RustDexSidecar` | 盈利后 |
@@ -59,14 +61,20 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ONRAMP-003 | wallet 买币页 | wallet | WebView | v0.3 |
 | FR-ONRAMP-005 | 地区路由 + 披露 | api, docs | v0.3 | v0.3 |
 | FR-ONRAMP-007 | 入金向导 Onramp+Bridge | wallet | v0.7 | v0.7 |
-| FR-PAY-001 | 公链/Rollup only（弃联盟链） | spec, docs | **已定** | **已定** |
+| FR-PAY-001 | 公链/现成 L2 only（弃联盟链） | spec, docs | **已定** | **已定** |
 | FR-PAY-002 | EIP-712 Receipt schema | shared, api | v0.2 | v0.2 |
 | FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 ✅ |
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
 | FR-PAY-009 | signReceipt SDK | shared, api/scripts | v0.3 ✅ |
-| FR-PAY-006 | Merkle 批量清算 | contracts | `MicroPaymentSettler` | v0.5 |
+| FR-PAY-006 | Merkle Root 批量清算 | contracts | `MicroPaymentSettler` | v0.5 |
+| FR-PAY-007 | 双向轧差净额 | contracts | v0.5 | v0.5 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v0.7 | v0.7 |
+| FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v0.8+ | v0.8+ |
+| FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | v0.5 | v0.5 |
+| FR-PAY-013 | Merkle 强制提现 | contracts | v0.5 | v0.5 |
+| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | v0.5 |
 
 ## MVP v0.1 验收对照
 
@@ -78,7 +86,6 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | 任务治理双通道 | api, wallet, worker, admin | MVP+ |
 | P2P Beacon | p2p | 未开始 |
 | IoT 设备支付 | contracts, sdk | v0.4 |
-| Agent 专用链 | 链 + contracts | v0.7 |
+| 链下账本 + Merkle / MasterChef（现成 L2） | api, contracts | v0.5–v0.7 |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。
-

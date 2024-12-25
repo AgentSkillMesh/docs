@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 物联网交易与设备经济
 
 **版本**: v0.1-draft · **最后更新**: 2025-01-14  
@@ -47,9 +48,9 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 买方 Agent（如农产品期货预测）按秒/按条调用  
 - 每笔 **$0.00001** 级微支付 → 传感器地址收款  
 
-**平台收入**：单次调用的 L2 Gas + 数据市场协议费；量级为「传感器数 × QPS × 费率」。
+**平台收入**：数据市场协议费（主）+ 偶发批量清算 Gas 摊销；量级为「传感器数 × QPS × 费率」。单笔微支付 **不上链**。
 
-**技术依赖**：超低 Gas L2/L3（见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)）、流式计量 Oracle、**链下 Receipt + 批量清算**（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) v0.5+）。
+**技术依赖**：流式计量 Oracle、**链下账本 + Merkle 批量清算**（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) v0.5+，部署于 Base/Arbitrum 等现成 L2）。**不依赖** 定制 L3 / 自建应用链。
 
 ### 3.3 分布式新能源与智能电网（v0.6）
 
@@ -108,7 +109,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | `EnergyOffer` | 供应量、时段、价格曲线 |
 | `LogisticsContract` | 条件树、保险关联、运费 Escrow |
 
-## 6. API / 合约（规划）
+## 6. API / 合约
 
 | 组件 | 仓库 | 版本 |
 |------|------|------|
@@ -138,4 +139,3 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ---
 
 *与 [TASK_SYSTEM.md](./TASK_SYSTEM.md)、[AGENT_CHAIN.md](./AGENT_CHAIN.md)、[ECOSYSTEM.md](./ECOSYSTEM.md) 协同演进。*
-

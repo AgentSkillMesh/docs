@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # 仓库关系说明
 
 **品牌**：[DoerFlow](https://doerflow.dev) · **目标组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh）  
@@ -113,7 +114,7 @@ flowchart TB
 | **contracts → web** | 配置文件 | `public/deployments.json`、`.env` |
 | **shared → api** | npm | `@vibe-agent/shared` 类型与常量 |
 | **shared → web** | npm | 同上 |
-| **shared → p2p** | npm | 同上（规划） |
+| **shared → p2p** | npm | 同上 |
 | **api → web** | HTTP | DApp 调用 REST（市场列表、Escrow 索引） |
 | **api → wallet** | HTTP | 发布任务、Escrow 托管、收益 |
 | **api → worker** | HTTP | 已发布任务列表、交付、社交任务登记 |
@@ -285,4 +286,3 @@ flowchart TB
 - [技术规格 SPEC.md](./SPEC.md)
 - [需求追溯 traceability.md](./traceability.md)
 - MetaRepo：[MVP_PLAN.md](../MVP_PLAN.md)、[NAMING.md](../NAMING.md)
-

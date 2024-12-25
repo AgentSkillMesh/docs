@@ -4,15 +4,15 @@ title: 发展路线图
 
 # 发展路线图
 
-> 对外路线图仅描述协议演进方向，**不承诺具体发布时间或版本交付日期**。项目处于早期阶段，商业版本仍在建设中。
+> 对外路线图描述协议演进方向，**不承诺具体发布时间或版本交付日期**。
 
 ## 总览
 
 ```
-基础协议 ──▶ 发现与信任 ──▶ 算力与扩展 ──▶ 物联网与数据 ──▶ Agent 专用链 ──▶ 主网与治理
+基础协议 ──▶ 发现与信任 ──▶ 算力与扩展 ──▶ 物联网与数据 ──▶ 激励与结算 hardening ──▶ 主网与治理
 ```
 
-以下为面向开发者、用户与投资者的**能力阶段规划**（顺序表示演进方向，非时间承诺）：
+以下为面向开发者、用户与投资者的能力演进顺序（非时间承诺）：
 
 | 阶段 | 目标 |
 |------|------|
@@ -54,7 +54,7 @@ wallet / worker、人类众包、设备算力节点、版税分账。
 
 - **法币买币**：Stripe / MoonPay 合规 Widget（[详情](/platform/fiat-onramp)）  
 - **跨链充值**：Base 官方桥引导（[详情](/platform/bridge-connectivity)）  
-- **异步支付**：Session Key + 链下 Receipt + 批量清算（[详情](/platform/async-payments)）  
+- **异步支付**：**链下账本 + Merkle Root**（现成 L2）；状态通道为可选拓展（[详情](/platform/async-payments)）  
 
 ## 物联网 · 设备自己收钱
 
@@ -67,23 +67,21 @@ wallet / worker、人类众包、设备算力节点、版税分账。
 ## 数据微市场
 
 - 气象/车载/环境/健康传感器  
-- 买方 Agent **微额按次** 购数据流  
-- 平台：海量调用 ×（Gas + 市场费）  
+- 买方 Agent **微额按次** 购数据流（链下账本，周期 Merkle 清算）  
+- 平台：海量调用 × 市场协议费  
 
 ## 能源与供应链
 
 - 户用光伏/储能 **Agent 竞价** 卖电  
 - 冷链 **温度 Oracle + 条件运费** 智能契约  
 
-## Agent 专用链
+## 协议激励与链策略
 
-- 团队 **Sequencer** 的 Agent 专用 L2/L3，**极低 Gas**  
-- **原生 Rollup 桥**：Ethereum 锁 ETH/USDC → L2 mint（[跨链说明](/platform/bridge-connectivity)）  
-- **异步批量清算**：Bundler + Paymaster 微支付批次（[异步支付](/platform/async-payments)）  
-- **MasterChef** + **UUPS** 可升级合约  
-- 开源 **Agent 交易 SDK**（Python/TS 模板）  
-- wallet **入金向导**：Onramp → 桥 → 可用余额  
-- 战略：**交易费养生态**  
+- **近中期**：Base / Arbitrum 等现成 L2 + **Vault / Merkle** 清算（[异步支付](/platform/async-payments)）  
+- **MasterChef** + **UUPS** 可升级合约；开源 **Agent 交易 SDK**  
+- **定制 L3：现阶段不做**；自建 Agent L2 仅规模证明后评估  
+- wallet **入金向导**：Onramp → 官方桥 → Vault 可用余额  
+- 战略：**交易费养生态**；状态通道作 1:1 流式拓展  
 
 详见 [Agent 交易 SDK](/developers/agent-trading-sdk)。
 

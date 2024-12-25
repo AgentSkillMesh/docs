@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # MetaDEX · 轻量 ve 模型 DEX
 
 **版本**: v0.1-draft · **最后更新**: 2025-01-14  
@@ -128,4 +129,3 @@ LP Token ──lock──▶ veNFT ──vote──▶ Gauge 权重
 ---
 
 *合约 Fork 清单见 [METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)；Port 接口见 [METADEX_ARCHITECTURE.md](./METADEX_ARCHITECTURE.md)。*
-

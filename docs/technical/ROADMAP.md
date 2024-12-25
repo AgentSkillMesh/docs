@@ -1,12 +1,13 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
+
 # VibeAgent 版本规划与里程碑
 
-**最后更新**: 2026-06-04
+**最后更新**: 2026-07-17
 
 ---
 
@@ -60,19 +61,20 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 - [x] `AgentNFT`（铸造 + metadata URI）
 - [x] `SkillRegistry`（注册/绑定/查询）
 - [x] `Escrow`（创建/付款/交付/确认）
-- [ ] 部署 Base Sepolia 测试网
+- [x] 部署 Base Sepolia 测试网（2025-01-03 · AgentNFT / SkillRegistry / Escrow / SessionKeyRegistry）
 
 #### 后端（本地 MVP ✅）
 - [x] NestJS + SQLite 索引
 - [x] 链上事件 Indexer（ethers）
 - [x] REST API: Agents, Skills, Escrows, Stats
 - [x] SIWE 登录（`/api/v1/auth` + Web 账户页）
-- [ ] IPFS
+- [x] IPFS 元数据 pin（本地 content-addressed + 可选 Pinata；web 铸造/注册/Escrow 走 `ipfs://`）
 
 #### 前端（本地 MVP ✅）
 - [x] React + AntD + wagmi
 - [x] 市场 / Agent 详情 / 工作台 / 任务中心
 - [x] 合约交互 Hooks
+- [x] 元数据经 API pin 后再上链（`data:` 仅作离线回退）
 
 #### P2P（v0.2）
 - [ ] libp2p 节点 PoC
@@ -81,7 +83,14 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 **里程碑验收**:
 > 两个测试用户可在 Base Sepolia 上完成：User A 铸造 Agent 并注册 Skill → User B 发起 Escrow 雇佣 → User A 交付 → 链上自动结算。
 
-**预计工期**: 8 周
+**Base Sepolia 地址（84532 · 2025-01-03）**:
+| 合约 | 地址 |
+|------|------|
+| AgentNFT | `0xe5C76a46b273418D814e9b98d057c7Ab1c615A9F` |
+| SkillRegistry | `0x120cF4c31f2503A2145C9A5D87B4647a9c4c32B4` |
+| Escrow | `0x1bB2364fFeA1D747aC41e8A92A2fC78BfE423f50` |
+| SessionKeyRegistry | `0xF35E657DD8a57256694666331b5875D7A1B4FF0A` |
+| Deployer | `0xC808098eF31882e22FAB88F8e07Ef92c343f857D` |
 
 ---
 
@@ -97,7 +106,7 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 |---|------|------|------|
 | A1 | Factory / Pair / Router + 单测 | contracts | ✅ |
 | A2 | VotingEscrow / Voter / Gauge + 单测 | contracts | ✅ |
-| A3 | `deploy-metadex` + Base Sepolia 部署 | contracts | 🟡 localhost ✅ · Sepolia 待部署 |
+| A3 | `deploy-metadex` + Base Sepolia 部署 | contracts | 🟡 localhost ✅ · 核心合约 Sepolia ✅ · MetaDEX Sepolia 待部署 |
 | A4 | `export-abi` → shared / deployments | contracts, shared | ✅ |
 | A5 | 集成测试：LP → Swap → Lock → Vote | contracts | ✅ |
 
@@ -241,12 +250,12 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 
 | 模块 | 交付 |
 |------|------|
-| 合约 | `DataStreamSubscription`、`MicroPaymentSettler`（Merkle 批量清算） |
+| 合约 | `DataStreamSubscription`、`MicroPaymentSettler`（Vault + Merkle Root） |
 | 场景 | 气象/车载/环境/健康数据；买方 Agent 秒级调用 |
-| 经济 | ~$0.00001/次；**链下 Receipt** + 批量上链（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)） |
-| 依赖 | Receipt Vault（v0.2）、Session Key（v0.3）；Agent L2 预研（v0.7） |
+| 经济 | ~$0.00001/次；**链下账本** + 周期 Root 上链（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)） |
+| 依赖 | Receipt Vault（v0.2）、Session Key（v0.3）；**现成 L2**（Base/Arbitrum）；**不依赖**自建 L3 |
 
-**验收**: 演示 100+ 模拟传感器 + 1 Agent 买方，持续微额扣费 1 小时；**10 万条 Receipt → 1 笔 batch 清算**。
+**验收**: 演示 100+ 模拟传感器 + 1 Agent 买方，持续微额扣费 1 小时；**10 万条 Receipt → 1 笔 Merkle Root**；强制提现 PoC。
 
 **预计工期**: 10 周
 
@@ -268,32 +277,33 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 
 ---
 
-### M7 — v0.7 Agent Chain「渐进式去中心化链」（2028 Q1）
+### M7 — v0.7 Protocol Incentives「激励与 SDK」（2028 Q1）
 
-**主题**: Agent 专用 L2/L3、MasterChef、开源交易模板
+**主题**: MasterChef、UUPS、开源交易模板 — **仍在现成 L2**；自建链 / 定制 L3 **不在本里程碑**
 
 | 模块 | 交付 |
 |------|------|
-| 链 | 团队运营 Sequencer；原生 Gas ~$0.0001 级 |
-| **原生桥** | OP Stack Standard Bridge；L1 ETH/USDC/USDT/PYUSD → L2 canonical |
-| 合约 | MasterChef 激励、UUPS 费率/Escrow 升级、`CanonicalTokenRegistry` |
-| SDK | Agent Trading 模板（Python/TS） |
-| 客户端 | wallet/web **Agent 桥** 存取款 UI |
-| 战略 | 交易费养生态；披露中心化阶段与 DAO 迁移路线 |
+| 链 | **Base / Arbitrum** 上 Vault、Escrow、费率模块 hardening |
+| 合约 | MasterChef 激励、UUPS 升级、`CanonicalTokenRegistry` |
+| SDK | Agent Trading 模板（Python/TS）+ `signReceipt` |
+| 客户端 | wallet/web 充提 Vault / 官方桥入金向导 |
+| 战略 | 交易费养生态；披露链下账本运营与强制提现；**明确不做定制 L3** |
+| 延期 | 自建 Sequencer / 原生桥 → 规模证明后单独立项（见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)） |
 
-**验收**: 在自建 L2 上完成 10 万笔/日级微额模拟；**Sepolia 存 USDC → L2 到账**；第三方开发者用模板接入并分成。
+**验收**: 现成 L2 上完成高并发链下记账 + 周期 Merkle 清算演示；第三方开发者用模板接入并分成；**无** 自建 L3 依赖。
 
 **预计工期**: 12 周
 
-#### v0.8 · Omnichain 扩展（M7 后 · 可选）
+#### v0.8 · Omnichain 与状态通道拓展（M7 后 · 可选）
 
 | 模块 | 交付 |
 |------|------|
-| CCTP | Circle USDC burn/mint（Base/Ethereum ↔ Agent L2） |
+| CCTP | Circle USDC burn/mint（Base/Ethereum 等） |
+| 状态通道 | 1:1 流式微支付拓展（非大厅默认，[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) FR-PAY-010） |
 | api | `IOmnichainRouter` Port |
-| docs | 与原生桥并列的风险披露 |
+| docs | 风险披露 |
 
-**预计工期**: 4 周（可与 M8 部分并行）
+**预计工期**: 4–8 周（可与 M8 部分并行）
 
 ---
 
@@ -393,4 +403,3 @@ v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
 ---
 
 *里程碑状态: ✅ 完成 | 🟡 进行中 | ⚪ 未开始 | 🔴 阻塞*
-
