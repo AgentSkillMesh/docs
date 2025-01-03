@@ -50,7 +50,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 **平台收入**：数据市场协议费（主）+ 偶发批量清算 Gas 摊销；量级为「传感器数 × QPS × 费率」。单笔微支付 **不上链**。
 
-**技术依赖**：流式计量 Oracle、**链下账本 + Merkle 批量清算**（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) v0.5+，部署于 Base/Arbitrum 等现成 L2）。**不依赖** 定制 L3 / 自建应用链。
+**技术依赖**：流式计量 Oracle、**链下账本 + Merkle 批量清算**（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)，主线 **v0.2 / M2** 交付底座后复用；部署于 Base/Arbitrum）。**不依赖** 定制 L3 / 自建应用链。场景本身排在 **1.0 后支线**（见 [ROADMAP.md](./ROADMAP.md)）。
 
 ### 3.3 分布式新能源与智能电网（v0.6）
 

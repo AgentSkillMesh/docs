@@ -88,7 +88,7 @@ export default defineConfig({
           text: '愿景与规划',
           items: [
             { text: '项目愿景', link: '/vision/' },
-            { text: '发展路线图', link: '/vision/roadmap' },
+            { text: '发展路线', link: '/vision/roadmap' },
             { text: '投资者叙事', link: '/vision/investors' },
           ],
         },

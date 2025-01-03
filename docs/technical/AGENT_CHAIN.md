@@ -103,7 +103,7 @@ v1.0   安全审计；主网 hardening
 | FR-CHAIN-005 | Agent Trading SDK 模板 | v0.7 |
 | FR-CHAIN-006 | DAO 费率治理 | v1.0 |
 | FR-BRIDGE-002~005 | 原生桥（随自建链） | **延期**；现阶段用 Base/官方桥 |
-| FR-PAY-006/012/013 | Merkle Vault 清算与强制提现 | v0.5（见 ASYNC_PAYMENTS） |
+| FR-PAY-006/012/013 | Merkle Vault 清算与强制提现 | **v0.2 / M2**（见 ASYNC_PAYMENTS · ROADMAP） |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | **已定** |
 
 ## 8. 风险披露

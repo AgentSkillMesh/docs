@@ -5,401 +5,251 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 > **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
 
-# VibeAgent 版本规划与里程碑
+# DoerFlow 版本规划与里程碑
 
-**最后更新**: 2026-07-17
+**最后更新**: 2026-07-24  
+**关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
 
-## 1. 版本策略
+## 1. 商业路径（到 v1.0 的主线）
 
-采用 **SemVer** 语义化版本，分三层发布节奏：
-
-| 层级 | 命名 | 周期 | 说明 |
-|------|------|------|------|
-| **Protocol** | v0.x → v1.0 | 按里程碑 | 智能合约 + P2P 协议 |
-| **Platform** | v0.x → v1.0 | 2 周一迭代 | 前后端 DApp 功能 |
-| **MetaRepo** | workspace version | 持续 | Monorepo 工具链与共享包 |
-
-## 2. 版本总览
+集中精力按下列顺序交付；**未列入主线的能力不阻塞商业版上线**。
 
 ```
-v0.1 MVP ──▶ v0.15.0 合约 ──▶ v0.15.1 api ──▶ v0.15.2 web
-                  │                              │
-                  └──────── v0.2 Alpha / v0.3 … ─┴──▶ v1.0
+M0–M1 基础已齐
+      │
+      ▼
+M2  v0.2  链下账本 + Merkle 批量结算     ← 当前主焦点
+      │
+      ▼
+M3  v0.3  客户端完善：wallet · worker · admin · web
+      │
+      ▼
+M4  v0.4  赚钱场景：Agent/云 SDK·API · 人类发单接单闭环
+      │
+      ▼
+M5  v1.0  商业版本上线（主网 / 生产就绪）
 ```
 
-**MetaDEX 铁律**：v0.15.0 合约部署验收通过前，DEX 前端不进入主开发路径。
+| 阶段 | 版本 | 一句话目标 |
+|------|------|------------|
+| **M2** | v0.2 | Vault + 链下记账引擎 + Merkle Root 上链 + 强制提现 |
+| **M3** | v0.3 | 发单 / 接单 / 运营审核客户端可日常使用 |
+| **M4** | v0.4 | 云与 Agent 可 SDK/API 接入；人类可发任务赚钱 |
+| **M5** | **v1.0** | 审计 + 主网 + 生产运维，对外商业发布 |
 
-> IoT / Agent 链等同 [ROADMAP](./ROADMAP.md) 完整表。
+**铁律**：
+
+1. **先清算底座，再客户端，再场景，最后商业发版。**  
+2. 高频路径必须走 [ASYNC_PAYMENTS](./ASYNC_PAYMENTS.md)（链下账本 + Merkle）；**不做** 定制 L3 作前置。  
+3. MetaDEX / IoT 车桩 / 能源冷链 / 完整 P2P / Omnichain → **1.0 后或并行支线**，不占用主线关键路径。
+
+---
+
+## 2. 版本策略
+
+采用 **SemVer**：
+
+| 层级 | 命名 | 说明 |
+|------|------|------|
+| **Protocol / Platform** | v0.x → **v1.0** | 合约 + api + 客户端一体里程碑 |
+| **MetaRepo** | workspace | 工具链与编排 |
 
 ---
 
 ## 3. 里程碑详情
 
-### M0 — 项目启动（2026 Q2）
+### M0 — 项目启动 ✅
 
-**目标**: 完成项目基础设施与核心文档
-
-| 交付物 | 状态 |
-|--------|------|
-| MetaRepo 脚手架（Shell + 多仓库） | ✅ |
-| 文档体系（白皮书、Spec、Roadmap） | ✅ |
-| CI/CD 流水线（lint/test/build） | 🟡 |
-| 开发环境（SQLite，无需 Docker） | ✅ |
-| Hardhat 合约项目初始化 | ✅ |
-
-**验收标准**: 新开发者可在 30 分钟内完成环境搭建并运行空项目。
+脚手架、文档、本地 SQLite 开发环境、Hardhat 初始化。
 
 ---
 
-### M1 — v0.1 MVP「身份与交易」（2026 Q3）
+### M1 — v0.1 MVP「身份与交易」🟡
 
-**主题**: 跑通 Agent 铸造 → Skill 注册 → Escrow 结算的最小闭环
+**主题**: Agent 铸造 → Skill 注册 → Escrow 结算最小闭环（已基本达成）
 
-#### 智能合约（本地 MVP ✅）
-- [x] `AgentNFT`（铸造 + metadata URI）
-- [x] `SkillRegistry`（注册/绑定/查询）
-- [x] `Escrow`（创建/付款/交付/确认）
-- [x] 部署 Base Sepolia 测试网（2025-01-03 · AgentNFT / SkillRegistry / Escrow / SessionKeyRegistry）
+| 域 | 状态摘要 |
+|----|----------|
+| 合约 | AgentNFT / SkillRegistry / Escrow / SessionKeyRegistry → Base Sepolia ✅ |
+| api | NestJS 索引、SIWE、任务治理 API MVP+ |
+| web | 市场 / 工作台 / Escrow 交互 |
+| 客户端 | wallet 发任务 / worker 列表 / admin 审批（MVP 级） |
 
-#### 后端（本地 MVP ✅）
-- [x] NestJS + SQLite 索引
-- [x] 链上事件 Indexer（ethers）
-- [x] REST API: Agents, Skills, Escrows, Stats
-- [x] SIWE 登录（`/api/v1/auth` + Web 账户页）
-- [x] IPFS 元数据 pin（本地 content-addressed + 可选 Pinata；web 铸造/注册/Escrow 走 `ipfs://`）
+**Base Sepolia（84532 · 2025-01-03）**:
 
-#### 前端（本地 MVP ✅）
-- [x] React + AntD + wagmi
-- [x] 市场 / Agent 详情 / 工作台 / 任务中心
-- [x] 合约交互 Hooks
-- [x] 元数据经 API pin 后再上链（`data:` 仅作离线回退）
-
-#### P2P（v0.2）
-- [ ] libp2p 节点 PoC
-- [ ] Beacon 广播/接收
-
-**里程碑验收**:
-> 两个测试用户可在 Base Sepolia 上完成：User A 铸造 Agent 并注册 Skill → User B 发起 Escrow 雇佣 → User A 交付 → 链上自动结算。
-
-**Base Sepolia 地址（84532 · 2025-01-03）**:
 | 合约 | 地址 |
 |------|------|
 | AgentNFT | `0xe5C76a46b273418D814e9b98d057c7Ab1c615A9F` |
 | SkillRegistry | `0x120cF4c31f2503A2145C9A5D87B4647a9c4c32B4` |
 | Escrow | `0x1bB2364fFeA1D747aC41e8A92A2fC78BfE423f50` |
 | SessionKeyRegistry | `0xF35E657DD8a57256694666331b5875D7A1B4FF0A` |
-| Deployer | `0xC808098eF31882e22FAB88F8e07Ef92c343f857D` |
+
+**验收**: 双钱包完成铸造 → Escrow → 交付 → 结算。
 
 ---
 
-### M1b — v0.15 MetaDEX Lite「ve 稳定/蓝筹 DEX」（2026 Q3–Q4）
+### M2 — v0.2「链下账本 + Merkle 结算」⚪ **当前主焦点**
 
-**主题**: **合约优先** — Fork Aerodrome 核心上 Base；再 api / web；分析外接 DataLuminary
-
-> 详细合约清单见 [METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)
-
-#### v0.15.0 · Phase A — 合约（**当前优先级 · 阻塞后续**）
-
-| # | 交付 | 仓库 | 状态 |
-|---|------|------|------|
-| A1 | Factory / Pair / Router + 单测 | contracts | ✅ |
-| A2 | VotingEscrow / Voter / Gauge + 单测 | contracts | ✅ |
-| A3 | `deploy-metadex` + Base Sepolia 部署 | contracts | 🟡 localhost ✅ · 核心合约 Sepolia ✅ · MetaDEX Sepolia 待部署 |
-| A4 | `export-abi` → shared / deployments | contracts, shared | ✅ |
-| A5 | 集成测试：LP → Swap → Lock → Vote | contracts | ✅ |
-
-**Phase A 验收**（**不依赖 api/web**）：
-
-> Base Sepolia 部署可验证；Hardhat 集成测试绿；`deployments.json` 含 `metadex.*`；≥2 个稳定/蓝筹 Pool 已初始化。
-
-**预计工期**: 4–5 周
-
-#### v0.15.1 · Phase B — api 读链
-
-| # | 交付 | 依赖 | 状态 |
-|---|------|------|------|
-| B1 | Port Adapter 读 Pair / Router 报价 | A4 | ✅ |
-| B2 | allowlist Pool 轻量 sync | A3 | ✅ |
-| B3 | `/dex/*` API 对接真实地址 | A4 | ✅ |
-
-**预计工期**: 1–2 周（Phase A 完成后）
-
-#### v0.15.2 · Phase C — web DEX 页
-
-| # | 交付 | 依赖 |
-|---|------|------|
-| C1 | `/dex` Swap | B1 |
-| C2 | LP + Lock ve + Vote | A2, B1 |
-
-**预计工期**: 2 周
-
-#### v0.15.x · Phase D — 分析（并行、非阻塞）
-
-- [DataLuminary](https://github.com/DataLuminary/DataLuminary-Platform) TVL/历史/套利  
-- api `IDexAnalytics` 已预留 Adapter  
-
-#### 明确不做（v0.15）
-
-全链 Indexer、万级 Pool、ms 重组回滚、Bribe 市场（Phase 2）
-
-**M1b 总体验收**: Phase A + B + C 完成；测试网端到端 Swap + ve 投票。
-
----
-
-### M2 — v0.2 Alpha「发现与信任」（2026 Q4）
-
-**主题**: P2P Agent 发现、Skill 验证、争议处理
-
-#### 智能合约
-- [ ] `SkillVerifier` (EAS attestation 集成)
-- [ ] `DisputeResolver` (超时退款 + 仲裁投票)
-- [ ] `ReviewRegistry` (链上评价 hash)
-- [ ] 合约升级 Proxy 部署
-
-#### P2P
-- [ ] 完整 Beacon 协议实现
-- [ ] DHT Agent 路由
-- [ ] WebRTC 浏览器节点
-- [ ] 加密消息通道（Noise）
-
-#### 后端
-- [ ] Beacon 快照缓存服务
-- [ ] Skill 验证工作流 API
-- [ ] 争议仲裁 API
-- [ ] 全文搜索（Elasticsearch 可选）
-- [ ] **Receipt Vault**：EIP-712 链下收据验签 + nonce 去重（见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）
-
-#### 前端
-- [ ] 实时在线 Agent 地图/列表
-- [ ] Skill 验证状态展示
-- [ ] 争议发起与跟踪 UI
-- [ ] 评价与信誉分
-
-**里程碑验收**:
-> Agent 可通过 P2P Beacon 被远程发现；一笔争议交易可完成仲裁流程；Skill 具有链上验证标记；**1 万笔/分链下 Receipt 验签零链上 tx**。
-
-**预计工期**: 10 周
-
----
-
-### M3 — v0.3 Beta「算力与人力」（2027 Q1）
-
-**主题**: 设备算力出租、人类任务 marketplace
-
-#### 智能合约
-- [ ] `DeviceRegistry` (设备注册/质押)
-- [ ] `HumanTaskEscrow` (人类任务专用 Escrow)
-- [ ] `RoyaltySplitter` (ERC-2981 + 协议费分账)
-- [ ] 多代币支付（USDC）
-- [ ] `SessionKeyRegistry` + Smart Account 策略（见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)）
-
-#### 设备层
-- [ ] Device Node SDK（Node.js/Electron）
-- [ ] 算力任务调度器
-- [ ] 设备心跳与状态上报
-
-#### 后端
-- [ ] Device 管理 API
-- [ ] Human Task API
-- [ ] 算力匹配引擎
-- [ ] 通知服务（WebSocket）
-- [ ] **Onramp** Port + MoonPay/Stripe Adapter（见 [ONRAMP.md](./ONRAMP.md)）
-- [ ] `GET /onramp/providers` 地区路由
-
-#### 前端
-- [ ] 设备管理面板
-- [ ] 人类任务 marketplace
-- [ ] 收益仪表盘（Agent/Skill/设备/人力 四象限）
-- [ ] PWA 支持（移动端基础体验）
-
-#### 移动端（wallet / worker）
-- [ ] wallet **「买币」** Onramp WebView（MoonPay + Stripe）
-- [ ] wallet **「充值」** Base 官方桥 deep link（见 [BRIDGE.md](./BRIDGE.md) Phase 1）
-- [ ] 入金合规披露页
-
-**里程碑验收**:
-> 用户可将 PC 注册为算力节点并获得收益；Agent 可发布人类任务并由真人接单完成；**wallet 可通过 MoonPay sandbox 买币至自托管地址**。
-
-**预计工期**: 10 周
-
----
-
-### M4 — v0.4 IoT Alpha「设备自己收钱」（2027 Q2）
-
-**主题**: 物联网直连支付、设备 SDK、认证白名单
+**主题**: 把 A2A / API 高频微支付从「每笔上链幻想」落到可上线的清算底座  
+**规范**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · FR-PAY-006 / 012 / 013
 
 | 模块 | 交付 |
 |------|------|
-| 合约 | `DeviceRegistry`、`IoTEscrow`（充电桩场景） |
-| SDK | IoT SDK PoC（BYOD 注册、稳定币收款） |
-| 场景 | 车载 Agent → 认证充电桩：导航、锁款、充电、结算 |
-| 认证 | L0 质押注册 + L1 厂商白名单 |
-| API | 设备索引、地理发现、认证状态 |
+| **contracts** | `Vault` 充提；`MicroPaymentSettler` 提交 Merkle Root；证明校验强制提现 |
+| **api** | 链下记账引擎（NestJS + Redis/PostgreSQL）；Receipt 验签 / nonce；周期快照与 Root 提交队列 |
+| **shared** | EIP-712 Receipt schema；`signReceipt` / Merkle proof 工具 |
+| **链** | 清算落在 **Base Sepolia → Base Mainnet 准备**；不依赖自建 L3 |
+| **披露** | `/payments/disclosure`；运维窗口与强制提现说明 |
 
-**验收**: 测试网上完成一笔「模拟电动车 Agent ↔ 充电桩」稳定币支付。
+**已有可复用**: Receipt Vault PoC、Session Key 合约（M1）。
 
-**预计工期**: 8 周
+**验收**:
+
+> 1 万笔/分链下记账零单笔链上 tx；模拟 ≥10 万笔 → **1 笔 Root**；任意账户可用 Merkle 证明从 Vault **强制提现**。
+
+**预计工期**: 8–10 周  
+**依赖**: M1 核心合约与 api 支付模块骨架  
 
 ---
 
-### M5 — v0.5 Data Micro-Market「高频微额数据」（2027 Q3）
+### M3 — v0.3「客户端完善」⚪
 
-**主题**: 传感器数据流 × Agent 买方，微额按次计费
+**主题**: 在清算底座之上，把日常使用的客户端做完整  
+**规范**: [WALLET.md](./WALLET.md) · [WORKER.md](./WORKER.md) · [ADMIN.md](./ADMIN.md) · [CLIENTS.md](./CLIENTS.md)
 
-| 模块 | 交付 |
+| 客户端 | 交付 |
+|--------|------|
+| **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 |
+| **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` |
+| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 |
+| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 |
+| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） |
+
+**验收**:
+
+> 发单方仅用 wallet、接单方仅用 worker、运营仅用 admin，可在测试网完成「发布 → 审批 → 接单 → 交付 → 放款」全流程，无需运维手工改库。
+
+**预计工期**: 8–10 周  
+**依赖**: M2 Vault/账本可用（充提与余额展示）  
+
+---
+
+### M4 — v0.4「赚钱场景落地」⚪
+
+**主题**: 把文档里的赚钱方式做成可接入、可交易的产品能力
+
+| 场景 | 交付 |
 |------|------|
-| 合约 | `DataStreamSubscription`、`MicroPaymentSettler`（Vault + Merkle Root） |
-| 场景 | 气象/车载/环境/健康数据；买方 Agent 秒级调用 |
-| 经济 | ~$0.00001/次；**链下账本** + 周期 Root 上链（[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)） |
-| 依赖 | Receipt Vault（v0.2）、Session Key（v0.3）；**现成 L2**（Base/Arbitrum）；**不依赖**自建 L3 |
+| **Agent / 云服务接入** | Agent Trading SDK（Python/TS）：发现、报价、`signReceipt`、接单回调；对外 REST/WebSocket API |
+| **Skill / 企业 API** | Skill 注册定价 → 调用计费走账本或 Escrow；企业回调网关文档 |
+| **人类发单** | wallet 任务发布（Agent 受众 + 人类受众）生产可用；确认清单与治理强制生效 |
+| **人类接单赚钱** | worker 众包闭环稳定；凭证与 Escrow/放款一致 |
+| **（可选同里程碑）** | Device Node 最小注册与心跳；不阻塞 1.0 若进度不足可延后 |
 
-**验收**: 演示 100+ 模拟传感器 + 1 Agent 买方，持续微额扣费 1 小时；**10 万条 Receipt → 1 笔 Merkle Root**；强制提现 PoC。
+**验收**:
 
-**预计工期**: 10 周
+> ① 第三方用 SDK 在无 App 情况下完成至少一笔链下微支付记账并参与一次 Merkle 清算；  
+> ② 人类用户完成「发单 → 审批 → 接单 → 结算」；  
+> ③ 公开开发者文档可按步骤复现。
+
+**预计工期**: 8–12 周  
+**依赖**: M2 + M3  
 
 ---
 
-### M6 — v0.6 Energy & Logistics「能源与供应链」（2027 Q4）
+### M5 — v1.0「商业版本上线」⚪
 
-**主题**: 分布式能源竞价 + 冷链 SLA 智能契约
+**主题**: 生产就绪与对外商业发布（主线终点）
 
-| 模块 | 交付 |
+| 域 | 交付 |
+|----|------|
+| **安全** | 外部审计（Vault / Settler / Escrow 优先）；Bug Bounty 启动 |
+| **主网** | Base Mainnet（及规划中的 Arbitrum）合约部署；生产 Indexer / 账本 / 高可用 |
+| **运维** | 监控告警、备份、Root 提交值班、强制提现演练 |
+| **产品** | wallet / worker / admin / web 生产构建；合规披露（Onramp、风险） |
+| **生态** | SDK + API 正式文档；ABI / 部署地址发布 |
+
+**验收**:
+
+> 主网可完成：Vault 充值 → 链下微支付 → Root 清算 → 提现；以及人类任务 Escrow 全流程；审计报告公开；达到对外宣布 **商业版 1.0** 的标准。
+
+**预计工期**: 8–10 周  
+**依赖**: M2–M4 验收通过  
+
+---
+
+## 4. 支线与 1.0 之后（不阻塞商业发版）
+
+以下能力 **可与主线并行**，但 **不得抢占 M2–M5 关键资源**，除非单独立项。
+
+### 4.1 MetaDEX Lite（支线）
+
+合约优先的 ve DEX（见 [METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)）。  
+**与 1.0 主线解耦**：账本 / 客户端 / 赚钱场景不依赖 MetaDEX 上线。
+
+| 子阶段 | 内容 | 相对主线 |
+|--------|------|----------|
+| v0.15.0 合约 | Factory / Pair / Router / ve | 可并行 |
+| v0.15.1 api | `/dex/*` 读链 | 可并行 |
+| v0.15.2 web | Swap / LP / Vote | 可并行 |
+
+### 4.2 v1.0 之后展望
+
+| 版本 | 主题 |
 |------|------|
-| 合约 | `EnergyMarket`、`ConditionalFreight`（温度 Oracle） |
-| 场景 | 户用光伏余电撮合；冷链运费按 SLA 自动分账/理赔触发 |
-| 收入 | 度电清算费 + 企业级契约执行 Gas |
-
-**验收**: 能源竞价 PoC + 冷链合约在测试网跑通一条完整运费释放/扣款路径。
-
-**预计工期**: 10 周
+| v1.1 | 完整 P2P Beacon、争议仲裁增强、信誉 |
+| v1.2 | IoT 设备收款 / 数据微市场规模化（复用 M2 账本） |
+| v1.3 | 能源与冷链 SLA 契约 |
+| v1.4 | Omnichain（CCTP / LayerZero）；状态通道 1:1 拓展 |
+| v1.x+ | MasterChef / DAO 治理扩大；自建 L2 **仅规模证明后评估** |
 
 ---
 
-### M7 — v0.7 Protocol Incentives「激励与 SDK」（2028 Q1）
+## 5. 团队与资源倾斜
 
-**主题**: MasterChef、UUPS、开源交易模板 — **仍在现成 L2**；自建链 / 定制 L3 **不在本里程碑**
+| 阶段 | 资源重心 |
+|------|----------|
+| **M2** | 合约结算 + api 账本引擎（最高优先级） |
+| **M3** | 移动端 + admin + 任务治理体验 |
+| **M4** | SDK / 对外 API + 场景联调 |
+| **M5** | 安全审计 + SRE + 发版 |
 
-| 模块 | 交付 |
-|------|------|
-| 链 | **Base / Arbitrum** 上 Vault、Escrow、费率模块 hardening |
-| 合约 | MasterChef 激励、UUPS 升级、`CanonicalTokenRegistry` |
-| SDK | Agent Trading 模板（Python/TS）+ `signReceipt` |
-| 客户端 | wallet/web 充提 Vault / 官方桥入金向导 |
-| 战略 | 交易费养生态；披露链下账本运营与强制提现；**明确不做定制 L3** |
-| 延期 | 自建 Sequencer / 原生桥 → 规模证明后单独立项（见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)） |
-
-**验收**: 现成 L2 上完成高并发链下记账 + 周期 Merkle 清算演示；第三方开发者用模板接入并分成；**无** 自建 L3 依赖。
-
-**预计工期**: 12 周
-
-#### v0.8 · Omnichain 与状态通道拓展（M7 后 · 可选）
-
-| 模块 | 交付 |
-|------|------|
-| CCTP | Circle USDC burn/mint（Base/Ethereum 等） |
-| 状态通道 | 1:1 流式微支付拓展（非大厅默认，[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) FR-PAY-010） |
-| api | `IOmnichainRouter` Port |
-| docs | 风险披露 |
-
-**预计工期**: 4–8 周（可与 M8 部分并行）
-
----
-
-### M8 — v1.0 Mainnet「生产就绪」（2028 Q2）
-
-**主题**: 主网部署、安全审计、DAO 治理、生态开放
-
-#### 安全与治理
-- [ ] 外部安全审计（至少 1 家）
-- [ ] Bug Bounty 计划
-- [ ] `VibeGovernor` DAO 合约
-- [ ] 协议参数链上治理
-
-#### 主网部署
-- [ ] Base Mainnet 合约部署
-- [ ] 生产级 Indexer + 后端
-- [ ] CDN + 高可用部署
-- [ ] 监控告警（Datadog/Grafana）
-
-#### 生态
-- [ ] 开发者 SDK（TypeScript）
-- [ ] 合约 ABI + Subgraph 发布
-- [ ] 第三方 Agent 接入文档
-- [ ] 合作伙伴集成（Wallet、IPFS Pin）
-
-#### 前端
-- [ ] 性能优化（首屏 < 2s）
-- [ ] 国际化（中/英）
-- [ ] 无障碍（WCAG 2.1 AA）
-
-**里程碑验收**:
-> 协议在 Base Mainnet 上线；通过安全审计；至少 100 个 Agent 注册、1000 笔 Escrow 结算；SDK 文档可供第三方集成。
-
-**预计工期**: 8 周
-
----
-
-## 4. v1.0 之后展望
-
-| 版本 | 主题 | 关键特性 |
-|------|------|----------|
-| v1.1 | Omnichain Skill | LayerZero 跨链 Skill + CCIP 评估（见 [BRIDGE.md](./BRIDGE.md)） |
-| v1.2 | IoT 规模化 | 百万传感器接入、联邦批量结算 |
-| v1.3 | ZK 验证 | 零知识 Skill / 数据质量证明 |
-| v1.4 | AgentFi | Skill 抵押借贷、收入 Token 化 |
-| v2.0 | 自主 Agent 经济 | 多 Sequencer、完全链上治理 |
-
----
-
-## 5. 团队阶段规划
-
-| 阶段 | 团队规模 | 角色 |
-|------|----------|------|
-| M0-M1 | 3-5 人 | 全栈 ×2, 合约 ×1, 产品 ×1 |
-| M2 | 5-8 人 | +P2P, +前端, +QA |
-| M3 | 8-12 人 | +移动端, +任务治理 |
-| M4-M6 | 10-14 人 | +IoT/嵌入式, +Oracle, +BD |
-| M7-M8 | 12-18 人 | +链工程/Sequencer, +安全/审计 |
+建议规模：M2 起 5–8 人；M3–M4 扩至含移动端；M5 加安全与运维。
 
 ---
 
 ## 6. 风险与缓冲
 
-| 风险 | 影响 | 缓解 | 时间缓冲 |
-|------|------|------|----------|
-| 合约审计延迟 | M4 推迟 | 提前 2 个月提交审计 | +4 周 |
-| P2P NAT 穿透困难 | M2 功能降级 | Relay 兜底方案 | +2 周 |
-| L2 网络不稳定 | 交易体验差 | 多 L2 部署 | +2 周 |
-| 监管不确定性 | 主网策略调整 | 法律咨询 + 地理限制 | 待定 |
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| Merkle / Vault 审计延迟 | M5 推迟 | M2 结束即启动审计预审 |
+| 客户端跨端进度不及预期 | M3 拉长 | 先保 wallet 发单 + worker 接单 + admin 审批三角 |
+| SDK 生态冷启动 | M4 验收弱 | 先官方示例 Agent + 沙箱水龙头 |
+| 过早投入 MetaDEX / IoT / 自建链 | 主线失血 | 支线隔离；定制 L3 不做 |
 
-每个里程碑预留 **15% 时间缓冲**。
+每个主线里程碑预留 **约 15% 时间缓冲**。
 
 ---
 
 ## 7. 进度追踪
 
-当前阶段: **M1 — v0.1 MVP（本地）**
+**当前阶段: M2 — v0.2 链下账本 + Merkle（主焦点）**
 
-| 里程碑 | 版本 | 计划 | 状态 |
-|--------|------|------|------|
-| M0 项目启动 | — | 2026-06 | ✅ |
-| M1 身份与交易 | v0.1 | 2026 Q3 | 🟡 |
-| M1b-A MetaDEX 合约 | v0.15.0 | 2026 Q3 | ⚪ **当前** |
-| M1b-B MetaDEX api | v0.15.1 | 2026 Q3–Q4 | ⚪ 阻塞于 A |
-| M1b-C MetaDEX web | v0.15.2 | 2026 Q4 | ⚪ 阻塞于 B |
-| M2 发现与信任 | v0.2 | 2026 Q4 | ⚪ |
-| M2b 链下 Receipt | v0.2 | 2026 Q4 | ⚪ |
-| M3 算力与人力 | v0.3 | 2027 Q1 | 🟡 任务治理 MVP+ |
-| M3b Onramp + Base 桥引导 | v0.3 | 2027 Q1 | ⚪ |
-| M4 IoT 设备支付 | v0.4 | 2027 Q2 | ⚪ |
-| M5 数据微市场 | v0.5 | 2027 Q3 | ⚪ |
-| M6 能源与物流 | v0.6 | 2027 Q4 | ⚪ |
-| M7 Agent 专用链 | v0.7 | 2028 Q1 | ⚪ |
-| M7b Omnichain CCTP | v0.8 | 2028 Q1–Q2 | ⚪ |
-| M8 主网就绪 | v1.0 | 2028 Q2 | ⚪ |
+| 里程碑 | 版本 | 状态 |
+|--------|------|------|
+| M0 项目启动 | — | ✅ |
+| M1 身份与交易 | v0.1 | 🟡 |
+| **M2 链下账本 + Merkle** | **v0.2** | **⚪ 当前主焦点** |
+| M3 客户端完善 | v0.3 | ⚪ |
+| M4 赚钱场景落地 | v0.4 | ⚪ |
+| **M5 商业版上线** | **v1.0** | ⚪ |
+| 支线 MetaDEX | v0.15.x | 🟡 合约进度另计 |
+| 支线 IoT / 能源 / Omnichain | v1.1+ | ⚪ |
+
+*状态: ✅ 完成 | 🟡 进行中 | ⚪ 未开始 | 🔴 阻塞*
 
 ---
 
-*里程碑状态: ✅ 完成 | 🟡 进行中 | ⚪ 未开始 | 🔴 阻塞*
+*主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*

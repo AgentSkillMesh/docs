@@ -67,14 +67,14 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
 | FR-PAY-009 | signReceipt SDK | shared, api/scripts | v0.3 ✅ |
-| FR-PAY-006 | Merkle Root 批量清算 | contracts | `MicroPaymentSettler` | v0.5 |
-| FR-PAY-007 | 双向轧差净额 | contracts | v0.5 | v0.5 |
-| FR-PAY-008 | Bundler 微支付批次 | contracts, api | v0.7 | v0.7 |
-| FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v0.8+ | v0.8+ |
+| FR-PAY-006 | Merkle Root 批量清算 | contracts | `MicroPaymentSettler` | **v0.2 / M2** |
+| FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
+| FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
+| FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
-| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | v0.5 | v0.5 |
-| FR-PAY-013 | Merkle 强制提现 | contracts | v0.5 | v0.5 |
-| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | v0.5 |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | **v0.2 / M2** | **v0.2 / M2** |
+| FR-PAY-013 | Merkle 强制提现 | contracts | **v0.2 / M2** | **v0.2 / M2** |
+| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | **v0.2 / M2** |
 
 ## MVP v0.1 验收对照
 
@@ -86,6 +86,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | 任务治理双通道 | api, wallet, worker, admin | MVP+ |
 | P2P Beacon | p2p | 未开始 |
 | IoT 设备支付 | contracts, sdk | v0.4 |
-| 链下账本 + Merkle / MasterChef（现成 L2） | api, contracts | v0.5–v0.7 |
+| 链下账本 + Merkle（主线 M2） | api, contracts | **v0.2** |
+| 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3** |
+| 赚钱场景 SDK/API/人类任务（主线 M4） | shared, api, clients | **v0.4** |
+| 商业版上线（主线 M5） | 全仓 | **v1.0** |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。

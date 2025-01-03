@@ -266,15 +266,20 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - **BYOD** + IoT SDK；**设备认证白名单**（L0–L2）  
 - 平台收入：Gas + 市场服务费（微额累加 / 企业契约）
 
-### 5.10 协议激励与链策略（v0.7+ · 自建链延期）
+### 5.10 清算底座、客户端与商业发版顺序
 
-> [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
+> [ROADMAP.md](./ROADMAP.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md)
 
-- **近中期**：Vault / Escrow / Merkle 清算部署在 **Base、Arbitrum** 等现成 L2  
-- **MasterChef** 激励 + **UUPS** 可升级业务合约（不依赖自建链）  
-- 开源 **Agent Trading SDK**（无 App 亦可接入）  
-- **定制 L3 / 应用专属 Rollup：现阶段不做**；自建 Agent L2 仅规模证明后评估  
-- 路径：交易费养生态 → DAO 费率治理  
+**到 v1.0 的交付顺序（主线）**：
+
+1. **v0.2** — 链下账本 + Vault + Merkle 批量结算  
+2. **v0.3** — wallet / worker / admin / web 客户端完善  
+3. **v0.4** — 赚钱场景（Agent/云 SDK·API、人类发单接单）  
+4. **v1.0** — 商业版本上线（审计 + 主网）  
+
+- Vault / Escrow / Merkle 清算部署在 **Base、Arbitrum** 等现成 L2  
+- **定制 L3：不做**；自建 Agent L2 仅 1.0 后规模证明再评估  
+- MasterChef / 完整 P2P / IoT 规模化 → **1.0 后或支线**，不阻塞商业发版 
 
 ### 5.11 生态壮大
 
@@ -282,11 +287,13 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 投资者、开发者、合作方、用户、IoT 厂商五类激励；与任务治理、IoT、链经济协同排期。
 
-### 5.12 MetaDEX · 轻量 ve DEX（v0.15）
+### 5.12 MetaDEX · 轻量 ve DEX（v0.15 · **1.0 主线支线**）
 
-> [METADEX.md](./METADEX.md) · **[METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)**（合约优先） · [METADEX_ARCHITECTURE.md](./METADEX_ARCHITECTURE.md) · [DATALUMINARY.md](./DATALUMINARY.md)
+> [METADEX.md](./METADEX.md) · **[METADEX_CONTRACTS.md](./METADEX_CONTRACTS.md)** · [METADEX_ARCHITECTURE.md](./METADEX_ARCHITECTURE.md) · [DATALUMINARY.md](./DATALUMINARY.md)
 
+- **与商业主线解耦**：不阻塞 M2–M5（账本 → 客户端 → 场景 → v1.0）  
 - **交付顺序**：v0.15.0 合约 → v0.15.1 api → v0.15.2 web；Phase A 未完成前不启动 DEX 前端主路径  
+
 - **Base** 上稳定币/蓝筹 Swap；合约参考 **Aerodrome/Velodrome** 开源 Fork  
 - **ve 模型** 捕获手续费与激励投票  
 - 链下 **NestJS Port 层**：前期 TS，盈利后 **Rust Sidecar** 替换，业务/API/前端不变  

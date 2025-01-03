@@ -101,15 +101,42 @@ DoerFlow（原 VibeAgent）是区块链交易平台。对 **Agent ↔ Agent 高�
 
 **已定**：清算落在 **现成公链 L2**；自建应用链 **推迟到规模证明之后**（见 [AGENT_CHAIN.md](./AGENT_CHAIN.md) 的延期声明），**不是** 微支付主路径的前置依赖。
 
-### 3.4 仍放弃联盟链
+### 3.4 为何放弃联盟链（已定 · 三条致命理由）
+
+DoerFlow **明确不做联盟链（Consortium / Permissioned Chain）** 作为协议底座。除「封闭局域网」叙事外，工程与经济上有三条不可接受的伤害：
+
+#### 1. 资产与流动性割裂（最大致命伤）
+
+| | 公链 / 现成 L2 | 联盟链 |
+|--|----------------|--------|
+| Agent 收入形态 | 全球通用 **USDC / USDT / ETH** | 链内积分或封闭凭证 |
+| 下游用途 | 直接调 OpenAI API、租 GPU、接入其他 Web3 协议 | **无法**与全球加密生态或传统 API 结算服务互通 |
+| 出金路径 | 钱包自托管 + 官方桥 / DEX | 强依赖 **中心化网关人工兑换** |
+
+联盟链上「赚到的钱」流动性几乎为零：Agent 无法把收益无缝花出去，价值被锁在封闭记账网络里。
+
+#### 2. 违背 Agent 的无许可（Permissionless）本质
+
+Agent 经济的核心魅力：**世界上任一开发者**写一个 AI Agent，分配链上钱包私钥后，**几秒内**即可自主接单、干活、收款——无需填表、无需节点席位审批。
+
+联盟链要求每个参与方/节点通过身份审核（KYC、数字证书授权）。若 Agent 入场还要「填表审批、分配节点权限」，就把 **Agent 自动化降级成传统软件接口对接**，杀死无许可可组合性。
+
+#### 3. 运维成本高，且极易退化为「假区块链」
+
+联盟链需多家机构共同维护节点（PBFT 等）。项目早期很难凑齐 **5～10 家**愿意长期跑节点的合作方。
+
+常见结局：团队 **独自搭建全部联盟节点**——用一套复杂、吞吐受限、难维护的分布式协议，搭出一个 **效率极低的中心化数据库**。既无真正多方共识，又丧失公链流动性与可组合性，两头不讨好。
+
+**对照摘要**：
 
 | 联盟链做法 | 对 Agent 经济的伤害 |
 |------------|---------------------|
-| 准入制节点 | 杀死无许可可组合性 |
+| 封闭积分 / 凭证 | **流动性归零**；无法直付全球 API / DeFi |
+| 准入制节点 + KYC 入场 | **杀死无许可**；自动化降级为人工对接 |
+| 早期自建全部节点 | **假区块链**；复杂中心化库，运维成本虚高 |
 | 多联盟孤岛 | 跨链信任成本高于公链稳定币 |
-| 封闭「企业链」 | 全球 AI 市场变成局域网 |
 
-> 参考：Stripe / Coinbase / Paradigm 等将支付协议化、异步化；AWS Bedrock AgentCore Payments 针对 Agent 高频微支付——DoerFlow 采用 **开放协议 + 非托管密钥** 的等价分层，不绑定单一云厂商。
+> 参考：Stripe / Coinbase / Paradigm 等将支付协议化、异步化；AWS Bedrock AgentCore Payments 针对 Agent 高频微支付——DoerFlow 采用 **开放协议 + 非托管密钥** 的等价分层，清算锚定公链稳定币，不绑定单一云厂商，也不走联盟链封闭账本。
 
 ---
 
@@ -191,7 +218,7 @@ sequenceDiagram
 | **Credit Line 净额** | 高频买卖双方 | 双向轧差后单次链上转账 |
 | **状态通道终态**（拓展） | 1:1 流式计费 | 通道关闭时提交终态 |
 
-**批量路径（v0.5+）**：
+**批量路径（v0.2 / M2+）**：
 
 ```
 Vault 充值（链上）
@@ -231,7 +258,7 @@ Vault 充值（链上）
 | 类型与 Receipt schema | `shared` | `src/payments/` |
 | 链下账本、Receipt Vault、批量队列 | `api` | `modules/payments/` |
 | Session Key 策略 UI | `wallet` / `web` | Agent 授权面板 |
-| Vault + Merkle 清算 | `contracts` | `settlement/MicroPaymentSettler.sol`（v0.5） |
+| Vault + Merkle 清算 | `contracts` | `settlement/MicroPaymentSettler.sol`（**v0.2 / M2**） |
 | AA + Session | `contracts` | `identity/SessionKeyRegistry.sol`（v0.3） |
 | Agent SDK 签名 | `shared` + SDK | Python/TS `signReceipt()` |
 | 状态通道（拓展） | `contracts` / `p2p` | 规划 · v0.8+ |
@@ -257,16 +284,18 @@ import { signReceipt, ReceiptVaultService, hashReceipt } from '@vibe-agent/share
 
 ---
 
-## 7. 版本路线
+## 7. 版本路线（对齐主线 ROADMAP）
 
-| 版本 | 交付 | 验收 |
-|------|------|------|
-| **v0.2** | Receipt EIP-712 + api 验签 PoC | 1 万笔/分链下验签；零链上 tx |
-| **v0.3** | Session Key + Smart Account 策略 | scoped key；超支拒绝 |
-| **v0.5** | Vault + `MicroPaymentSettler` Merkle Root + IoT 流 | 10 万条收据 → 1 笔 Root；强制提现 PoC |
-| **v0.7** | Bundler/Paymaster 优化批次；账本引擎生产 hardening | 摊销 Gas 极低；Base/Arbitrum 主清算 |
-| **v0.8+** | **状态通道拓展**（可选） | 1:1 流式通道开闭 demo |
-| **远期** | 自建应用链（仅当规模证明需要） | 见 AGENT_CHAIN · **非微支付前置** |
+> 商业主线：**M2 账本+Merkle → M3 客户端 → M4 赚钱场景 → M5 v1.0**。详见 [ROADMAP.md](./ROADMAP.md)。
+
+| 版本 | 里程碑 | 交付 | 验收 |
+|------|--------|------|------|
+| **v0.2** | **M2（当前主焦点）** | Vault + 链下记账引擎 + `MicroPaymentSettler` Merkle Root + 强制提现 | 1 万笔/分链下记账；≥10 万笔 → 1 Root；强制提现 PoC |
+| **v0.3** | M3 | 客户端对接 Vault 充提 / 余额；Session Key UX | wallet/worker/admin 可用账本余额 |
+| **v0.4** | M4 | SDK `signReceipt` / 对外支付 API；场景联调 | 第三方 SDK 完成微支付并参与清算 |
+| **v1.0** | M5 | 主网 hardening、审计、生产 Root 值班 | 商业版可对外宣布 |
+| **v1.1+** | 支线 | 状态通道拓展；IoT 数据流规模化复用账本 | 可选 |
+| **远期** | — | 自建应用链（仅规模证明后） | 见 AGENT_CHAIN · **非微支付前置** |
 
 ---
 
@@ -279,14 +308,14 @@ import { signReceipt, ReceiptVaultService, hashReceipt } from '@vibe-agent/share
 | FR-PAY-003 | Receipt Vault 验签与 nonce 去重 | api | v0.2 |
 | FR-PAY-004 | Session Key scoped 授权 | contracts, wallet | v0.3 |
 | FR-PAY-005 | Session 预算与撤销 | contracts | v0.3 |
-| FR-PAY-006 | 账本快照 Merkle Root 清算 | contracts, api | v0.5 |
-| FR-PAY-007 | 双向轧差净额结算 | contracts | v0.5 |
-| FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | v0.7 |
-| FR-PAY-009 | Agent SDK `signReceipt` / `settle` | shared, SDK | v0.3 |
-| FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v0.8+ |
+| FR-PAY-006 | 账本快照 Merkle Root 清算 | contracts, api | **v0.2 / M2** |
+| FR-PAY-007 | 双向轧差净额结算 | contracts | v0.2–v0.4 |
+| FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | v1.0 |
+| FR-PAY-009 | Agent SDK `signReceipt` / `settle` | shared, SDK | **v0.4 / M4** |
+| FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ |
 | FR-PAY-011 | **不做** 定制 L3 作为微支付主路径 | spec | **已定** |
-| FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | v0.5 |
-| FR-PAY-013 | Merkle 证明强制提现（抗平台作恶/宕机） | contracts | v0.5 |
+| FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | **v0.2 / M2** |
+| FR-PAY-013 | Merkle 证明强制提现（抗平台作恶/宕机） | contracts | **v0.2 / M2** |
 
 ---
 
