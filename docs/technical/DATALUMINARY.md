@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # DataLuminary 外接分析
 
 **版本**: v0.1-draft · **外项目**: [DataLuminary-Platform](https://github.com/DataLuminary/DataLuminary-Platform)
@@ -82,3 +81,4 @@ DATALUMINARY_DASHBOARD_URL=
 ---
 
 *MetaDEX 产品见 [METADEX.md](./METADEX.md)。*
+

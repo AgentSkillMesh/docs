@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 管理平台规格
 
 **版本**: v0.1-draft  
@@ -36,23 +35,51 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 ### FR-ADM-002 任务列表
 - 列：ID、类型、发单方、金额、风险分、状态、创建时间  
 - 筛选：`pending_review` | `published` | `rejected` | 告警中  
+- **实现（M3）**：`/tasks` ← `GET /admin/tasks`；行内 approve/reject；批量通过待审  
 
 ### FR-ADM-003 审批工作台
 - 任务详情：描述、附件、发单方历史、风控命中规则  
-- 操作：通过（→ `published` + 触发 Escrow 绑定）、驳回、要求修改  
+- 操作：通过（→ `published` + **绑定 Escrow 预留** `escrowId`）、驳回、要求修改（→ `needs_revision`）  
 - 批量通过（仅 L1 且符合规则，可选）  
+- **实现（M3）**：`/review` → `approve|reject|request-revision`；approve 写入平台 Escrow 预留记录  
 
 ### FR-ADM-004 自动审批监控
 - 展示规则引擎决策日志  
 - L0/L1 通过率、误放抽检标记  
+- **实现（M3）**：`/auto-approval` ← `GET /admin/tasks/auto-decisions`（`autoDecision` + 规则回放）  
+  - 抽检标记已处理 → `POST .../mark-auto-reviewed`  
+  - 升级人工 → `POST .../escalate-auto`（`published` 且未接单 → `pending_review`）  
 
 ### FR-ADM-005 危险任务告警
 - 实时列表（WebSocket 或轮询）  
 - 级别：高 / 中  
 - 操作：拦截、升级人工、加入黑名单  
+- **实现（M3）**：`/risk-alerts` ← `GET /admin/tasks/alerts`；拦截 → reject；标记已处理 → `POST .../clear-alert`  
 
 ### FR-ADM-006 仪表盘
 - 今日发布/完成/GMV、待审数量、告警数  
+- **实现（M3）**：KPI 条接 `GET /admin/stats/overview`（图表仍可 mock，完整仪表盘 v0.4）  
+
+### FR-ADM-007 支付清算运维（M3）
+- 只读面板：`GET /payments/ledger/commits`  
+- 列：epoch · status · root · txHash（Basescan）· error · updatedAt  
+- 展示账本引擎 / 队列模式（disclosure）  
+- 路由：`/payments/commits`  
+
+### FR-ADM-008 费率等级只读（M3）
+- 面板：`GET /fees/tiers`（ERC-4337 等级协议费 bps）  
+- 路由：`/payments/fees`  
+- 与 FEE_TIERS_AA 文档一致；配置写入链上 FeeTierRegistry 见后续版本  
+
+### FR-ADM-009 治理参数（M3）
+- 路由：`/governance`  
+- `GET|PUT /admin/governance/config`：自动审批 ETH 阈值、硬拒/风控关键词、发单限流、L0–L3 开关  
+- 保存后立即作用于新提交任务的规则引擎（不回溯已决策任务）  
+
+### FR-ADM-010 发单方治理（M3）
+- 路由：`/publishers` ← `GET /admin/publishers`（任务聚合 + 观察/黑名单）  
+- `POST /admin/publishers/flag`：`watchlist` / `blacklist`（持久化于 governance config）  
+- 黑名单地址 `POST /tasks` 拒绝（`PUBLISHER_BLACKLISTED`）  
 
 ## 3. 技术栈
 
@@ -78,16 +105,17 @@ admin → shared（类型）
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 登录、待审列表、单条审批、告警列表 |
+| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览** |
 | v0.4 | 仪表盘、批量操作、Webhook 告警 |
 | v1.0 | 完整 RBAC + 审计日志 |
 
 ## 6. 验收
 
-- [ ] `pending_review` 任务可在后台通过并出现在 worker 列表  
-- [ ] L3 告警任务默认不在 worker 可见  
-- [ ] 驳回任务发单方 wallet 可见原因  
+- [x] `pending_review` 任务可在后台通过并出现在 worker 列表（API 联调；E2E 冒烟 2025-01-14 ✅）  
+- [x] L3 告警任务默认不在 worker 可见（`alertFlag` 过滤；审批通过后清 flag）  
+- [x] 驳回任务发单方 wallet 可见原因（`alertReason` → 收益「我发布的任务」）  
 
 ---
 
 *审批规则见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)。*
+

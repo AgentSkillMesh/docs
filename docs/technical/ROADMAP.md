@@ -1,13 +1,12 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # DoerFlow 版本规划与里程碑
 
-**最后更新**: 2026-07-24  
+**最后更新**: 2025-02-10  
 **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
@@ -90,20 +89,28 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 
 ---
 
-### M2 — v0.2「链下账本 + Merkle 结算」⚪ **当前主焦点**
+### M2 — v0.2「链下账本 + Merkle 结算」🟡 **当前主焦点**
 
 **主题**: 把 A2A / API 高频微支付从「每笔上链幻想」落到可上线的清算底座  
 **规范**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · FR-PAY-006 / 012 / 013
 
-| 模块 | 交付 |
-|------|------|
-| **contracts** | `Vault` 充提；`MicroPaymentSettler` 提交 Merkle Root；证明校验强制提现 |
-| **api** | 链下记账引擎（NestJS + Redis/PostgreSQL）；Receipt 验签 / nonce；周期快照与 Root 提交队列 |
-| **shared** | EIP-712 Receipt schema；`signReceipt` / Merkle proof 工具 |
-| **链** | 清算落在 **Base Sepolia → Base Mainnet 准备**；不依赖自建 L3 |
-| **披露** | `/payments/disclosure`；运维窗口与强制提现说明 |
+| 模块 | 交付 | 状态（2025-01-14） |
+|------|------|-------------------|
+| **contracts** | `PaymentVault` 充提；`MicroPaymentSettler` commitRoot + forceWithdraw | 🟡 Hardhat + localhost 冒烟；**Base Sepolia 已部署**（2025-01-14） |
+| **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | 🟡 `LEDGER_STORE=postgres` + BullMQ `commitRoot` 队列；默认 memory 回退 |
+| **shared** | EIP-712 Receipt；`buildBalanceMerkle` / proof 工具 | 🟡 Merkle leaf 与合约对齐 + 单测 |
+| **链** | Base Sepolia → Base Mainnet 准备 | 🟡 Vault Sepolia ✅；BullMQ `commitRoot` 已冒烟上链 |
+| **披露** | `/payments/disclosure` | 🟡 含 latestEpoch / forceWithdraw 说明 |
 
 **已有可复用**: Receipt Vault PoC、Session Key 合约（M1）。
+
+**Base Sepolia Vault（84532 · 2025-01-14）**:
+
+| 合约 | 地址 |
+|------|------|
+| Mock USDC（Vault asset） | `0x3d8893Ab039e32330a6e80F4baed34EC194f603F` |
+| PaymentVault | `0xcce2aeeA7e46941eaFC62c4d8f02D357B75AcdBc` |
+| MicroPaymentSettler | `0x20fC7000eb52ef53980E00F12AA64df941f1042C` |
 
 **验收**:
 
@@ -114,18 +121,18 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 
 ---
 
-### M3 — v0.3「客户端完善」⚪
+### M3 — v0.3「客户端完善」🟡
 
 **主题**: 在清算底座之上，把日常使用的客户端做完整  
 **规范**: [WALLET.md](./WALLET.md) · [WORKER.md](./WORKER.md) · [ADMIN.md](./ADMIN.md) · [CLIENTS.md](./CLIENTS.md)
 
-| 客户端 | 交付 |
-|--------|------|
-| **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 |
-| **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` |
-| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 |
-| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 |
-| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） |
+| 客户端 | 交付 | 状态 |
+|--------|------|------|
+| **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · **Escrow fund/release** · 驳回/修改 |
+| **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` | 🟡 published 门禁 · Vault · 账本 · escrowId · **deliverEscrow** |
+| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · auto-approval · tasks · governance · **publishers** · alerts · KPI · commits · fees |
+| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；既有 Escrow UX |
+| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions |
 
 **验收**:
 
@@ -241,8 +248,8 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 |--------|------|------|
 | M0 项目启动 | — | ✅ |
 | M1 身份与交易 | v0.1 | 🟡 |
-| **M2 链下账本 + Merkle** | **v0.2** | **⚪ 当前主焦点** |
-| M3 客户端完善 | v0.3 | ⚪ |
+| **M2 链下账本 + Merkle** | **v0.2** | **🟡 进行中（Vault Sepolia ✅ · api 账本 PoC）** |
+| M3 客户端完善 | v0.3 | 🟡 |
 | M4 赚钱场景落地 | v0.4 | ⚪ |
 | **M5 商业版上线** | **v1.0** | ⚪ |
 | 支线 MetaDEX | v0.15.x | 🟡 合约进度另计 |
@@ -253,3 +260,4 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 ---
 
 *主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*
+

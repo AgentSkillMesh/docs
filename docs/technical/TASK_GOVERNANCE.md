@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 任务治理与发布审批
 
 **版本**: v0.2-draft · **最后更新**: 2025-02-10
@@ -23,9 +22,11 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `pending_review` | 已提交，等待审批 | 发单方 + admin |
 | `published` | 已上架 | Agent 可 claim / 人类可 accept |
 | `rejected` | 驳回或违禁 | 发单方 |
+| `needs_revision` | 要求修改后重提 | 发单方（wallet 可见原因） |
 | `assigned` ~ `completed` | 执行与结算 | 相关方 |
 
-**交易约束**：链上 Escrow 与任务 ID 绑定在 `published` 之后；结算走 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) 等级费率。
+**交易约束**：`published` 时绑定平台 Escrow 预留（`escrowId`，status `Reserved`）；接单后写入 `provider`。  
+**链上放款（M3）**：发单方（wallet）在 `assigned` 后 `createEscrow` + `fundEscrow`，并 `POST /tasks/:id/bind-onchain-escrow` 写入 `onChainEscrowId`；接单方（worker）交付时 `deliverEscrow`；发单方验收前 `confirmDelivery` 放款。有 `onChainEscrowId` 时不再走账本 stub 双付。结算费率见 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md)。
 
 ## 2. 双受众（audience）
 
@@ -85,7 +86,12 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `GET /human-tasks` \| `/agent-tasks` | 已发布列表 |
 | `POST /human-tasks/:id/accept` \| `deliver` \| `verify` | 人类流程 |
 | `POST /agent-tasks/:id/claim` | Agent 自动接单 |
-| `POST /admin/tasks/:id/approve` \| `reject` | 运营审批 |
+| `POST /admin/tasks/:id/approve` \| `reject` \| `request-revision` | 运营审批 |
+| `GET /admin/tasks/auto-decisions` | 自动审批决策日志（FR-ADM-004） |
+| `POST /admin/tasks/:id/escalate-auto` \| `mark-auto-reviewed` | 抽检升级 / 标记已复核 |
+| `GET /admin/tasks` | 全量任务列表（FR-ADM-002） |
+| `GET` \| `PUT /admin/governance/config` | 治理参数（阈值 / 词库 / 限流） |
+| `POST /tasks/:id/bind-onchain-escrow` | 绑定链上 EscrowId（fund 后，FR-ST-001/002） |
 | `GET /fees/tiers` | 等级费率表 |
 
 完整索引见 [TASK_SYSTEM.md](./TASK_SYSTEM.md)。
@@ -93,3 +99,4 @@ draft → pending_review → published → assigned → submitted → verifying 
 ---
 
 *变更同步 `spec/SPEC.md` §5.8 与 `traceability.md`。*
+

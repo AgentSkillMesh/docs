@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 跨链互通 · 官方桥与 Omnichain
 
 **版本**: v0.2-draft · **最后更新**: 2025-01-14  
@@ -38,7 +37,9 @@ Phase 3  v0.8–v1.1      Omnichain 扩展
          └─ LayerZero OFT / CCIP（Skill 跨链、多链 USDC 可达）
 ```
 
-## 3. 原生桥架构（Phase 2 · Agent L2）
+## 3. 原生桥架构（Phase 2 · 延期 · 仅自建链立项后）
+
+> **状态**：非当前交付。近中期请用 Phase 1 官方桥。以下规格供远期评估参考。
 
 采用 **Optimism Bedrock 标准桥**（OP Stack 自带），避免自研桥数学。
 
@@ -203,3 +204,4 @@ infrastructure/
 ---
 
 *法币入口见 [ONRAMP.md](./ONRAMP.md)；链经济见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)。*
+

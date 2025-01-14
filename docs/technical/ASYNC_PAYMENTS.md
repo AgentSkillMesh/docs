@@ -1,13 +1,12 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # Agent 异步支付 · 链下账本 + Merkle 批量结算
 
-**版本**: v0.2.1-draft · **最后更新**: 2026-07-23  
+**版本**: v0.2.3-draft · **最后更新**: 2025-01-14  
 **关联**: [SPEC.md](./SPEC.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [IOT.md](./IOT.md) · [BRIDGE.md](./BRIDGE.md)
 
 ## 0. 架构决策（已定）
@@ -275,11 +274,36 @@ Vault 充值（链上）
 | POST | `/api/v1/payments/receipts` | 提交签名收据（须已注册 Session） |
 | GET | `/api/v1/payments/receipts/stats?payer=0x…` | payer nonce / pending 数 |
 | GET | `/api/v1/payments/receipts/pending?limit=100` | 待批量清算列表 |
+| POST | `/api/v1/payments/ledger/credit` | 记入链下余额（PoC；镜像 Vault 充值） |
+| GET | `/api/v1/payments/ledger/balances?account=0x…` | 查询链下余额 |
+| POST | `/api/v1/payments/ledger/snapshot` | 余额快照 → Merkle Root；队列开启时入队 `commitRoot` |
+| GET | `/api/v1/payments/ledger/snapshots/latest` | 最新 Root / epoch |
+| GET | `/api/v1/payments/ledger/proof?account=&asset=&epoch=` | 强制提现用 Merkle proof |
+| GET | `/api/v1/payments/ledger/commits?status=pending` | Root 上链任务列表 |
+| GET | `/api/v1/payments/ledger/commits/:epoch` | 单 epoch 提交状态 / txHash |
+
+### 6.1.1 生产向存储与队列（M2）
+
+| 组件 | 技术 | 环境变量 | 说明 |
+|------|------|----------|------|
+| 账本持久化 | **PostgreSQL** | `LEDGER_STORE=postgres` · `LEDGER_DATABASE_URL` | 余额 / 快照 / leaf / commit 审计表 |
+| 热缓存（可选） | **Redis** | `REDIS_URL` | 余额 write-through；未配置则直读 PG |
+| Root 上链队列 | **BullMQ** | `COMMIT_ROOT_QUEUE=bull` · `REDIS_URL` | 快照后异步 `MicroPaymentSettler.commitRoot` |
+| 本地回退 | memory | `LEDGER_STORE=memory`（默认）· `COMMIT_ROOT_QUEUE=off` | 无 Docker 时 PoC |
+| 操作员密钥 | — | `SETTLER_OPERATOR_KEY` | 仅 api 进程；对应 Settler `operator` |
+
+本地编排：`repos/api/docker-compose.ledger.yml`（Postgres 5433 + Redis 6379）。
 
 ### 6.2 shared 包
 
 ```typescript
-import { signReceipt, ReceiptVaultService, hashReceipt } from '@vibe-agent/shared/payments';
+import {
+  signReceipt,
+  ReceiptVaultService,
+  hashReceipt,
+  buildBalanceMerkle,
+  getMerkleProof,
+} from '@vibe-agent/shared/payments';
 ```
 
 ---
@@ -343,3 +367,4 @@ import { signReceipt, ReceiptVaultService, hashReceipt } from '@vibe-agent/share
 ---
 
 *等级费率见 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md)；跨链资产见 [BRIDGE.md](./BRIDGE.md)；链经济延期见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)。*
+

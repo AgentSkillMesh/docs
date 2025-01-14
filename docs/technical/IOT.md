@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 物联网交易与设备经济
 
 **版本**: v0.1-draft · **最后更新**: 2025-01-14  
@@ -139,3 +138,4 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 ---
 
 *与 [TASK_SYSTEM.md](./TASK_SYSTEM.md)、[AGENT_CHAIN.md](./AGENT_CHAIN.md)、[ECOSYSTEM.md](./ECOSYSTEM.md) 协同演进。*
+

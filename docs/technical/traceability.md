@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 需求追溯矩阵
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
@@ -67,14 +66,31 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
 | FR-PAY-009 | signReceipt SDK | shared, api/scripts | v0.3 ✅ |
-| FR-PAY-006 | Merkle Root 批量清算 | contracts | `MicroPaymentSettler` | **v0.2 / M2** |
+| FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot` | **v0.2 / M2** 🟡 |
 | FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
-| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | **v0.2 / M2** | **v0.2 / M2** |
-| FR-PAY-013 | Merkle 强制提现 | contracts | **v0.2 / M2** | **v0.2 / M2** |
-| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | **v0.2 / M2** |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | `PaymentVault` Sepolia ✅ · PG 账本 + Redis/BullMQ Root 队列（memory 回退） | **v0.2 / M2** 🟡 |
+| FR-PAY-013 | Merkle 强制提现 | contracts, shared | `forceWithdraw` Sepolia 已部署 + proof 工具 | **v0.2 / M2** 🟡 |
+| FR-WLT-002 | wallet ETH 转账（去演示化） | wallet | `/transfer` gas 估算 + 回执 + explorer | **v0.3 / M3** 🟡 |
+| FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert | **v0.3 / M3** 🟡 |
+| FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
+| FR-WLT-006 / FR-ONRAMP-003 | wallet 买币 Onramp | wallet, api | `/onramp` + `POST /onramp/session` | **v0.3 / M3** 🟡 |
+| FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm | **v0.3 / M3** 🟡 |
+| FR-WLT-008 | wallet Vault 充提 | wallet | `app/vault.tsx` + disclosure | **v0.3 / M3** 🟡 |
+| FR-ADM-003 | admin 审批工作台 | admin, api | approve 绑 Escrow 预留；request-revision → needs_revision | **v0.3 / M3** 🟡 |
+| FR-ADM-004 | admin 自动审批监控 | admin, api | `/auto-approval` ← auto-decisions / escalate / mark-reviewed | **v0.3 / M3** 🟡 |
+| FR-ADM-009 | admin 治理参数 | admin, api | `/governance` ← GET/PUT governance/config；驱动 scoreTask | **v0.3 / M3** 🟡 |
+| FR-ADM-010 | admin 发单方观察/黑名单 | admin, api | `/publishers` ← aggregate + flag；黑名单禁发 | **v0.3 / M3** 🟡 |
+| FR-ADM-002 | admin 任务列表 | admin, api | `/tasks` ← GET /admin/tasks + 行内审批 | **v0.3 / M3** 🟡 |
+| FR-ADM-005 | admin 风控告警 | admin, api | `/risk-alerts` ← alerts + clear-alert | **v0.3 / M3** 🟡 |
+| FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` ← stats/overview | **v0.3 / M3** 🟡 |
+| FR-ADM-007 | admin 支付 Commits 运维 | admin | `/payments/commits` | **v0.3 / M3** 🟡 |
+| FR-ADM-008 | admin 费率等级只读 | admin, api | `/payments/fees` ← `GET /fees/tiers` | **v0.3 / M3** 🟡 |
+| FR-WRK-002/003/005 | worker published 大厅 + 接单门禁 + Vault/账本 | worker, api | earnings Vault + ledger；完成入账 stub；展示 escrowId | **v0.3 / M3** 🟡 |
+| FR-PAY-SETTLE | 任务完成链下放款 stub | api | `ledgerSettled` + LEDGER.credit(WETH wei) | **v0.3 / M3** 🟡 |
+| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | **v0.2 / M2** 🟡 |
 
 ## MVP v0.1 验收对照
 
@@ -86,9 +102,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | 任务治理双通道 | api, wallet, worker, admin | MVP+ |
 | P2P Beacon | p2p | 未开始 |
 | IoT 设备支付 | contracts, sdk | v0.4 |
-| 链下账本 + Merkle（主线 M2） | api, contracts | **v0.2** |
+| 链下账本 + Merkle（主线 M2） | api, contracts, shared | **v0.2** 🟡 PoC |
 | 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3** |
 | 赚钱场景 SDK/API/人类任务（主线 M4） | shared, api, clients | **v0.4** |
 | 商业版上线（主线 M5） | 全仓 | **v1.0** |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。
+

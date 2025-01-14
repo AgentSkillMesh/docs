@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 综合端 App 规格（React Native）
 
 **版本**: v0.1-draft  
@@ -43,7 +42,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 - 必填：结果截图（含平台 UI 特征）  
 - 可选：无障碍事件序列 hash  
-- API 校验 → 链上/链下确认 → Escrow 放款  
+- API 校验 → 若任务已绑定 `onChainEscrowId`：worker 调用 `deliverEscrow` → 发单方 `confirmDelivery` 放款  
+- 未绑定时可走链下账本 stub（`ledgerSettled`）  
 
 ### 支持平台
 
@@ -68,10 +68,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | ID | 内容 |
 |----|------|
 | FR-WRK-001 | 绑定收款地址（只读展示，可从 wallet 导入同一助记词） |
-| FR-WRK-002 | 任务大厅（human + social 分 Tab） |
-| FR-WRK-003 | 众包交付（相机/GPS/问卷） |
-| FR-WRK-004 | 社交任务引导 + 无障碍流程 |
-| FR-WRK-005 | 收益与历史 |
+| FR-WRK-002 | 任务大厅（human + social 分 Tab）；**仅 `published`/`open`** |
+| FR-WRK-003 | 众包交付（相机/GPS/问卷）；接单前校验 published |
+| FR-WRK-004 | 社交任务引导 + 无障碍流程（无障碍本体 v0.4） |
+| FR-WRK-005 | 收益与历史；Vault 提现；**任务完成账本余额**（`GET /payments/ledger/balances`） |
 | FR-WRK-006 | 推送（v0.4） |
 
 ## 5. 技术栈
@@ -85,10 +85,11 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 众包任务大厅 + 拍照交付（从 wallet 迁移） |
+| v0.3 | 众包/社交大厅仅 published；接单门禁；收益页 Vault 提现；拍照交付 |
 | v0.4 | 社交任务 MVP（抖音观看/点赞）+ 无障碍 |
 | v0.5 | 多平台扩展 |
 
 ---
 
 *代码可从 `repos/wallet` 众包模块迁移为初始实现。*
+

@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # 本地开发端口
 
 **默认 API 端口 `13008`**（避免与多项目默认 3000 冲突）。各仓通过环境变量覆盖。
@@ -28,3 +27,4 @@ VITE_API_URL=http://localhost:13008
 ```
 
 真机调试时将 `localhost` 换为电脑局域网 IP。
+

@@ -1,10 +1,9 @@
----
+﻿---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
 ---
 
-> **规范源文件**：由 MetaRepo spec/ 同步，请勿直接编辑本页。
-
+> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
 # DoerFlow 技术规格说明书
 
 > **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
@@ -152,11 +151,13 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-ST-001 Escrow 创建
 - Consumer 发起雇佣：指定 Agent、Skill、任务描述 CID、金额、超时时间
 - 资金锁定至 Escrow 合约
+- **平台人类任务（M3）**：接单后 wallet `createEscrow` + `fundEscrow`，API `bind-onchain-escrow`
 
 #### FR-ST-002 任务执行与交付
 - Provider Agent 通过 P2P 接收任务
 - 完成后提交交付凭证（加密结果 CID + 签名）
 - Consumer 或仲裁合约验证后触发放款
+- **平台人类任务（M3）**：worker `deliverEscrow` → wallet `confirmDelivery`（2.5% 协议费）
 
 #### FR-ST-003 争议仲裁
 - 超时未交付 → 自动退款 Consumer
@@ -459,3 +460,4 @@ users           -- SIWE 用户映射
 ---
 
 *本文档随项目迭代持续更新。变更请提交 PR 并标注版本号。*
+
