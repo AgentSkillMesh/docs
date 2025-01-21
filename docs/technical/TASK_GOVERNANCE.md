@@ -91,7 +91,10 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `POST /admin/tasks/:id/escalate-auto` \| `mark-auto-reviewed` | 抽检升级 / 标记已复核 |
 | `GET /admin/tasks` | 全量任务列表（FR-ADM-002） |
 | `GET` \| `PUT /admin/governance/config` | 治理参数（阈值 / 词库 / 限流） |
+| `GET /admin/publishers` · `POST /admin/publishers/flag` | 发单方聚合与观察/黑名单（FR-ADM-010） |
+| `GET /admin/audit` | 运营审计日志（FR-ADM-011） |
 | `POST /tasks/:id/bind-onchain-escrow` | 绑定链上 EscrowId（fund 后，FR-ST-001/002） |
+| `GET /escrows?consumer=` | 发单方 Escrow 流水 |
 | `GET /fees/tiers` | 等级费率表 |
 
 完整索引见 [TASK_SYSTEM.md](./TASK_SYSTEM.md)。

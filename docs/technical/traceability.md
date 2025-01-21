@@ -83,6 +83,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ADM-004 | admin 自动审批监控 | admin, api | `/auto-approval` ← auto-decisions / escalate / mark-reviewed | **v0.3 / M3** 🟡 |
 | FR-ADM-009 | admin 治理参数 | admin, api | `/governance` ← GET/PUT governance/config；驱动 scoreTask | **v0.3 / M3** 🟡 |
 | FR-ADM-010 | admin 发单方观察/黑名单 | admin, api | `/publishers` ← aggregate + flag；黑名单禁发 | **v0.3 / M3** 🟡 |
+| FR-ADM-011 | admin 审计日志 | admin, api | `/audit` ← `GET /admin/audit`；审批/治理/拉黑落库 | **v0.3 / M3** 🟡 |
 | FR-ADM-002 | admin 任务列表 | admin, api | `/tasks` ← GET /admin/tasks + 行内审批 | **v0.3 / M3** 🟡 |
 | FR-ADM-005 | admin 风控告警 | admin, api | `/risk-alerts` ← alerts + clear-alert | **v0.3 / M3** 🟡 |
 | FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` ← stats/overview | **v0.3 / M3** 🟡 |

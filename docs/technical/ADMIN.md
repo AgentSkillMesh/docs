@@ -81,6 +81,11 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - `POST /admin/publishers/flag`：`watchlist` / `blacklist`（持久化于 governance config）  
 - 黑名单地址 `POST /tasks` 拒绝（`PUBLISHER_BLACKLISTED`）  
 
+### FR-ADM-011 审计日志（M3）
+- 路由：`/audit` ← `GET /admin/audit`  
+- 记录：审批通过/驳回/要求修改、清告警、自动决策抽检、治理配置变更、发单方拉黑/观察  
+- 支持按 action / 关键词筛选与 CSV 导出  
+
 ## 3. 技术栈
 
 | 项 | 选型 |
@@ -105,9 +110,9 @@ admin → shared（类型）
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览** |
+| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志** |
 | v0.4 | 仪表盘、批量操作、Webhook 告警 |
-| v1.0 | 完整 RBAC + 审计日志 |
+| v1.0 | 完整 RBAC + 审计留存策略 |
 
 ## 6. 验收
 

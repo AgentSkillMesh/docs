@@ -130,7 +130,7 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 |--------|------|------|
 | **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · **Escrow fund/release** · 驳回/修改 |
 | **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` | 🟡 published 门禁 · Vault · 账本 · escrowId · **deliverEscrow** |
-| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · auto-approval · tasks · governance · **publishers** · alerts · KPI · commits · fees |
+| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · auto-approval · tasks · governance · publishers · **audit** · alerts · KPI · commits · fees |
 | **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；既有 Escrow UX |
 | **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions |
 
