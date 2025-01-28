@@ -21,7 +21,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | **审批发布** | L2 复杂任务人工通过/驳回 |
 | **自动审批监控** | L0/L1 规则命中日志、异常回放 |
 | **风控告警** | L3 危险任务红色队列、实时刷新 |
-| **争议仲裁** | Escrow 争议工单（v0.4） |
+| **争议仲裁** | Escrow / 平台争议工单（**M3 工单**；链上仲裁 v0.4+） |
 | **参数配置** | 自动审批阈值、敏感词、模板白名单 |
 
 用户：**平台运营、风控、客服**（RBAC，非普通 C 端用户）。
@@ -83,8 +83,17 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 ### FR-ADM-011 审计日志（M3）
 - 路由：`/audit` ← `GET /admin/audit`  
-- 记录：审批通过/驳回/要求修改、清告警、自动决策抽检、治理配置变更、发单方拉黑/观察  
+- 记录：审批通过/驳回/要求修改、清告警、自动决策抽检、治理配置变更、发单方拉黑/观察、争议裁决  
 - 支持按 action / 关键词筛选与 CSV 导出  
+
+### FR-ADM-012 争议仲裁工单（M3）
+- 路由：`/disputes` ← `GET /admin/disputes`  
+- 开单：`POST /tasks/:id/dispute`（发单方 / 接单方 / 运营），状态限于 `assigned|submitted|verifying`  
+- 运营：`POST /admin/disputes/:id/claim`（→ reviewing）、`POST /admin/disputes/:id/resolve`  
+  - `refund_publisher` → 任务 `cancelled`，平台 Escrow `Refunded`  
+  - `release_worker` → 任务 `completed` + 账本结算（链上已锁定则要求已有 `releaseTxHash` 或仅结案标注）  
+  - `split` → 按 `splitBps` 账本部分打款后 `completed`  
+- 裁决写入审计 `DISPUTE_RESOLVED`  
 
 ## 3. 技术栈
 
@@ -110,8 +119,8 @@ admin → shared（类型）
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志** |
-| v0.4 | 仪表盘、批量操作、Webhook 告警 |
+| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志**、**争议工单** |
+| v0.4 | 仪表盘、批量操作、Webhook 告警、链上争议结算 |
 | v1.0 | 完整 RBAC + 审计留存策略 |
 
 ## 6. 验收

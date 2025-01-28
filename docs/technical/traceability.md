@@ -22,7 +22,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-SK-004 | Skill 搜索 | api + web | `skills` 模块、市场页 | v0.1 |
 | FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`、雇佣流 | v0.1 |
 | FR-ST-002 | 交付 | contracts + api | Escrow 状态、索引 | v0.1 |
-| FR-ST-003 | 争议 | contracts | v0.2 | v0.2 |
+| FR-ST-003 | 争议仲裁 | contracts, api, admin | v0.2+；**M3 平台工单** | **M3** 🟡 |
 | FR-ST-004 | 分账 | contracts | 协议费 + AA 等级 | v0.1+ |
 | FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata` | v0.1 ✅ |
 | FR-P2P-001~004 | P2P | p2p | Beacon 等 | v0.2 |
@@ -84,6 +84,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ADM-009 | admin 治理参数 | admin, api | `/governance` ← GET/PUT governance/config；驱动 scoreTask | **v0.3 / M3** 🟡 |
 | FR-ADM-010 | admin 发单方观察/黑名单 | admin, api | `/publishers` ← aggregate + flag；黑名单禁发 | **v0.3 / M3** 🟡 |
 | FR-ADM-011 | admin 审计日志 | admin, api | `/audit` ← `GET /admin/audit`；审批/治理/拉黑落库 | **v0.3 / M3** 🟡 |
+| FR-ADM-012 | admin 争议仲裁工单 | admin, api | `/disputes` ← list/claim/resolve；`POST /tasks/:id/dispute` | **v0.3 / M3** 🟡 |
 | FR-ADM-002 | admin 任务列表 | admin, api | `/tasks` ← GET /admin/tasks + 行内审批 | **v0.3 / M3** 🟡 |
 | FR-ADM-005 | admin 风控告警 | admin, api | `/risk-alerts` ← alerts + clear-alert | **v0.3 / M3** 🟡 |
 | FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` ← stats/overview | **v0.3 / M3** 🟡 |
