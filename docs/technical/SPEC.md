@@ -162,7 +162,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-ST-003 争议仲裁
 - 超时未交付 → 自动退款 Consumer
 - 双方争议 → 进入 DAO/仲裁者投票流程（v0.2+）
-- **平台人类任务（M3）**：`assigned|submitted|verifying` 可开争议工单；admin 裁决 `refund_publisher` / `release_worker` / `split`（账本侧结算；链上 Escrow 退款/分账函数见后续）
+- **平台人类任务（M3）**：`assigned|submitted|verifying` 可开争议工单；admin 裁决 `refund_publisher` / `release_worker` / `split`（账本侧结算）
+- **链上（M3）**：`Escrow.refundTimedOut` — 截止后 consumer 退回 FUNDED/DELIVERED 托管金；DAO 分账仲裁仍见 v0.4+
 
 #### FR-ST-004 分账
 - 平台协议费（默认 2.5%，DAO 可调）

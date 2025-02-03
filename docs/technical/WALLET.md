@@ -50,6 +50,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 按任务 ID 聚合  
 - **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`verifying` 验收前 `confirmDelivery` 放款  
 - **M3**：收益页 `GET /escrows?consumer=` 展示预留/链上 Escrow 流水  
+- **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议；链上托管超时可 `refundTimedOut`  
 - 导出（v0.4）  
 
 ### FR-WLT-004 发布任务

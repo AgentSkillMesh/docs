@@ -22,7 +22,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-SK-004 | Skill 搜索 | api + web | `skills` 模块、市场页 | v0.1 |
 | FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`、雇佣流 | v0.1 |
 | FR-ST-002 | 交付 | contracts + api | Escrow 状态、索引 | v0.1 |
-| FR-ST-003 | 争议仲裁 | contracts, api, admin | v0.2+；**M3 平台工单** | **M3** 🟡 |
+| FR-ST-003 | 争议仲裁 | contracts, api, admin, wallet, worker | M3 平台工单 + `refundTimedOut`；DAO 分账 v0.4+ | **M3** 🟡 |
 | FR-ST-004 | 分账 | contracts | 协议费 + AA 等级 | v0.1+ |
 | FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata` | v0.1 ✅ |
 | FR-P2P-001~004 | P2P | p2p | Beacon 等 | v0.2 |

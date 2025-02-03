@@ -95,6 +95,7 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `GET /admin/audit` | 运营审计日志（FR-ADM-011） |
 | `GET /admin/disputes` · `POST .../claim` · `POST .../resolve` | 争议工单（FR-ADM-012） |
 | `POST /tasks/:id/dispute` | 发单方/接单方/运营开争议 |
+| `POST /tasks/:id/onchain-refund` | 记录链上 `refundTimedOut`（FR-ST-003） |
 | `POST /tasks/:id/bind-onchain-escrow` | 绑定链上 EscrowId（fund 后，FR-ST-001/002） |
 | `GET /escrows?consumer=` | 发单方 Escrow 流水 |
 | `GET /fees/tiers` | 等级费率表 |

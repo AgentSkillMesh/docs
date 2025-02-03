@@ -73,6 +73,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-WRK-004 | 社交任务引导 + 无障碍流程（无障碍本体 v0.4） |
 | FR-WRK-005 | 收益与历史；Vault 提现；**任务完成账本余额**（`GET /payments/ledger/balances`） |
 | FR-WRK-006 | 推送（v0.4） |
+| FR-WRK-007 | **M3** 争议：任务详情对 `assigned|submitted|verifying` 可 `POST /tasks/:id/dispute`（openedBy=worker） |
 
 ## 5. 技术栈
 
