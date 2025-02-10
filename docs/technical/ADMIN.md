@@ -35,13 +35,13 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ### FR-ADM-002 任务列表
 - 列：ID、类型、发单方、金额、风险分、状态、创建时间  
 - 筛选：`pending_review` | `published` | `rejected` | 告警中  
-- **实现（M3）**：`/tasks` ← `GET /admin/tasks`；行内 approve/reject；批量通过待审  
+- **实现（M3）**：`/tasks` ← `GET /admin/tasks`；行内 approve/reject；**批量通过** ← `POST /admin/tasks/batch-approve`  
 
 ### FR-ADM-003 审批工作台
 - 任务详情：描述、附件、发单方历史、风控命中规则  
 - 操作：通过（→ `published` + **绑定 Escrow 预留** `escrowId`）、驳回、要求修改（→ `needs_revision`）  
-- 批量通过（仅 L1 且符合规则，可选）  
-- **实现（M3）**：`/review` → `approve|reject|request-revision`；approve 写入平台 Escrow 预留记录  
+- **批量通过（M3）**：默认 `pending_review` 且非 L3、非 `alertFlag`（超额人类任务多为 L2）；`force=true` 可含告警任务（仍跳过 L3）  
+- **实现（M3）**：`/review` 单条 + 勾选批量；`/tasks` 行选批量；approve 写入平台 Escrow 预留  
 
 ### FR-ADM-004 自动审批监控
 - 展示规则引擎决策日志  
@@ -58,7 +58,8 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 ### FR-ADM-006 仪表盘
 - 今日发布/完成/GMV、待审数量、告警数  
-- **实现（M3）**：KPI 条接 `GET /admin/stats/overview`（图表仍可 mock，完整仪表盘 v0.4）  
+- **实现（M3）**：KPI 条接 `GET /admin/stats/overview`  
+- **图表**：不做自建图表；后续嵌入 [DataLuminary](./DATALUMINARY.md) Dashboard（iframe / 外链）  
 
 ### FR-ADM-007 支付清算运维（M3）
 - 只读面板：`GET /payments/ledger/commits`  
@@ -119,8 +120,8 @@ admin → shared（类型）
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 登录、待审列表、单条审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志**、**争议工单** |
-| v0.4 | 仪表盘、批量操作、Webhook 告警、链上争议结算 |
+| v0.3 | 登录、待审列表、单条/批量审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志**、**争议工单**；仪表盘 KPI（图表 → DataLuminary） |
+| v0.4 | Webhook 告警、链上争议结算、DataLuminary 仪表盘嵌入 |
 | v1.0 | 完整 RBAC + 审计留存策略 |
 
 ## 6. 验收

@@ -87,6 +87,7 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `POST /human-tasks/:id/accept` \| `deliver` \| `verify` | 人类流程 |
 | `POST /agent-tasks/:id/claim` | Agent 自动接单 |
 | `POST /admin/tasks/:id/approve` \| `reject` \| `request-revision` | 运营审批 |
+| `POST /admin/tasks/batch-approve` | 批量通过待审（默认 L0/L1；FR-ADM-002/003） |
 | `GET /admin/tasks/auto-decisions` | 自动审批决策日志（FR-ADM-004） |
 | `POST /admin/tasks/:id/escalate-auto` \| `mark-auto-reviewed` | 抽检升级 / 标记已复核 |
 | `GET /admin/tasks` | 全量任务列表（FR-ADM-002） |

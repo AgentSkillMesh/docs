@@ -49,6 +49,7 @@ GET /api/v1/dex/analytics/overview
 ### 2.2 前端嵌入
 
 - web `/dex/analytics`：iframe 或新窗口打开 DataLuminary 预置 Dashboard  
+- **admin `/dashboard`**：运营 KPI 外的趋势/GMV 等图表 **不自建**，嵌入或跳转 DataLuminary 预置运营 Dashboard（`DATALUMINARY_DASHBOARD_URL`）  
 - 链 ID、Pool 地址通过 URL 参数传递（契约由两项目文档对齐）
 
 ### 2.3 数据回写（可选）

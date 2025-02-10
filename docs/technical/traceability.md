@@ -87,7 +87,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ADM-012 | admin 争议仲裁工单 | admin, api | `/disputes` ← list/claim/resolve；`POST /tasks/:id/dispute` | **v0.3 / M3** 🟡 |
 | FR-ADM-002 | admin 任务列表 | admin, api | `/tasks` ← GET /admin/tasks + 行内审批 | **v0.3 / M3** 🟡 |
 | FR-ADM-005 | admin 风控告警 | admin, api | `/risk-alerts` ← alerts + clear-alert | **v0.3 / M3** 🟡 |
-| FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` ← stats/overview | **v0.3 / M3** 🟡 |
+| FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` KPI；图表 → DataLuminary 嵌入 | **v0.3 / M3** 🟡 |
 | FR-ADM-007 | admin 支付 Commits 运维 | admin | `/payments/commits` | **v0.3 / M3** 🟡 |
 | FR-ADM-008 | admin 费率等级只读 | admin, api | `/payments/fees` ← `GET /fees/tiers` | **v0.3 / M3** 🟡 |
 | FR-WRK-002/003/005 | worker published 大厅 + 接单门禁 + Vault/账本 | worker, api | earnings Vault + ledger；完成入账 stub；展示 escrowId | **v0.3 / M3** 🟡 |
