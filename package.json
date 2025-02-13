@@ -13,12 +13,12 @@
     "@rspress/core": "^1.47.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
+    "@types/node": "^24.0.0",
     "rspress": "^1.47.0",
     "typescript": "^5.7.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24.0.0"
   },
   "repository": {
     "type": "git",
