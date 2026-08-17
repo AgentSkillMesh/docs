@@ -34,6 +34,11 @@ VibeAgent 采用 **渐进式去中心化**：早期保留升级与费率控制�
 
 战略转向：**用交易费养生态**，而非仅靠代币补贴流动性。
 
+## AI 边界
+
+- **ChainSkill ≠ AiTool**。Escrow / Merkle / SIWE / 结算留在协议仓。
+- 可选推理走 [LuminaryWorks AI 平台](https://docs.luminaryworks.dev/develop/ai-platform)。预留 Entitlement feature `ai.strategy.run`，**未实现前不得当已上线**。
+
 ## 相关文档
 
 - 技术：[ECOSYSTEM.md](/technical/ECOSYSTEM) · [AGENT_CHAIN.md](/technical/AGENT_CHAIN)  
