@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 管理平台规格
 
 **版本**: v0.1-draft  
@@ -29,8 +30,10 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ## 2. 功能需求
 
 ### FR-ADM-001 登录与权限
-- 运营账号 + 2FA（v0.4）  
-- 角色：`viewer` | `reviewer` | `risk` | `admin`  
+- Logto OIDC 平台账号 + 2FA（v0.4）
+- 资源响应附 `permissions`；审批、风控、治理控件只按该映射启用
+- Logto roles、JWT claims、前端 mock role 和角色切换器均不是授权依据；API Casbin 为唯一资源授权裁决
+- 页头/设置展示中央 `effectivePlan` 与组织上下文；商业门禁 `402` 与资源拒绝 `403` 分开处理
 
 ### FR-ADM-002 任务列表
 - 列：ID、类型、发单方、金额、风险分、状态、创建时间  
@@ -41,7 +44,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 任务详情：描述、附件、发单方历史、风控命中规则  
 - 操作：通过（→ `published` + **绑定 Escrow 预留** `escrowId`）、驳回、要求修改（→ `needs_revision`）  
 - **批量通过（M3）**：默认 `pending_review` 且非 L3、非 `alertFlag`（超额人类任务多为 L2）；`force=true` 可含告警任务（仍跳过 L3）  
-- **实现（M3）**：`/review` 单条 + 勾选批量；`/tasks` 行选批量；approve 写入平台 Escrow 预留  
+- **实现（M3）**：`/review` 单条 + 勾选批量；`/tasks` 行选批量；approve 写入平台 Escrow 预留；待审队列含 `pending_review` 与 `needs_revision`  
 
 ### FR-ADM-004 自动审批监控
 - 展示规则引擎决策日志  
@@ -54,7 +57,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 实时列表（WebSocket 或轮询）  
 - 级别：高 / 中  
 - 操作：拦截、升级人工、加入黑名单  
-- **实现（M3）**：`/risk-alerts` ← `GET /admin/tasks/alerts`；拦截 → reject；标记已处理 → `POST .../clear-alert`  
+- **实现（M3）**：`/risk-alerts` ← `GET /admin/tasks/alerts`；拦截 → `POST .../reject`（待审或未接单的 `published`）；升级人工 → `POST .../escalate`；加入黑名单/观察 → `POST /admin/publishers/flag`；标记已处理 → `POST .../clear-alert`  
 
 ### FR-ADM-006 仪表盘
 - 今日发布/完成/GMV、待审数量、告警数  
@@ -126,11 +129,12 @@ admin → shared（类型）
 
 ## 6. 验收
 
-- [x] `pending_review` 任务可在后台通过并出现在 worker 列表（API 联调；E2E 冒烟 2025-01-14 ✅）  
+- [x] `pending_review` 任务可在后台通过并出现在 worker 列表（API 联调；E2E 冒烟 2025-01-13 ✅）  
 - [x] L3 告警任务默认不在 worker 可见（`alertFlag` 过滤；审批通过后清 flag）  
 - [x] 驳回任务发单方 wallet 可见原因（`alertReason` → 收益「我发布的任务」）  
+- [ ] 无 API `permissions.review|manage` 时写控件不可用，即使 JWT 带同名角色
+- [ ] `401` 返回登录，`402` 显示套餐/配额上下文，`403` 显示资源无权且不展示升级误导
 
 ---
 
 *审批规则见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)。*
-

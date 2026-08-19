@@ -1,12 +1,13 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # DoerFlow 版本规划与里程碑
 
-**最后更新**: 2025-02-10  
+**最后更新**: 2025-01-29  
 **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
@@ -76,7 +77,7 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 | web | 市场 / 工作台 / Escrow 交互 |
 | 客户端 | wallet 发任务 / worker 列表 / admin 审批（MVP 级） |
 
-**Base Sepolia（84532 · 2025-01-03）**:
+**Base Sepolia（84532 · 2025-01-08）**:
 
 | 合约 | 地址 |
 |------|------|
@@ -94,9 +95,9 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 **主题**: 把 A2A / API 高频微支付从「每笔上链幻想」落到可上线的清算底座  
 **规范**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · FR-PAY-006 / 012 / 013
 
-| 模块 | 交付 | 状态（2025-01-14） |
+| 模块 | 交付 | 状态（2025-01-13） |
 |------|------|-------------------|
-| **contracts** | `PaymentVault` 充提；`MicroPaymentSettler` commitRoot + forceWithdraw | 🟡 Hardhat + localhost 冒烟；**Base Sepolia 已部署**（2025-01-14） |
+| **contracts** | `PaymentVault` 充提；`MicroPaymentSettler` commitRoot + forceWithdraw | 🟡 Hardhat + localhost 冒烟；**Base Sepolia 已部署**（2025-01-13） |
 | **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | 🟡 `LEDGER_STORE=postgres` + BullMQ `commitRoot` 队列；默认 memory 回退 |
 | **shared** | EIP-712 Receipt；`buildBalanceMerkle` / proof 工具 | 🟡 Merkle leaf 与合约对齐 + 单测 |
 | **链** | Base Sepolia → Base Mainnet 准备 | 🟡 Vault Sepolia ✅；BullMQ `commitRoot` 已冒烟上链 |
@@ -104,7 +105,7 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 
 **已有可复用**: Receipt Vault PoC、Session Key 合约（M1）。
 
-**Base Sepolia Vault（84532 · 2025-01-14）**:
+**Base Sepolia Vault（84532 · 2025-01-13）**:
 
 | 合约 | 地址 |
 |------|------|
@@ -131,8 +132,8 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 | **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · Escrow fund/release · **dispute / refundTimedOut** · 驳回/修改 |
 | **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` | 🟡 published 门禁 · Vault · 账本 · escrowId · deliverEscrow · **open dispute** |
 | **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · **batch-approve** · auto-approval · tasks · governance · publishers · audit · disputes · alerts · KPI · commits · fees |
-| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；既有 Escrow UX |
-| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions |
+| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；既有 Escrow UX；**测试网网络/水龙头/gas 引导** |
+| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions；**Indexer 分片 getLogs** |
 
 **验收**:
 
@@ -260,4 +261,3 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 ---
 
 *主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*
-

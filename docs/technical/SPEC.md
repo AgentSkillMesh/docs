@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # DoerFlow 技术规格说明书
 
 > **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
@@ -11,7 +12,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2025-02-03
+**最后更新**: 2025-02-06
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -124,6 +125,14 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-ID-003 钱包集成
 - 支持 MetaMask、WalletConnect、Coinbase Wallet
 - 支持 SIWE（Sign-In With Ethereum）登录后端
+- **双身份不可合并**：Logto 平台会话负责会员/组织/平台 API，钱包连接与 SIWE 负责地址证明和链上签名；任一状态不得推断另一状态
+- 平台账号可显示已链接钱包，但绑定须使用平台 JWT + 新鲜 SIWE 证明；Logto 绝不等价于钱包所有权
+
+#### FR-ID-004 平台会员与商业权益
+- 调用顺序固定为 Logto AuthN → Entitlement → Casbin；`401` 登录、`402 ENTITLEMENT_*` 升级/配额、`403` 资源 ACL
+- DoerFlow `trialPolicy=disabled`：只展示 Pro / Ultra / Enterprise，不创建 Trial，不显示试用 CTA 或倒计时
+- 会员快照来自 `GET /api/v1/platform/membership`，包含 `effectivePlan`、组织上下文与 quota；不得从 JWT 或前端角色推断
+- 协议费、Escrow、Gas、链上 Skill 按次价格属于协议经济；平台套餐只控制托管 API/配额，两者不得混称
 
 ### 5.2 技能层（Skill Layer）
 
@@ -218,6 +227,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-UI-001 市场首页
 - Agent/Skill 列表、分类、搜索、排序
 - 实时在线 Agent 数量、交易量统计
+- 公开市场不要求平台会员；连接钱包后仍可直接签名链上交易
 
 #### FR-UI-002 Agent 详情页
 - Agent 信息、绑定 Skills、历史交易、评价
@@ -226,6 +236,14 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-UI-003 Creator 工作台
 - 铸造 Agent、注册 Skill、管理定价
 - 收入仪表盘、交易历史
+- 平台受限能力遇到稳定 `402` 时进入升级流程，不把 `403` ACL 拒绝误报为付费问题
+- 连接钱包后展示当前链与原生币余额；钱包停在未配置链（如以太坊主网）时，引导切换到 Hardhat `31337` 或 Base Sepolia `84532`，不得暗示需要购买主网 ETH
+- Base Sepolia 原生币不足支付 gas 时展示测试网水龙头；钱包 `insufficient funds` / 用户拒签映射为可读文案
+
+#### FR-IDX-001 链上事件索引窗口
+- Indexer 同步 AgentMinted、SkillRegistered、SkillBound、Escrow 相关事件，供市场与 Studio 展示
+- 公共 RPC（含 Base Sepolia）单次 `eth_getLogs` 区间不得超过供应商上限（常见 5 万块）；按 `INDEXER_MAX_BLOCK_RANGE` 切片推进
+- 启动从持久化游标、`INDEXER_START_BLOCK` 或近期 lookback 开始；禁止每次从创世块扫到 latest
 
 #### FR-UI-004 任务中心
 - 进行中的 Escrow 任务
@@ -437,7 +455,7 @@ users           -- SIWE 用户映射
 | 后端 | NestJS 10, TypeORM, **SQLite**（better-sqlite3） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
 | 存储 | IPFS (Pinata/web3.storage), Arweave (元数据) |
-| 索引 | 自建 Indexer (NestJS 监听链上事件) |
+| 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标，见 FR-IDX-001） |
 | 构建 | MetaRepo + Polyrepo, pnpm, TypeScript |
 | CI/CD | GitHub Actions |
 
@@ -456,10 +474,9 @@ users           -- SIWE 用户映射
 - [ ] 用户可通过 Escrow 完成一次完整的雇佣-交付-结算流程
 - [ ] P2P Beacon 广播可被其他节点发现（**v0.2**，不在 MVP 本地范围）
 - [x] 前端 DApp 可连接钱包并完成上述操作（代码就绪；本地联调）
-- [x] 合约部署至 Base Sepolia 测试网（2024-12-25 · 见 `ROADMAP.md` / `deployments/baseSepolia.json`）
+- [x] 合约部署至 Base Sepolia 测试网（2024-12-24 · 见 `ROADMAP.md` / `deployments/baseSepolia.json`）
 - [x] 后端索引服务同步链上事件（本地 Indexer + IPFS 元数据解析）
 - [x] 元数据 pin → `ipfs://`（本地 / 可选 Pinata）
 ---
 
 *本文档随项目迭代持续更新。变更请提交 PR 并标注版本号。*
-

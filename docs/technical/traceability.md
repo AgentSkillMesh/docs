@@ -1,14 +1,15 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 需求追溯矩阵
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2025-02-10
+**最后更新**: 2026-08-19
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -16,6 +17,7 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ID-002 | Agent 管理 | contracts + api | 合约 + `agents` 模块 | v0.1 |
 | FR-ID-003 | 钱包集成 | web | `wagmi`、连接组件 | v0.1 |
 | FR-ID-003b | SIWE 登录 | api + web | `auth` 模块、`/account` | v0.1 🟡 |
+| FR-ID-004 | 双身份 + 无 Trial 会员权益 | api, web, admin, wallet, worker | `platform/membership`、wallet-links、客户端 401/402/403 | v0.3 🟡 |
 | FR-SK-001 | Skill 注册 | contracts | `SkillRegistry.sol` | v0.1 |
 | FR-SK-002 | Skill 验证 | contracts | v0.2 EAS | v0.2 |
 | FR-SK-003 | Skill 绑定 | contracts + web | 注册 + Studio UI | v0.1 |
@@ -32,6 +34,8 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | FR-ADM-* | 管理平台 | admin | 审批、告警 | v0.3+ |
 | FR-GOV-* | 任务治理 | api | `tasks` 模块 | MVP+ |
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
+| FR-UI-003 | Creator 工作台网络/gas 引导 | web | `NetworkGasAlert`、Studio | **v0.3 / M3** 🟡 |
+| FR-IDX-001 | 索引分片与游标 | api | `indexer/` | **v0.3 / M3** 🟡 |
 | FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
 | FR-IOT-003 | IoT SDK BYOD | shared / iot-sdk | 设备 SDK | v0.4 |
@@ -110,4 +114,3 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | 商业版上线（主线 M5） | 全仓 | **v1.0** |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。
-
