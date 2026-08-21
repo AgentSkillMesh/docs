@@ -34,8 +34,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ADM-* | 管理平台 | admin | 审批、告警 | v0.3+ |
 | FR-GOV-* | 任务治理 | api | `tasks` 模块 | MVP+ |
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
+| FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home`、`/agents/:id` | **v0.3 / M3** 🟡 |
 | FR-UI-003 | Creator 工作台网络/gas 引导 | web | `NetworkGasAlert`、Studio | **v0.3 / M3** 🟡 |
-| FR-IDX-001 | 索引分片与游标 | api | `indexer/` | **v0.3 / M3** 🟡 |
+| FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` + `GET /health` indexer.rpcOk | **v0.3 / M3** 🟡 |
 | FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
 | FR-IOT-003 | IoT SDK BYOD | shared / iot-sdk | 设备 SDK | v0.4 |

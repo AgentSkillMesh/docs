@@ -228,6 +228,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - Agent/Skill 列表、分类、搜索、排序
 - 实时在线 Agent 数量、交易量统计
 - 公开市场不要求平台会员；连接钱包后仍可直接签名链上交易
+- 链上索引的 Agent / Skill / Escrow 列表 API 公开可读，不得要求平台 JWT
 
 #### FR-UI-002 Agent 详情页
 - Agent 信息、绑定 Skills、历史交易、评价
@@ -244,6 +245,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - Indexer 同步 AgentMinted、SkillRegistered、SkillBound、Escrow 相关事件，供市场与 Studio 展示
 - 公共 RPC（含 Base Sepolia）单次 `eth_getLogs` 区间不得超过供应商上限（常见 5 万块）；按 `INDEXER_MAX_BLOCK_RANGE` 切片推进
 - 启动从持久化游标、`INDEXER_START_BLOCK` 或近期 lookback 开始；禁止每次从创世块扫到 latest
+- `GET /health` 返回索引游标、是否追块、`rpcOk` / `lastError`；RPC 不可达时市场须提示「链 RPC 未就绪」（如 Hardhat 未启动），不得伪装成「没有 Agent」
+- 历史追块期间须**同时扫描链头窗口**（`latest − INDEXER_MAX_BLOCK_RANGE`），使新铸造 / 新 Escrow 不必等整段 lookback 追完才可见
+- Indexer 在 RPC 连续失败时退避重试，避免刷屏日志
 
 #### FR-UI-004 任务中心
 - 进行中的 Escrow 任务
