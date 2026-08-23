@@ -1,14 +1,15 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 仓库关系说明
 
 **品牌**：[DoerFlow](https://doerflow.dev) · **目标组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh）  
 **版本**: v0.1  
-**最后更新**: 2025-01-14  
+**最后更新**: 2026-08-22  
 **清单数据源**: `repos.manifest.json`
 
 > 组织迁移见 [LuminaryWorks/spec/github-org-migration.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/github-org-migration.md)。下文 **AgentSkillMesh** 为迁移前组织名。
@@ -264,7 +265,7 @@ flowchart TB
 | `worker` | `git@github.com:doerflow/worker.git` | main |
 | `admin` | `git@github.com:doerflow/admin.git` | main |
 
-克隆 MetaRepo 后执行：`./scripts/clone-repos.sh`
+克隆 MetaRepo 后执行：`pnpm run setup`（macOS / Linux / Windows 相同；实现为 `scripts/init-meta.mjs`）。
 
 ---
 
@@ -285,4 +286,3 @@ flowchart TB
 - [技术规格 SPEC.md](./SPEC.md)
 - [需求追溯 traceability.md](./traceability.md)
 - MetaRepo：[MVP_PLAN.md](../MVP_PLAN.md)、[NAMING.md](../NAMING.md)
-

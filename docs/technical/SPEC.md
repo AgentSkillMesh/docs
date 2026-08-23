@@ -1,9 +1,10 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 
 # DoerFlow 技术规格说明书
 
@@ -12,7 +13,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2025-02-06
+**最后更新**: 2026-08-22
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -116,6 +117,11 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 用户连接钱包后可铸造 Agent NFT（ERC-725）
 - 每个 Agent NFT 自动绑定 ERC-6551 Token Bound Account（TBA）作为链上钱包
 - Agent 元数据（名称、描述、头像、能力标签）存储于 IPFS/Arweave，链上仅存 CID
+- 索引解析 `ipfs://`：先读本地 pin；再 `IPFS_GATEWAY`；若仍未命中且配置了 `THIRDWEB_PROJECT_ID`，可选用 `{clientId}.ipfscdn.io`（可选，失败则保留 URI 截断名）。Secret 不得进入 gateway URL
+- `/storage/pin` 返回 `backend: "local"` 与 `ipfs://local-…` **即为成功**（未配置 Pinata 时的默认路径）。Studio 不得把 local CID 当成失败
+- Creator 工作台铸造进度须在**卡片内**展示四步（不得只依赖顶部 toast）：① 保存元数据 ② 钱包确认 ③ 交易上链 ④ 市场可见
+- pin 成功后立即展示 CID/URI，并明确「下一步是钱包弹窗确认」；钱包拒绝后保留 URI，允许再次唤起 `mint` 而不重复 pin
+- 出现交易哈希后提供区块浏览器链接；索引到该 Owner 的新 Agent 后提供详情/市场入口
 
 #### FR-ID-002 Agent 管理
 - 支持 Agent 信息更新（仅 Owner）
@@ -123,8 +129,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 支持多 Agent 绑定同一 Owner 钱包
 
 #### FR-ID-003 钱包集成
-- 支持 MetaMask、WalletConnect、Coinbase Wallet
+- 支持 MetaMask、WalletConnect、Coinbase Wallet（Creator DApp 默认 **wagmi injected**，不依赖 thirdweb Connect；连接按钮列出已注入的 EIP-6963 钱包供用户选择）
 - 支持 SIWE（Sign-In With Ethereum）登录后端
+- **可选 thirdweb**：仅作测试网 / 开发 RPC 入口。配置 `THIRDWEB_PROJECT_ID`（web：`VITE_THIRDWEB_CLIENT_ID`）后，公共网可走 `https://{chainId}.rpc.thirdweb.com/{clientId}`；`THIRDWEB_PROJECT_SECRET` 仅服务端持有，**不得**写入 RPC URL。未配置时继续用 `RPC_URL` / `VITE_BASE_RPC_URL`。`THIRDWEB_RPC=0` 可关闭。Hardhat `31337` 始终本机节点
 - **双身份不可合并**：Logto 平台会话负责会员/组织/平台 API，钱包连接与 SIWE 负责地址证明和链上签名；任一状态不得推断另一状态
 - 平台账号可显示已链接钱包，但绑定须使用平台 JWT + 新鲜 SIWE 证明；Logto 绝不等价于钱包所有权
 
@@ -139,6 +146,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-SK-001 Skill 注册
 - Creator 将 Skill 元数据（名称、描述、版本、定价模型、能力证明 CID）提交至 Skill Registry 合约
 - 定价模型支持：按次调用（pay-per-call）、订阅（subscription）、一次性买断（buyout）
+- Studio 注册与铸造相同：`POST /storage/pin` 的 **201 Created**（Nest 对 POST 的默认成功码）与 200 均为成功；pin 后须在卡片内进入「钱包确认」，不得只转圈
+- 钱包拒绝后保留 URI，允许再次唤起 `registerSkill` 而不重复 pin；索引到新 Skill 后可复制 skillId
 
 #### FR-SK-002 Skill 验证
 - v0.1：Creator 自声明 + 链上 hash 存证
@@ -236,16 +245,22 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 #### FR-UI-003 Creator 工作台
 - 铸造 Agent、注册 Skill、管理定价
+- 铸造与注册 Skill 均在卡片内跟进度（元数据 → 钱包 → 上链 → 可见）；`POST /storage/pin` 返回 201/200 都必须有下一步行动说明，不能进入无反馈状态
 - 收入仪表盘、交易历史
 - 平台受限能力遇到稳定 `402` 时进入升级流程，不把 `403` ACL 拒绝误报为付费问题
 - 连接钱包后展示当前链与原生币余额；钱包停在未配置链（如以太坊主网）时，引导切换到 Hardhat `31337` 或 Base Sepolia `84532`，不得暗示需要购买主网 ETH
 - Base Sepolia 原生币不足支付 gas 时展示测试网水龙头；钱包 `insufficient funds` / 用户拒签映射为可读文案
+- MetaRepo 提供 `pnpm run use:sepolia` / `use:localhost`，将 api/web 的链与合约地址从 `.env.sepolia` / `.env.localhost` 合并进 `.env`（保留 IdP 等本地密钥）；切换后须重启进程
 
 #### FR-IDX-001 链上事件索引窗口
 - Indexer 同步 AgentMinted、SkillRegistered、SkillBound、Escrow 相关事件，供市场与 Studio 展示
-- 公共 RPC（含 Base Sepolia）单次 `eth_getLogs` 区间不得超过供应商上限（常见 5 万块）；按 `INDEXER_MAX_BLOCK_RANGE` 切片推进
+- 公共 RPC（含 Base Sepolia）单次 `eth_getLogs` 区间不得超过供应商上限（常见 5 万块；**thirdweb gateway 常见 1000 块**）；按 `INDEXER_MAX_BLOCK_RANGE` 切片推进，遇供应商 cap 错误时自动收缩窗口
+- **可选** thirdweb RPC：若配置了 `THIRDWEB_PROJECT_ID` 且未设 `THIRDWEB_RPC=0`，公共网走 `https://{chainId}.rpc.thirdweb.com/{clientId}`；否则 `RPC_URL`。Secret 不进入 RPC 路径。Hardhat 本地仍用本机节点
+- 当 live RPC 为 thirdweb 且 `RPC_URL` 不同时，**历史追块**走 `RPC_URL`（更大 `eth_getLogs` 窗口），**链头窗口**仍走 thirdweb；历史 RPC 连续失败则该窗口改用 live。`GET /health` 报告 `catchupRpcProvider` / `catchupPercent` / `catchupMaxRange`
+- thirdweb gateway **连续失败**时整条索引回退 `RPC_URL`（若与 gateway 不同）；`GET /health` 报告 `rpcProvider` / `rpcFallback`
+- `GET /health` 的 `indexer.rpcUrl` **必须脱敏**（thirdweb URL 中的 secret/clientId 不得明文返回）
 - 启动从持久化游标、`INDEXER_START_BLOCK` 或近期 lookback 开始；禁止每次从创世块扫到 latest
-- `GET /health` 返回索引游标、是否追块、`rpcOk` / `lastError`；RPC 不可达时市场须提示「链 RPC 未就绪」（如 Hardhat 未启动），不得伪装成「没有 Agent」
+- `GET /health` 返回索引游标、是否追块、`rpcOk` / `lastError` / `rpcProvider`；RPC 不可达时市场须提示「链 RPC 未就绪」（如 Hardhat 未启动），不得伪装成「没有 Agent」；追块中展示进度百分比
 - 历史追块期间须**同时扫描链头窗口**（`latest − INDEXER_MAX_BLOCK_RANGE`），使新铸造 / 新 Escrow 不必等整段 lookback 追完才可见
 - Indexer 在 RPC 连续失败时退避重试，避免刷屏日志
 
@@ -438,7 +453,7 @@ users           -- SIWE 用户映射
 | Escrows | `/api/v1/escrows` | 交易查询、状态同步 |
 | Devices | `/api/v1/devices` | 设备注册、算力查询 |
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
-| Storage | `/api/v1/storage` | 元数据 pin（本地 / Pinata → `ipfs://`） |
+| Storage | `/api/v1/storage` | 元数据 pin（本地 / Pinata → `ipfs://`）。`POST /pin` 返回 **201 Created**（或 200）且 `backend: "local"` 均为成功，客户端应继续链上写入 |
 | Stats | `/api/v1/stats` | 市场统计 |
 
 ### 8.2 智能合约接口
@@ -459,7 +474,7 @@ users           -- SIWE 用户映射
 | 后端 | NestJS 10, TypeORM, **SQLite**（better-sqlite3） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
 | 存储 | IPFS (Pinata/web3.storage), Arweave (元数据) |
-| 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标，见 FR-IDX-001） |
+| 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标；公共网 RPC 可选用 thirdweb，见 FR-IDX-001） |
 | 构建 | MetaRepo + Polyrepo, pnpm, TypeScript |
 | CI/CD | GitHub Actions |
 
