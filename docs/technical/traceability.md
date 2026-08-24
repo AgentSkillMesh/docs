@@ -1,16 +1,15 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
-
 
 # 需求追溯矩阵
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2026-08-22
+**最后更新**: 2026-08-23
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -21,10 +20,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-ID-004 | 双身份 + 无 Trial 会员权益 | api, web, admin, wallet, worker | `platform/membership`、wallet-links、客户端 401/402/403 | v0.3 🟡 |
 | FR-SK-001 | Skill 注册 | contracts + web | `SkillRegistry.sol`；Studio `MintFlowPanel` kind=skill（201 pin 后钱包确认） | v0.1 |
 | FR-SK-002 | Skill 验证 | contracts | v0.2 EAS | v0.2 |
-| FR-SK-003 | Skill 绑定 | contracts + web | 注册 + Studio UI | v0.1 |
+| FR-SK-003 | Skill 绑定 | contracts + web | Studio `MintFlowPanel` kind=bind（钱包→上链→Agent 可见） | v0.1 |
 | FR-SK-004 | Skill 搜索 | api + web | `skills` 模块、市场页 | v0.1 |
-| FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`、雇佣流 | v0.1 |
-| FR-ST-002 | 交付 | contracts + api | Escrow 状态、索引 | v0.1 |
+| FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`；Agent 详情 `MintFlowPanel` kind=hire | v0.1 |
+| FR-ST-002 | 交付 | contracts + web + api | `EscrowDelivered` + 开放订单 `getEscrow` 刷新；任务中心摘要 | v0.1 |
 | FR-ST-003 | 争议仲裁 | contracts, api, admin, wallet, worker | M3 平台工单 + `refundTimedOut`；DAO 分账 v0.4+ | **M3** 🟡 |
 | FR-ST-004 | 分账 | contracts | 协议费 + AA 等级 | v0.1+ |
 | FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata`；`backend: local` 视为成功；索引可选 gateway / thirdweb CDN 解析 | v0.1 ✅ |
@@ -36,6 +35,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-GOV-* | 任务治理 | api | `tasks` 模块 | MVP+ |
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
 | FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home`、`/agents/:id` | **v0.3 / M3** 🟡 |
+| FR-UI-002 | Agent 详情雇佣进度 + 未绑定引导 | web | `pages/AgentDetail`、托管历史、`MintFlowPanel` kind=hire | v0.1 |
+| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、`escrow-ui` | v0.1 |
 | FR-UI-003 | Creator 工作台网络/gas 引导；`use:sepolia` / `use:localhost` | web + MetaRepo | `NetworkGasAlert`、Studio、`scripts/use-chain.mjs` | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
 | FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |

@@ -1,10 +1,9 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
-
 
 # DoerFlow 技术规格说明书
 
@@ -13,7 +12,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2026-08-22
+**最后更新**: 2026-08-23
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -157,6 +156,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-SK-003 Skill 绑定
 - Agent 可绑定多个 Skill
 - Skill 可被多个 Agent 授权使用（License 模式）
+- Studio 绑定须在卡片内跟进度（钱包确认 → 上链 → Agent 详情可见绑定），不得只转圈；无 pin 步骤；钱包拒绝后允许再次唤起 `bindSkillToAgent`
+- 铸造/注册完成后提供「下一步：绑定」入口，预填最近的 skillId 与 Owner 的 Agent
 
 #### FR-SK-004 Skill 搜索与发现
 - 链下索引服务（NestJS + **SQLite**）提供全文搜索、分类筛选、排序
@@ -169,12 +170,17 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-ST-001 Escrow 创建
 - Consumer 发起雇佣：指定 Agent、Skill、任务描述 CID、金额、超时时间
 - 资金锁定至 Escrow 合约
+- Agent 详情「雇佣」与铸造相同：`POST /storage/pin` 的 201/200 后进入钱包确认；卡片内跟进度（元数据 → 钱包 → 上链 → 任务中心可见）；索引到新 Escrow 后再进入任务中心，不得 pin 成功后无反馈地跳走
+- 钱包拒绝后保留任务 CID，允许再次唤起 `createEscrow` 而不重复 pin
 - **平台人类任务（M3）**：接单后 wallet `createEscrow` + `fundEscrow`，API `bind-onchain-escrow`
 
 #### FR-ST-002 任务执行与交付
 - Provider Agent 通过 P2P 接收任务
 - 完成后提交交付凭证（加密结果 CID + 签名）
 - Consumer 或仲裁合约验证后触发放款
+- `deliverEscrow` 须发出 `EscrowDelivered`；Indexer 同步该事件与 `EscrowRefunded`
+- 已部署合约若无交付事件：Indexer 每轮对 `CREATED` / `FUNDED` / `DELIVERED` 调用 `getEscrow` 刷新状态；`POST /escrows/:id/refresh` 可手动从链拉齐（本地 pin 的任务/交付摘要一并返回）
+- 任务中心交付须可填写结果说明再 pin，付款/交付/确认须有明确成功或钱包提示，不得只显示 "OK"
 - **平台人类任务（M3）**：worker `deliverEscrow` → wallet `confirmDelivery`（2.5% 协议费）
 
 #### FR-ST-003 争议仲裁
@@ -241,11 +247,14 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 #### FR-UI-002 Agent 详情页
 - Agent 信息、绑定 Skills、历史交易、评价
-- 「雇佣此 Agent」入口
+- 「雇佣此 Agent」入口；雇佣进度在卡片内展示，不得只依赖顶部 toast
+- 未绑定 Skill 时不得假装可雇佣：Owner 引导去工作台绑定，访客提示等待 Creator
+- 展示该 Agent 作为 Provider 的托管历史；雇佣完成后带 `escrowId` 进入任务中心
 
 #### FR-UI-003 Creator 工作台
-- 铸造 Agent、注册 Skill、管理定价
-- 铸造与注册 Skill 均在卡片内跟进度（元数据 → 钱包 → 上链 → 可见）；`POST /storage/pin` 返回 201/200 都必须有下一步行动说明，不能进入无反馈状态
+- 铸造 Agent、注册 Skill、管理定价、绑定 Agent
+- 铸造、注册 Skill、绑定均在卡片内跟进度；`POST /storage/pin` 返回 201/200 都必须有下一步行动说明，不能进入无反馈状态
+- 工作台展示闭环进度（已铸 Agent / 已注册 Skill / 已绑定），完成后引导到下一步 Tab
 - 收入仪表盘、交易历史
 - 平台受限能力遇到稳定 `402` 时进入升级流程，不把 `403` ACL 拒绝误报为付费问题
 - 连接钱包后展示当前链与原生币余额；钱包停在未配置链（如以太坊主网）时，引导切换到 Hardhat `31337` 或 Base Sepolia `84532`，不得暗示需要购买主网 ETH
@@ -265,7 +274,11 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - Indexer 在 RPC 连续失败时退避重试，避免刷屏日志
 
 #### FR-UI-004 任务中心
-- 进行中的 Escrow 任务
+- 进行中的 Escrow 任务；默认突出「待我处理」，可切到全部
+- 状态用人话（待付款 / 待交付 / 待确认 / 已完成 / 已退款），并展示任务与交付摘要（解析本地 pin）
+- 付款金额默认 Skill 定价；付款 / 交付 / 确认须有明确成功或钱包提示；交付须可填写结果说明
+- 后台刷新不得整页转圈；刚创建的订单可用 `?id=` 高亮
+- 截止后仍为 FUNDED/DELIVERED 时，Consumer 可调用 `refundTimedOut`
 - 人类任务列表与接单
 
 #### FR-UI-005 设备管理
@@ -420,7 +433,7 @@ Escrow {
   amount: uint256
   taskCID: string
   deliveryCID: string
-  status: enum          // CREATED | FUNDED | DELIVERED | COMPLETED | DISPUTED | REFUNDED
+  status: enum          // CREATED | FUNDED | DELIVERED | COMPLETED | REFUNDED | CANCELLED（链上；争议为平台工单）
   deadline: uint256
   createdAt: uint256
 }
@@ -450,7 +463,7 @@ users           -- SIWE 用户映射
 | Auth | `/api/v1/auth` | SIWE 登录、Token 刷新 |
 | Agents | `/api/v1/agents` | Agent CRUD、搜索 |
 | Skills | `/api/v1/skills` | Skill CRUD、搜索 |
-| Escrows | `/api/v1/escrows` | 交易查询、状态同步 |
+| Escrows | `/api/v1/escrows` | 交易查询、状态同步；`POST /:id/refresh` 从链刷新（含任务/交付摘要） |
 | Devices | `/api/v1/devices` | 设备注册、算力查询 |
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
 | Storage | `/api/v1/storage` | 元数据 pin（本地 / Pinata → `ipfs://`）。`POST /pin` 返回 **201 Created**（或 200）且 `backend: "local"` 均为成功，客户端应继续链上写入 |
