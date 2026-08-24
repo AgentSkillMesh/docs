@@ -193,6 +193,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 平台协议费（默认 2.5%，DAO 可调）
 - Skill Creator 版税（NFT 标准 ERC-2981，最高 10%）
 - Provider 收入自动结算至 TBA
+- 确认收款后，任务卡与工作台收入区须展示锁定额、协议费与 Provider 实收（与 `Escrow.protocolFeeBps` 默认 250 一致）；不得只显示 "OK"
 
 #### FR-ST-005 链下账本与 Merkle 批量清算（主路径）
 - Agent 将结算资产存入链上 **Vault**；微交互在 **链下账本** 毫秒级记账（签名 Receipt）
@@ -250,12 +251,13 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 「雇佣此 Agent」入口；雇佣进度在卡片内展示，不得只依赖顶部 toast
 - 未绑定 Skill 时不得假装可雇佣：Owner 引导去工作台绑定，访客提示等待 Creator
 - 展示该 Agent 作为 Provider 的托管历史；雇佣完成后带 `escrowId` 进入任务中心
+- 雇佣自己的 Agent（consumer = provider）时须提示：付款后仍要在任务中心交付并确认，才能走完闭环
 
 #### FR-UI-003 Creator 工作台
 - 铸造 Agent、注册 Skill、管理定价、绑定 Agent
 - 铸造、注册 Skill、绑定均在卡片内跟进度；`POST /storage/pin` 返回 201/200 都必须有下一步行动说明，不能进入无反馈状态
 - 工作台展示闭环进度（已铸 Agent / 已注册 Skill / 已绑定），完成后引导到下一步 Tab
-- 收入仪表盘、交易历史
+- 收入仪表盘：该钱包作为 Provider 的已完成托管实收（锁定额 − 协议费）与最近订单入口
 - 平台受限能力遇到稳定 `402` 时进入升级流程，不把 `403` ACL 拒绝误报为付费问题
 - 连接钱包后展示当前链与原生币余额；钱包停在未配置链（如以太坊主网）时，引导切换到 Hardhat `31337` 或 Base Sepolia `84532`，不得暗示需要购买主网 ETH
 - Base Sepolia 原生币不足支付 gas 时展示测试网水龙头；钱包 `insufficient funds` / 用户拒签映射为可读文案
@@ -279,6 +281,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 付款金额默认 Skill 定价；付款 / 交付 / 确认须有明确成功或钱包提示；交付须可填写结果说明
 - 后台刷新不得整页转圈；刚创建的订单可用 `?id=` 高亮
 - 截止后仍为 FUNDED/DELIVERED 时，Consumer 可调用 `refundTimedOut`
+- 同一钱包同时为 consumer 与 provider 时（自雇演示），按状态机展示下一步（付款 → 交付 → 确认），不得因「雇主」角色优先而隐藏交付
 - 人类任务列表与接单
 
 #### FR-UI-005 设备管理

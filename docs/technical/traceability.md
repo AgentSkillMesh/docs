@@ -25,7 +25,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`；Agent 详情 `MintFlowPanel` kind=hire | v0.1 |
 | FR-ST-002 | 交付 | contracts + web + api | `EscrowDelivered` + 开放订单 `getEscrow` 刷新；任务中心摘要 | v0.1 |
 | FR-ST-003 | 争议仲裁 | contracts, api, admin, wallet, worker | M3 平台工单 + `refundTimedOut`；DAO 分账 v0.4+ | **M3** 🟡 |
-| FR-ST-004 | 分账 | contracts | 协议费 + AA 等级 | v0.1+ |
+| FR-ST-004 | 分账 | contracts + web | 协议费 + 任务卡/工作台实收拆分 | v0.1+ |
 | FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata`；`backend: local` 视为成功；索引可选 gateway / thirdweb CDN 解析 | v0.1 ✅ |
 | FR-P2P-001~004 | P2P | p2p | Beacon 等 | v0.2 |
 | FR-DV-001~003 | 设备/人类任务 | api + wallet + worker | v0.3 | v0.3 |
@@ -35,9 +35,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-GOV-* | 任务治理 | api | `tasks` 模块 | MVP+ |
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
 | FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home`、`/agents/:id` | **v0.3 / M3** 🟡 |
-| FR-UI-002 | Agent 详情雇佣进度 + 未绑定引导 | web | `pages/AgentDetail`、托管历史、`MintFlowPanel` kind=hire | v0.1 |
-| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、`escrow-ui` | v0.1 |
-| FR-UI-003 | Creator 工作台网络/gas 引导；`use:sepolia` / `use:localhost` | web + MetaRepo | `NetworkGasAlert`、Studio、`scripts/use-chain.mjs` | **v0.3 / M3** 🟡 |
+| FR-UI-002 | Agent 详情雇佣进度 + 未绑定引导 | web | `pages/AgentDetail`、托管历史、自雇提示、`MintFlowPanel` kind=hire | v0.1 |
+| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、`escrow-ui`（自雇双角色下一步） | v0.1 |
+| FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio 收入卡、`scripts/use-chain.mjs` | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
 | FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
