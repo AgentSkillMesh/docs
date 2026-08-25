@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # DoerFlow 版本规划与里程碑
 
-**最后更新**: 2025-01-29  
+**最后更新**: 2026-08-25  
 **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
@@ -73,8 +73,8 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 | 域 | 状态摘要 |
 |----|----------|
 | 合约 | AgentNFT / SkillRegistry / Escrow / SessionKeyRegistry → Base Sepolia ✅ |
-| api | NestJS 索引、SIWE、任务治理 API MVP+ |
-| web | 市场 / 工作台 / Escrow 交互 |
+| api | NestJS **Fastify** 索引、SIWE、任务治理 API MVP+ |
+| web | 市场（可雇佣 Agent + Skill 列表搜索）/ 工作台 waitMined / 任务中心闭环 + 人类任务只读 |
 | 客户端 | wallet 发任务 / worker 列表 / admin 审批（MVP 级） |
 
 **Base Sepolia（84532 · 2025-01-08）**:
@@ -98,7 +98,7 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 | 模块 | 交付 | 状态（2025-01-13） |
 |------|------|-------------------|
 | **contracts** | `PaymentVault` 充提；`MicroPaymentSettler` commitRoot + forceWithdraw | 🟡 Hardhat + localhost 冒烟；**Base Sepolia 已部署**（2025-01-13） |
-| **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | 🟡 `LEDGER_STORE=postgres` + BullMQ `commitRoot` 队列；默认 memory 回退 |
+| **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | 🟡 `LEDGER_STORE=postgres` + BullMQ；默认 memory；**`credit-batch`（≤1 万笔/请求）**；HTTP **Fastify** |
 | **shared** | EIP-712 Receipt；`buildBalanceMerkle` / proof 工具 | 🟡 Merkle leaf 与合约对齐 + 单测 |
 | **链** | Base Sepolia → Base Mainnet 准备 | 🟡 Vault Sepolia ✅；BullMQ `commitRoot` 已冒烟上链 |
 | **披露** | `/payments/disclosure` | 🟡 含 latestEpoch / forceWithdraw 说明 |
@@ -170,6 +170,8 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 ### M5 — v1.0「商业版本上线」⚪
 
 **主题**: 生产就绪与对外商业发布（主线终点）
+
+> **不能用 Creator DApp 迭代代替。** 下列交付依赖 M2–M4 验收、密钥/主网资金、外部审计与 SRE，单次编码无法完成。
 
 | 域 | 交付 |
 |----|------|
@@ -244,6 +246,8 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 ## 7. 进度追踪
 
 **当前阶段: M2 — v0.2 链下账本 + Merkle（主焦点）**
+
+M1 Creator DApp 测试网闭环（铸造 → 绑定 → 雇佣 → 付款/交付/确认、市场 Skill 发现）可持续 hardening，**不改变**「先 M2 清算底座，最后才是 M5 商业 1.0」的顺序。
 
 | 里程碑 | 版本 | 状态 |
 |--------|------|------|

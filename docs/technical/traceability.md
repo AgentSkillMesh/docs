@@ -9,7 +9,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2026-08-23
+**最后更新**: 2026-08-25
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -21,12 +21,12 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-SK-001 | Skill 注册 | contracts + web | `SkillRegistry.sol`；Studio `MintFlowPanel` kind=skill（201 pin 后钱包确认） | v0.1 |
 | FR-SK-002 | Skill 验证 | contracts | v0.2 EAS | v0.2 |
 | FR-SK-003 | Skill 绑定 | contracts + web | Studio `MintFlowPanel` kind=bind（钱包→上链→Agent 可见） | v0.1 |
-| FR-SK-004 | Skill 搜索 | api + web | `skills` 模块、市场页 | v0.1 |
-| FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`；Agent 详情 `MintFlowPanel` kind=hire | v0.1 |
+| FR-SK-004 | Skill 搜索 | api + web | `GET /skills?q=`、市场 Skill 列表 | v0.1 |
+| FR-ST-001 | Escrow 创建 | contracts + web | `Escrow.sol`；雇佣等上链后再轮询新 escrowId | v0.1 |
 | FR-ST-002 | 交付 | contracts + web + api | `EscrowDelivered` + 开放订单 `getEscrow` 刷新；任务中心摘要 | v0.1 |
 | FR-ST-003 | 争议仲裁 | contracts, api, admin, wallet, worker | M3 平台工单 + `refundTimedOut`；DAO 分账 v0.4+ | **M3** 🟡 |
 | FR-ST-004 | 分账 | contracts + web | 协议费 + 任务卡/工作台实收拆分 | v0.1+ |
-| FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 模块、`pinMetadata`；`backend: local` 视为成功；索引可选 gateway / thirdweb CDN 解析 | v0.1 ✅ |
+| FR-IPFS-001 | 元数据 / 任务 CID pin | api + web | `storage` 默认 local；`STORAGE_BACKEND=pinata` 才走 Pinata | v0.1 ✅ |
 | FR-P2P-001~004 | P2P | p2p | Beacon 等 | v0.2 |
 | FR-DV-001~003 | 设备/人类任务 | api + wallet + worker | v0.3 | v0.3 |
 | FR-WLT-* | 纯粹钱包 RN | wallet | 发任务、转账 | v0.3 |
@@ -34,10 +34,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ADM-* | 管理平台 | admin | 审批、告警 | v0.3+ |
 | FR-GOV-* | 任务治理 | api | `tasks` 模块 | MVP+ |
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
-| FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home`、`/agents/:id` | **v0.3 / M3** 🟡 |
+| FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home` 默认可雇佣 Agent + Skill 列表搜索、`/agents/:id` | **v0.3 / M3** 🟡 |
 | FR-UI-002 | Agent 详情雇佣进度 + 未绑定引导 | web | `pages/AgentDetail`、托管历史、自雇提示、`MintFlowPanel` kind=hire | v0.1 |
-| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、`escrow-ui`（自雇双角色下一步） | v0.1 |
-| FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio 收入卡、`scripts/use-chain.mjs` | **v0.3 / M3** 🟡 |
+| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、上链回执 + 状态对齐；人类任务只读列表 | v0.1 |
+| FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio `waitMined`、收入卡、`scripts/use-chain.mjs` | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
 | FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
@@ -72,13 +72,13 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 ✅ |
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
-| FR-PAY-009 | signReceipt SDK | shared, api/scripts | v0.3 ✅ |
+| FR-PAY-009 | signReceipt SDK | shared, api | `@vibe-agent/shared/payments` + `POST /payments/receipts`（M4 第一刀） | **v0.3 / M4** 🟡 |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot` | **v0.2 / M2** 🟡 |
 | FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
-| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | `PaymentVault` Sepolia ✅ · PG 账本 + Redis/BullMQ Root 队列（memory 回退） | **v0.2 / M2** 🟡 |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify HTTP；`credit-batch` ≤1 万笔；PG + Redis/BullMQ（memory 回退） | **v0.2 / M2** 🟡 |
 | FR-PAY-013 | Merkle 强制提现 | contracts, shared | `forceWithdraw` Sepolia 已部署 + proof 工具 | **v0.2 / M2** 🟡 |
 | FR-WLT-002 | wallet ETH 转账（去演示化） | wallet | `/transfer` gas 估算 + 回执 + explorer | **v0.3 / M3** 🟡 |
 | FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert | **v0.3 / M3** 🟡 |

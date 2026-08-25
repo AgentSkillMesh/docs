@@ -9,7 +9,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 **品牌**：[DoerFlow](https://doerflow.dev) · **目标组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh）  
 **版本**: v0.1  
-**最后更新**: 2026-08-22  
+**最后更新**: 2026-08-25  
 **清单数据源**: `repos.manifest.json`
 
 > 组织迁移见 [LuminaryWorks/spec/github-org-migration.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/github-org-migration.md)。下文 **AgentSkillMesh** 为迁移前组织名。
@@ -185,8 +185,8 @@ flowchart TB
 | 项 | 内容 |
 |----|------|
 | 路径 | `repos/api` |
-| 实现 Spec | §8 REST、`FR-SK-004` 索引、Escrow 状态同步 |
-| 依赖 | `shared`、`deployments.json`、SQLite（MVP） |
+| 实现 Spec | §8 REST、`FR-SK-004` 索引、Escrow 状态同步、账本 `credit-batch` |
+| 依赖 | `shared`、`deployments.json`、SQLite（MVP）；HTTP **Fastify**（禁止 Express） |
 | 端口 | **13008**（见 `PORTS.md`） |
 
 ### 3.6 web

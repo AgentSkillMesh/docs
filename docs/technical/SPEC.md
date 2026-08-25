@@ -12,7 +12,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 **版本**: v0.1.0-draft  
 **状态**: Draft  
-**最后更新**: 2026-08-23
+**最后更新**: 2026-08-25
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -117,7 +117,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 每个 Agent NFT 自动绑定 ERC-6551 Token Bound Account（TBA）作为链上钱包
 - Agent 元数据（名称、描述、头像、能力标签）存储于 IPFS/Arweave，链上仅存 CID
 - 索引解析 `ipfs://`：先读本地 pin；再 `IPFS_GATEWAY`；若仍未命中且配置了 `THIRDWEB_PROJECT_ID`，可选用 `{clientId}.ipfscdn.io`（可选，失败则保留 URI 截断名）。Secret 不得进入 gateway URL
-- `/storage/pin` 返回 `backend: "local"` 与 `ipfs://local-…` **即为成功**（未配置 Pinata 时的默认路径）。Studio 不得把 local CID 当成失败
+- `/storage/pin` 默认走**本地 IPFS 目录**（`STORAGE_BACKEND=local`，可省略）。仅当显式 `STORAGE_BACKEND=pinata` 且配置了 `PINATA_JWT` 才走 Pinata；失败仍回退 local。Studio 不得把 `backend: "local"` / `ipfs://local-…` 当成失败
 - Creator 工作台铸造进度须在**卡片内**展示四步（不得只依赖顶部 toast）：① 保存元数据 ② 钱包确认 ③ 交易上链 ④ 市场可见
 - pin 成功后立即展示 CID/URI，并明确「下一步是钱包弹窗确认」；钱包拒绝后保留 URI，允许再次唤起 `mint` 而不重复 pin
 - 出现交易哈希后提供区块浏览器链接；索引到该 Owner 的新 Agent 后提供详情/市场入口
@@ -160,8 +160,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 铸造/注册完成后提供「下一步：绑定」入口，预填最近的 skillId 与 Owner 的 Agent
 
 #### FR-SK-004 Skill 搜索与发现
-- 链下索引服务（NestJS + **SQLite**）提供全文搜索、分类筛选、排序
-- P2P Beacon 广播实时可用 Skill 及价格
+- 链下索引（NestJS + **SQLite**）提供 `GET /skills?q=`：按名称、描述、`skillId` 子串过滤；市场首页展示 Skill 列表，与 Agent 列表共用搜索框
+- SQLite FTS / 分类分面为增强项，不阻塞 M1
+- P2P Beacon 广播实时可用 Skill 及价格（v0.2+）
 
 ### 5.3 交易与结算层（Settlement Layer）
 
@@ -172,6 +173,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 资金锁定至 Escrow 合约
 - Agent 详情「雇佣」与铸造相同：`POST /storage/pin` 的 201/200 后进入钱包确认；卡片内跟进度（元数据 → 钱包 → 上链 → 任务中心可见）；索引到新 Escrow 后再进入任务中心，不得 pin 成功后无反馈地跳走
 - 钱包拒绝后保留任务 CID，允许再次唤起 `createEscrow` 而不重复 pin
+- `createEscrow` 签名后须等待 receipt 成功，再轮询索引直至出现新 `escrowId`；未出块不得把雇佣标成「任务中心可见」
 - **平台人类任务（M3）**：接单后 wallet `createEscrow` + `fundEscrow`，API `bind-onchain-escrow`
 
 #### FR-ST-002 任务执行与交付
@@ -200,6 +202,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 周期或阈值触发：余额/收据快照 → **Merkle Root** 提交至 Base/Arbitrum 等现成 L2
 - 用户可用 Merkle 证明 **强制提现**（抗平台作恶/宕机）
 - **不做**：以定制 L3 作为微支付底座；以状态通道作为大厅全局架构
+- HTTP 入口为 **NestJS + Fastify**（禁止 Express）
+- `POST /payments/ledger/credit-batch` 单次最多 10000 笔链下入账（Sepolia / 本地吞吐打磨）
+- 无 App 接入第一刀：`@vibe-agent/shared/payments` 的 `signReceipt` + `POST /payments/receipts`（完整 Agent Trading SDK 仍属 M4）
 - 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
 #### FR-ST-006 交易场景覆盖
@@ -242,6 +247,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 #### FR-UI-001 市场首页
 - Agent/Skill 列表、分类、搜索、排序
+- 市场默认突出已绑定 Skill 的可雇佣 Agent，可切到全部；未绑定的不得混在默认可雇佣列表里
 - 实时在线 Agent 数量、交易量统计
 - 公开市场不要求平台会员；连接钱包后仍可直接签名链上交易
 - 链上索引的 Agent / Skill / Escrow 列表 API 公开可读，不得要求平台 JWT
@@ -256,6 +262,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-UI-003 Creator 工作台
 - 铸造 Agent、注册 Skill、管理定价、绑定 Agent
 - 铸造、注册 Skill、绑定均在卡片内跟进度；`POST /storage/pin` 返回 201/200 都必须有下一步行动说明，不能进入无反馈状态
+- 钱包返回交易哈希后，须等待 receipt 成功再提示「已上链」；reverted 不得标成成功（与任务中心 `waitMined` 同一规则）
 - 工作台展示闭环进度（已铸 Agent / 已注册 Skill / 已绑定），完成后引导到下一步 Tab
 - 收入仪表盘：该钱包作为 Provider 的已完成托管实收（锁定额 − 协议费）与最近订单入口
 - 平台受限能力遇到稳定 `402` 时进入升级流程，不把 `403` ACL 拒绝误报为付费问题
@@ -279,10 +286,12 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 进行中的 Escrow 任务；默认突出「待我处理」，可切到全部
 - 状态用人话（待付款 / 待交付 / 待确认 / 已完成 / 已退款），并展示任务与交付摘要（解析本地 pin）
 - 付款金额默认 Skill 定价；付款 / 交付 / 确认须有明确成功或钱包提示；交付须可填写结果说明
+- 钱包签名返回交易哈希后，须等待 receipt 成功再 `POST /escrows/:id/refresh`；未出块或 reverted 不得提示已付款 / 已交付 / 已完成
+- 上链成功后 refresh 须重试至索引状态与动作结果一致（fund→FUNDED、deliver→DELIVERED、confirm→COMPLETED、refund→REFUNDED）；成功提示须带区块浏览器链接（Base Sepolia）
 - 后台刷新不得整页转圈；刚创建的订单可用 `?id=` 高亮
 - 截止后仍为 FUNDED/DELIVERED 时，Consumer 可调用 `refundTimedOut`
 - 同一钱包同时为 consumer 与 provider 时（自雇演示），按状态机展示下一步（付款 → 交付 → 确认），不得因「雇主」角色优先而隐藏交付
-- 人类任务列表与接单
+- 任务中心只读列出已发布人类任务（`GET /human-tasks`）；接单、交付、验收在 **worker**（见 [CLIENTS.md](./CLIENTS.md)），web 不提供 `accept`
 
 #### FR-UI-005 设备管理
 - 注册/注销 Device Node
@@ -469,7 +478,8 @@ users           -- SIWE 用户映射
 | Escrows | `/api/v1/escrows` | 交易查询、状态同步；`POST /:id/refresh` 从链刷新（含任务/交付摘要） |
 | Devices | `/api/v1/devices` | 设备注册、算力查询 |
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
-| Storage | `/api/v1/storage` | 元数据 pin（本地 / Pinata → `ipfs://`）。`POST /pin` 返回 **201 Created**（或 200）且 `backend: "local"` 均为成功，客户端应继续链上写入 |
+| Storage | `/api/v1/storage` | 元数据 pin。默认本地目录；`STORAGE_BACKEND=pinata` 才用 Pinata。`backend: "local"` 均为成功 |
+| Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露 |
 | Stats | `/api/v1/stats` | 市场统计 |
 
 ### 8.2 智能合约接口
@@ -487,9 +497,9 @@ users           -- SIWE 用户映射
 | 区块链 | Solidity 0.8.x, Hardhat/Foundry, OpenZeppelin |
 | L2 | Base Sepolia (testnet) → Base Mainnet |
 | 前端 | React 19, Ant Design 5, Zustand, wagmi/viem, Rsbuild |
-| 后端 | NestJS 10, TypeORM, **SQLite**（better-sqlite3） |
+| 后端 | NestJS 10 + **Fastify**，TypeORM，**SQLite**（better-sqlite3） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
-| 存储 | IPFS (Pinata/web3.storage), Arweave (元数据) |
+| 存储 | **本地 IPFS 目录**（默认）；Pinata 仅显式 `STORAGE_BACKEND=pinata` |
 | 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标；公共网 RPC 可选用 thirdweb，见 FR-IDX-001） |
 | 构建 | MetaRepo + Polyrepo, pnpm, TypeScript |
 | CI/CD | GitHub Actions |
