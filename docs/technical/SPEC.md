@@ -204,6 +204,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - **不做**：以定制 L3 作为微支付底座；以状态通道作为大厅全局架构
 - HTTP 入口为 **NestJS + Fastify**（禁止 Express）
 - `POST /payments/ledger/credit-batch` 单次最多 10000 笔链下入账（Sepolia / 本地吞吐打磨）
+- **M2 实验室验收（2026-08-25）**：1 万笔/分链下记账（零链上 tx）；≥10 万笔合成 **1 个 Merkle Root**；Hardhat 上任意存款账户可 `forceWithdraw`
 - 无 App 接入第一刀：`@vibe-agent/shared/payments` 的 `signReceipt` + `POST /payments/receipts`（完整 Agent Trading SDK 仍属 M4）
 - 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
@@ -337,8 +338,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 **到 v1.0 的交付顺序（主线）**：
 
-1. **v0.2** — 链下账本 + Vault + Merkle 批量结算  
-2. **v0.3** — wallet / worker / admin / web 客户端完善  
+1. **v0.2** — 链下账本 + Vault + Merkle 批量结算（**实验室验收 2026-08-25**）  
+2. **v0.3** — wallet / worker / admin / web 客户端完善（当前主焦点）  
 3. **v0.4** — 赚钱场景（Agent/云 SDK·API、人类发单接单）  
 4. **v1.0** — 商业版本上线（审计 + 主网）  
 

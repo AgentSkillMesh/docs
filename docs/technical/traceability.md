@@ -73,13 +73,13 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
 | FR-PAY-009 | signReceipt SDK | shared, api | `@vibe-agent/shared/payments` + `POST /payments/receipts`（M4 第一刀） | **v0.3 / M4** 🟡 |
-| FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot` | **v0.2 / M2** 🟡 |
+| FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot`；10 万笔 → 1 Root | **v0.2 / M2** ✅ |
 | FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
-| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify HTTP；`credit-batch` ≤1 万笔；PG + Redis/BullMQ（memory 回退） | **v0.2 / M2** 🟡 |
-| FR-PAY-013 | Merkle 强制提现 | contracts, shared | `forceWithdraw` Sepolia 已部署 + proof 工具 | **v0.2 / M2** 🟡 |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify；`credit-batch` ≤1 万；10 万笔实验室验收；PG + Redis/BullMQ 可选 | **v0.2 / M2** ✅ |
+| FR-PAY-013 | Merkle 强制提现 | contracts, shared | Hardhat 任意账户 `forceWithdraw`；Sepolia 已部署未重部 | **v0.2 / M2** ✅ |
 | FR-WLT-002 | wallet ETH 转账（去演示化） | wallet | `/transfer` gas 估算 + 回执 + explorer | **v0.3 / M3** 🟡 |
 | FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert | **v0.3 / M3** 🟡 |
 | FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
@@ -97,7 +97,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` KPI；图表 → DataLuminary 嵌入 | **v0.3 / M3** 🟡 |
 | FR-ADM-007 | admin 支付 Commits 运维 | admin | `/payments/commits` | **v0.3 / M3** 🟡 |
 | FR-ADM-008 | admin 费率等级只读 | admin, api | `/payments/fees` ← `GET /fees/tiers` | **v0.3 / M3** 🟡 |
-| FR-WRK-002/003/005 | worker published 大厅 + 接单门禁 + Vault/账本 | worker, api | earnings Vault + ledger；完成入账 stub；展示 escrowId | **v0.3 / M3** 🟡 |
+| FR-WRK-002/003/005 | worker published 大厅 + 接单门禁 + Vault/账本 | worker, api | Expo 大厅 · accept · deliverEscrow · earnings Vault | **v0.3 / M3** 🟡 |
 | FR-PAY-SETTLE | 任务完成链下放款 stub | api | `ledgerSettled` + LEDGER.credit(WETH wei) | **v0.3 / M3** 🟡 |
 | FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | **v0.2 / M2** 🟡 |
 
@@ -111,7 +111,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | 任务治理双通道 | api, wallet, worker, admin | MVP+ |
 | P2P Beacon | p2p | 未开始 |
 | IoT 设备支付 | contracts, sdk | v0.4 |
-| 链下账本 + Merkle（主线 M2） | api, contracts, shared | **v0.2** 🟡 PoC |
+| 链下账本 + Merkle（主线 M2） | api, contracts, shared | **v0.2** ✅ 实验室验收 |
 | 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3** |
 | 赚钱场景 SDK/API/人类任务（主线 M4） | shared, api, clients | **v0.4** |
 | 商业版上线（主线 M5） | 全仓 | **v1.0** |
