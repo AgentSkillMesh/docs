@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 钱包 App 规格（纯粹钱包 · React Native）
 
 **版本**: v0.2-draft  
@@ -38,36 +39,46 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - 助记词 / WalletConnect  
 - 多链余额（Base 优先）  
 - 生物识别解锁  
+- 私钥、助记词与签名只在设备；不得上传到 Logto、Entitlement 或 DoerFlow API
+- 可选平台 Logto 会话仅用于平台门禁调用与套餐/组织展示；不能代表、解锁或恢复钱包  
+- 首页（平台会话提示、快速体验）文案走 en/zh locale
 
 ### FR-WLT-002 转账交易
 - 地址转账（ETH）；扫码 v0.4  
 - **Gas 估算**（`estimateGas` + 展示预估费用）  
 - 提交后等待回执；展示 txHash；Base Sepolia / Basescan 可打开浏览器  
 - 收款地址默认留空（不再预填 Hardhat 演示地址）；仅本地链可选填入测试收款方  
+- 转账页文案走 en/zh locale  
 
 ### FR-WLT-003 收益与账单
 - Escrow 收入/支出流水  
 - 按任务 ID 聚合  
-- **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`verifying` 验收前 `confirmDelivery` 放款  
+- **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`submitted` / `verifying` 验收前 `confirmDelivery` 放款；收益页对这两态均可点通过/驳回  
+- **本机自动测**：`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易，约锁定 0.008 ETH）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
 - **M3**：收益页 `GET /escrows?consumer=` 展示预留/链上 Escrow 流水  
-- **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议；链上托管超时可 `refundTimedOut`  
+- **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议（原因用输入框，不依赖 iOS `Alert.prompt`）；链上托管超时可 `refundTimedOut`  
+- 收益页、发布页与 Tab 文案走 en/zh locale；Escrow 签名/配置错误同样走 locale  
+- 本 App **不** 展示接单大厅或离线演示人类任务  
 - 导出（v0.4）  
 
 ### FR-WLT-004 发布任务
-- 选择任务类型：`human` | `social`（社交类标记高风险）  
+- 选择任务类型：`human` | `social`（社交类标记高风险，**须声明平台与步骤**，进入人工审核；社交任务是 M3 要做的发单能力）  
+- **人类 / Agent**：须填写任务说明；人类众包可标线下地点（`remote=false` 时 worker 交付须 GPS）  
 - 模板表单 + 报酬 + 截止时间  
 - **发单方确认清单**（见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)）  
 - 提交 → `pending_review` → 展示审批状态  
+- 连接钱包后自动 **SIWE**（`GET /auth/nonce` + `POST /auth/siwe`），任务写接口带 Bearer；测试网不强制 Logto 钱包绑定  
 - `published` 后显示接单进度（只读）  
 - **`rejected` 须展示驳回原因**（API：`alertReason` / `rejectReason`；运营驳回或违禁硬拒）  
 
 ### FR-WLT-005 通知
 - 审批通过/驳回、Escrow 锁定、任务完成结算  
-- M3：收益页可见驳回原因；系统推送（Push）见 v0.4  
+- **M3**：收益页可见驳回原因、社交任务的平台与步骤；接单方交付进入 `submitted` 时应用内通知「待验收」；系统推送（Push）见 v0.4  
 
 ### FR-WLT-006 买币（Onramp）
 - 「买币」入口 → `/onramp` → `POST /onramp/session` → 第三方 Hosted URL  
 - crypto 直达 **用户钱包地址**；平台不碰法币/KYC  
+- 买币页文案走 en/zh locale  
 - 见 [ONRAMP.md](./ONRAMP.md)  
 
 ### FR-WLT-007 跨链充值
@@ -81,21 +92,23 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 - `withdraw`；可选同步链下账本 `POST /payments/ledger/credit`  
 - 展示 `GET /payments/disclosure`（引擎 / 队列 / latestEpoch）  
 - 环境：`EXPO_PUBLIC_PAYMENT_VAULT_ADDRESS` · `EXPO_PUBLIC_VAULT_ASSET_ADDRESS`  
+- 入金 Tab 与 Vault 页文案走 en/zh locale  
 - 见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
 ## 4. 技术栈
 
 React Native · Expo · expo-router · viem · Biome · 依赖 `api` 任务治理接口。
 
+平台门禁调用可附加安全存储中的 OIDC access token，并区分 `401` / `402` / `403`。普通转账、收款、链上签名与协议费路径不依赖平台套餐。DoerFlow 无 Trial，wallet 不显示试用 CTA 或倒计时。Agent Session Key 页（`/session`）文案走 en/zh locale。
+
 ## 5. 里程碑
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 钱包 + 发任务 + 审批状态查询 + **买币 Onramp** + Base 桥引导 + **Vault 充提** |
+| v0.3 | 钱包 + 发任务（含社交平台与步骤）+ 审批状态查询 + **买币 Onramp** + Base 桥引导 + **Vault 充提** |
 | v0.4 | WalletConnect、账单导出、Transak/Alchemy Pay |
 | v0.7 | Agent L2 原生桥 UI + 入金向导 |
 
 ---
 
 *原 v0.1「wallet=接单」描述已迁移至 WORKER.md。*
-

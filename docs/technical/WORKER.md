@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 综合端 App 规格（React Native）
 
 **版本**: v0.1-draft  
@@ -21,15 +22,20 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 发单在 **wallet App**；本 App **仅接单与交付**。
 
-## 2. 社交平台任务（无障碍辅助）
+## 2. 社交平台任务
 
-### FR-WRK-010 能力说明
+社交任务是 **M3 要做的产品能力**（wallet 发单声明平台与步骤 → 治理人工审 → worker 社交 Tab 接单 → 清单 + 截图 → `submitted` → 发单方验收）。用户在自有账号上自愿操作；平台不代操作、不绕过目标 App。
 
-通过 Android **无障碍服务（Accessibility Service）**（及 iOS 合规替代方案调研）：
+> **残障无障碍（已定，前期不做）**：不针对听障、视障、言语障碍等特殊人群做读屏、字幕、WCAG、TalkBack/VoiceOver 专项。见 [CLIENTS.md](./CLIENTS.md)。这 **不是**「不做社交任务」。
+
+### FR-WRK-010 能力说明（v0.4 可选增强，非社交任务本体）
+
+社交任务本体不依赖此条。此条仅指 Android **无障碍服务（Accessibility Service）** 自动打开目标 App 的步骤引导（及 iOS 调研），**不是** 残障无障碍，也 **不是** M3 社交任务的验收条件。
 
 - 在用户 **明确授权** 后，辅助跳转到目标 App  
 - 引导完成 **可验证步骤**（如：打开指定视频 → 停留 N 秒 → 点赞）  
-- 生成交付凭证：截图时间戳 + 步骤完成标记（**不上传** 聊天记录、密码）
+- 生成交付凭证：截图时间戳 + 步骤完成标记（**不上传** 聊天记录、密码）  
+- **不是** 面向聋哑盲的残障无障碍产品
 
 ### FR-WRK-011 合规与安全
 
@@ -49,17 +55,26 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 | 平台 | 任务示例 | 版本 |
 |------|----------|------|
-| 抖音 | 观看、点赞 | v0.4 |
-| 小红书 | 浏览、点赞、收藏 | v0.4 |
-| 知乎 | 阅读、赞同 | v0.5 |
+| 抖音 | 观看、点赞 | **v0.3 / M3** |
+| 小红书 | 浏览、点赞、收藏 | **v0.3 / M3** |
+| 知乎 | 阅读、赞同 | **v0.3 / M3** |
 
 ## 3. Agent 众包任务
 
 与 ex-WALLET §FR-WL-002~004 相同：
 
 - 任务大厅（仅 `published`）  
-- 接单、拍照/视频/问卷、GPS  
+- 接单、交付说明、链上 `deliverEscrow`（已绑定 `onChainEscrowId` 时）；`deliver` 后任务为 `submitted`（待发单方验收）或直接 `completed`  
 - 收益页  
+
+### FR-WRK-003 v0.3 交付凭证
+
+- **相机**：`expo-camera` 拍摄现场/结果照片 → `POST /human-tasks/:id/proof` 得到 `proofCid`  
+- **GPS**：`expo-location`；`remote=false` 的线下任务交付前必须附加坐标（写入交付说明 `gps:lat,lng`）  
+- **问卷**：交付说明必填（完成步骤 / 问卷答案）  
+- **社交（M3，要做）**：详情走 `app/social/[id]`；展示发单方声明的 App 与步骤；**可打开目标 App 首页**（系统浏览器 / 已安装 App，不代操作）；须勾选清单后上传截图。Accessibility Service 自动打开 App 为 v0.4 可选项  
+- **API**：`verificationRequired` 或 `taskType=social` 的交付必须带 `proofCid`，否则 `PROOF_REQUIRED`  
+- 大厅 / 交付 / 收益 / Vault 用户文案走 en/zh locale  
 
 见 [用户文档 · 人类任务](../repos/docs/docs/users/human-tasks.md)。
 
@@ -69,28 +84,34 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 |----|------|
 | FR-WRK-001 | 绑定收款地址（只读展示，可从 wallet 导入同一助记词） |
 | FR-WRK-002 | 任务大厅（human + social 分 Tab）；**仅 `published`/`open`** |
-| FR-WRK-003 | 众包交付（相机/GPS/问卷）；接单前校验 published |
-| FR-WRK-004 | 社交任务引导 + 无障碍流程（无障碍本体 v0.4） |
+| FR-WRK-003 | 众包交付（相机/GPS/问卷 + `proofCid`）→ `submitted`；接单前校验 published |
+| FR-WRK-004 | **社交任务（M3 要做）**：大厅 + 打开目标首页 + 清单 + 截图交付 |
+| FR-WRK-010 | Android Accessibility Service 社交步骤引导（v0.4；非残障无障碍） |
+| FR-WRK-011 | 社交步骤引导合规与授权（v0.4） |
+| FR-WRK-012 | 社交交付截图 / 可选事件 hash（v0.4） |
 | FR-WRK-005 | 收益与历史；Vault 提现；**任务完成账本余额**（`GET /payments/ledger/balances`） |
 | FR-WRK-006 | 推送（v0.4） |
 | FR-WRK-007 | **M3** 争议：任务详情对 `assigned|submitted|verifying` 可 `POST /tasks/:id/dispute`（openedBy=worker） |
+| FR-WRK-008 | 可选 Logto 平台会话：只为平台门禁接单/交付调用附 token，并展示套餐/组织；不替代收款钱包 |
 
 ## 5. 技术栈
 
 - React Native · Expo（**独立工程**，与 wallet 分仓库）  
 - 原生模块：`expo-camera`、`expo-location`  
-- Android：Accessibility Service（**原生 Kotlin 模块**，v0.4）  
+- Android：Accessibility Service（**原生 Kotlin 模块**，v0.4，社交步骤引导；**不是**读屏/字幕）  
+- **前期不做** 面向聋哑盲等特殊人群的残障无障碍适配
 - `api`：`GET /tasks?status=published&type=social|human`  
+- 本机私钥/签名永不传给 Logto 或平台；公开任务浏览和链上收款地址保持钱包语义
+- `401` 要求平台登录，`402` 为套餐/配额，`403` 为任务资源无权；DoerFlow 不显示 Trial CTA/倒计时
 
 ## 6. 里程碑
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 众包/社交大厅仅 published；接单门禁；收益页 Vault 提现；拍照交付 |
-| v0.4 | 社交任务 MVP（抖音观看/点赞）+ 无障碍 |
-| v0.5 | 多平台扩展 |
+| v0.3 | 众包 + **社交任务**（抖音/小红书/知乎：发单声明平台与步骤、人工审、接单、清单+截图、验收）；相机/GPS/问卷；收益 Vault + 账本；链上 `deliverEscrow` |
+| v0.4 | 可选：Accessibility Service 打开目标 App；**不含**残障无障碍 |
+| v0.5 | 更多社交平台扩展 |
 
 ---
 
 *代码可从 `repos/wallet` 众包模块迁移为初始实现。*
-

@@ -1,12 +1,13 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 任务治理与发布审批
 
-**版本**: v0.2-draft · **最后更新**: 2025-02-10
+**版本**: v0.2-draft · **最后更新**: 2026-08-26
 
 ## 1. 任务状态机
 
@@ -23,7 +24,10 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `published` | 已上架 | Agent 可 claim / 人类可 accept |
 | `rejected` | 驳回或违禁 | 发单方 |
 | `needs_revision` | 要求修改后重提 | 发单方（wallet 可见原因） |
-| `assigned` ~ `completed` | 执行与结算 | 相关方 |
+| `assigned` | 已接单，执行中 | 发单方 + 接单方 |
+| `submitted` | 接单方已交付，等待发单方验收 | 发单方 + 接单方 |
+| `verifying` | 验收/自动核验进行中（与 `submitted` 同等可 `verify`） | 发单方 + 接单方 |
+| `completed` / `cancelled` | 已结算或已取消 | 相关方 |
 
 **交易约束**：`published` 时绑定平台 Escrow 预留（`escrowId`，status `Reserved`）；接单后写入 `provider`。  
 **链上放款（M3）**：发单方（wallet）在 `assigned` 后 `createEscrow` + `fundEscrow`，并 `POST /tasks/:id/bind-onchain-escrow` 写入 `onChainEscrowId`；接单方（worker）交付时 `deliverEscrow`；发单方验收前 `confirmDelivery` 放款。有 `onChainEscrowId` 时不再走账本 stub 双付。结算费率见 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md)。
@@ -66,10 +70,12 @@ draft → pending_review → published → assigned → submitted → verifying 
 
 ## 4. 人类验收（可选）
 
-| `verificationRequired` | 行为 |
-|------------------------|------|
-| `true`（默认） | `deliver` → `verifying` → 发单方 `verify` → `completed` |
-| `false` | `deliver` 后直接 `completed` |
+| 条件 | 行为 |
+|------|------|
+| `verificationRequired=true`（默认）或已绑 `onChainEscrowId` | `deliver` → **`submitted`**（稳定待验收）→ 发单方 `verify` → `completed` |
+| `verificationRequired=false` 且无链上 Escrow | `deliver` → `completed` |
+
+`verifying` 不再由 `deliver` 自动写入。`POST /human-tasks/:id/verify` **同时接受** `submitted` 与 `verifying`（兼容历史任务；后续自动核验服务可将 `submitted` 推进为 `verifying`）。驳回验收回到 `assigned`，接单方可重新交付。
 
 ## 5. 发单方确认清单（wallet）
 
@@ -82,9 +88,11 @@ draft → pending_review → published → assigned → submitted → verifying 
 
 | 接口 | 说明 |
 |------|------|
-| `POST /tasks` | 创建并可选 submit |
+| `POST /tasks` | 创建并可选 submit（wallet SIWE Bearer；测试网可不绑 Logto） |
+| `POST /human-tasks/:id/accept` \| `verify` | 人类接单 / 发单方验收 |
 | `GET /human-tasks` \| `/agent-tasks` | 已发布列表 |
-| `POST /human-tasks/:id/accept` \| `deliver` \| `verify` | 人类流程 |
+| `POST /human-tasks/:id/proof` | 接单方上传交付照片，返回 `proofCid`（`local://…`） |
+| `POST /human-tasks/:id/deliver` | 人类交付 → `submitted`（须验收或已绑链上 Escrow）或 `completed`；`verificationRequired` 或社交任务须 `proofCid`；若已绑 `onChainEscrowId` 须带 `deliveryTxHash`（`deliverEscrow`） |
 | `POST /agent-tasks/:id/claim` | Agent 自动接单 |
 | `POST /admin/tasks/:id/approve` \| `reject` \| `request-revision` | 运营审批 |
 | `POST /admin/tasks/batch-approve` | 批量通过待审（默认 L0/L1；FR-ADM-002/003） |
@@ -97,7 +105,7 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `GET /admin/disputes` · `POST .../claim` · `POST .../resolve` | 争议工单（FR-ADM-012） |
 | `POST /tasks/:id/dispute` | 发单方/接单方/运营开争议 |
 | `POST /tasks/:id/onchain-refund` | 记录链上 `refundTimedOut`（FR-ST-003） |
-| `POST /tasks/:id/bind-onchain-escrow` | 绑定链上 EscrowId（fund 后，FR-ST-001/002） |
+| `POST /tasks/:id/bind-onchain-escrow` | 绑定链上 EscrowId（fund 后；状态 `assigned|submitted|verifying`，FR-ST-001/002） |
 | `GET /escrows?consumer=` | 发单方 Escrow 流水 |
 | `GET /fees/tiers` | 等级费率表 |
 
@@ -106,4 +114,3 @@ draft → pending_review → published → assigned → submitted → verifying 
 ---
 
 *变更同步 `spec/SPEC.md` §5.8 与 `traceability.md`。*
-

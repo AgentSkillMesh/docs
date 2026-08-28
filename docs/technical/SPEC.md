@@ -183,7 +183,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - `deliverEscrow` 须发出 `EscrowDelivered`；Indexer 同步该事件与 `EscrowRefunded`
 - 已部署合约若无交付事件：Indexer 每轮对 `CREATED` / `FUNDED` / `DELIVERED` 调用 `getEscrow` 刷新状态；`POST /escrows/:id/refresh` 可手动从链拉齐（本地 pin 的任务/交付摘要一并返回）
 - 任务中心交付须可填写结果说明再 pin，付款/交付/确认须有明确成功或钱包提示，不得只显示 "OK"
-- **平台人类任务（M3）**：worker `deliverEscrow` → wallet `confirmDelivery`（2.5% 协议费）
+- **平台人类任务（M3）**：worker `deliver` → `submitted`（须验收或已绑链上 Escrow）→ wallet `verify`；链上则先 `deliverEscrow` 再 `confirmDelivery`（2.5% 协议费）
 
 #### FR-ST-003 争议仲裁
 - 超时未交付 → 自动退款 Consumer
@@ -242,12 +242,13 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 #### FR-DV-003 人类任务
 - Agent 发布 Human Task（描述、地点/远程、报酬、截止时间）
-- Human Worker 接单 → 完成 → 提交链上凭证 → Escrow 放款
+- Human Worker 接单 → 完成 → `deliver` → `submitted` → 发单方验收 → Escrow / 账本放款
 
 ### 5.6 前端 DApp
 
 #### FR-UI-001 市场首页
 - Agent/Skill 列表、分类、搜索、排序
+- 用户可见文案走 en + zh-CN locale（含 401/402/403 横幅、路由错误、Vault / 支付提示）
 - 市场默认突出已绑定 Skill 的可雇佣 Agent，可切到全部；未绑定的不得混在默认可雇佣列表里
 - 实时在线 Agent 数量、交易量统计
 - 公开市场不要求平台会员；连接钱包后仍可直接签名链上交易
@@ -304,7 +305,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 
 #### 移动端分工（摘要）
 - **wallet（纯粹钱包）**：转账、收益、发布任务（须审批）— [WALLET.md](./WALLET.md)
-- **worker（综合端）**：众包接单 + 社交平台任务（无障碍）— [WORKER.md](./WORKER.md)
+- **worker（综合端）**：众包接单 + **社交平台任务（M3 要做，清单+截图）**— [WORKER.md](./WORKER.md)
+- **残障无障碍（前期不做）**：不针对聋哑盲等特殊人群做读屏/字幕/WCAG 专项；见 [CLIENTS.md](./CLIENTS.md)
 
 见 [CLIENTS.md](./CLIENTS.md)。
 

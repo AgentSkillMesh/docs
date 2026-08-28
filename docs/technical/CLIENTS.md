@@ -1,20 +1,20 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
 
 # 客户端与平台总览
 
-**版本**: v0.2-draft · **最后更新**: 2026-08-19
+**版本**: v0.2-draft · **最后更新**: 2026-08-26
 
 ## 1. 产品矩阵
 
 | 端 | 仓库 | 用户 | 核心能力 |
 |----|------|------|----------|
 | **钱包 App** | `wallet` | 发单方 / 持币用户 | 转账、余额、收益、**发布任务**（草稿→审核→上链） |
-| **综合端 App** | `worker` | 任务执行者 | Agent 众包 + **社交平台任务**（无障碍） |
+| **综合端 App** | `worker` | 任务执行者 | Agent 众包 + **社交平台任务**（清单+截图） |
 | **Creator DApp** | `web` | Agent 运营者 | Agent/Skill、Escrow、市场；测试网 gas/水龙头引导 |
 | **管理平台** | `admin` | 平台运营 | 订单审核、风控告警、发布审批 |
 | **文档站** | `docs` | 所有人 | 公开说明 |
@@ -50,7 +50,7 @@ flowchart TB
 1. 发单方在 **wallet** 填写任务模板并 **锁定 Escrow 预算**（或预授权额度）  
 2. 任务进入 **治理流水线**：风险评分 → 自动/人工审批  
 3. **仅 `published` 状态** 的任务对 worker 可见并可接单  
-4. 执行者交付 → 验证 → Escrow 放款；争议进 admin 仲裁队列  
+4. 执行者 `deliver` → **`submitted`**（须验收）→ 发单方 `verify` → Escrow 放款；争议进 admin 仲裁队列  
 
 **原则**：未通过平台确认的任务 **不得** 对执行端展示、不得扣款结算。
 
@@ -67,8 +67,20 @@ flowchart TB
 
 ## 5. 双身份、会员与客户端边界
 
-- **web**：平台 Logto 会话、钱包连接、SIWE 会话分别展示；显示钱包链接状态、会员快照、Pro / Ultra / Enterprise 与配额。公开市场和钱包直签保持可用。
-- **admin**：必须登录平台账号；按钮只消费 API 返回的 `permissions`，不得用 Logto claim、前端 mock role 或可切换角色授予权限；同时展示套餐与组织上下文。
-- **wallet / worker**：非托管密钥和签名仅在设备；可选显示平台会员，并只在平台门禁 API 上附加平台 token。Logto 不创建、导入、导出或证明钱包。
+- **web**：平台 Logto 会话、钱包连接、SIWE 会话分别展示；显示钱包链接状态、会员快照、Pro / Ultra / Enterprise 与配额。公开市场和钱包直签保持可用。Creator DApp 用户可见文案走 en + zh-CN locale。
+- **admin**：必须登录平台账号；按钮只消费 API 返回的 `permissions`，不得用 Logto claim、前端 mock role 或可切换角色授予权限；同时展示套餐与组织上下文。运营界面文案走 en + zh-CN locale。
+- **wallet / worker**：非托管密钥和签名仅在设备；任务写路径用 **SIWE** 证明地址（测试网不强制 Logto 绑定）。可选显示平台会员，并只在平台门禁 API 上附加平台 token。Logto 不创建、导入、导出或证明钱包。
 - **无 Trial**：DoerFlow 全客户端不得出现免费试用 CTA、Trial Plan 或倒计时。
+- **残障无障碍（前期不做）**：不针对听障、视障、言语障碍等特殊人群做无障碍适配（读屏、字幕轨、WCAG、TalkBack/VoiceOver 专项等）。wallet / worker / web / admin 均按普通视听用户设计。覆盖 M3 至商业 1.0 前；以后若做须单独立项。**不是**社交任务的 Android Accessibility Service（FR-WRK-010，步骤引导）。
 - **错误语义**：`401` 登录；`402 ENTITLEMENT_*` 套餐/配额升级；`403` 产品资源 ACL。协议费与平台套餐为两条独立收费轨。
+
+## 6. worker 路由（v0.3）
+
+| Tab / 路由 | 职责 |
+|------------|------|
+| 众包 `(tabs)/index` | `GET /human-tasks`，仅 `published`/`open`，`taskType≠social` |
+| 社交 `(tabs)/social` | 同上，`taskType=social` |
+| 收益 `(tabs)/earnings` | 我的接单 + `GET /payments/ledger/balances` |
+| 收款 `(tabs)/payout` · `/vault` | Vault 充提 |
+| `app/task/[id]` | 人类众包详情：接单、拍照、GPS、问卷、`deliverEscrow`、争议 |
+| `app/(tabs)/social/[id]` | 社交任务详情：打开目标首页 + 清单 + 截图交付（**M3 要做**；Accessibility Service 自动打开 App 为 v0.4 可选项） |

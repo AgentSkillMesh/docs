@@ -232,7 +232,7 @@ flowchart TB
 |----|------|
 | 路径 | `repos/worker` |
 | 规格 | `spec/WORKER.md`、`spec/CLIENTS.md` |
-| 角色 | **执行者**：众包 Human Task + 社交平台任务（无障碍 v0.4） |
+| 角色 | **执行者**：众包 Human Task + 社交平台任务（清单+截图） |
 | 依赖 | `api`（仅 `published` 任务）、`shared`、Escrow |
 | 构建 | Expo · 包名 `@vibe-agent/worker` |
 

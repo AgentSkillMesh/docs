@@ -1,12 +1,13 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 任务系统总览
 
-**版本**: v0.2-draft · **最后更新**: 2025-01-14
+**版本**: v0.2-draft · **最后更新**: 2026-08-26
 
 ## 1. 双通道发布
 
@@ -33,8 +34,8 @@ flowchart LR
 ### 1.2 人类任务（自愿）
 
 - 仅 `audience=human`（及 `taskType=social` 子类）出现在 worker 众包列表  
-- 执行者 `accept` → 线下/端内交付 → `deliver`  
-- 发单方 `verify`（通过/驳回）；未开启验收时交付后自动 `completed`  
+- 执行者 `accept` → 线下/端内交付 → `deliver` → **`submitted`**（须验收时）  
+- 发单方 `verify`（通过/驳回；接口接受 `submitted` 与 `verifying`）；未开启验收且无链上 Escrow 时交付后自动 `completed`  
 
 ## 2. 任务管理（治理）
 
@@ -72,4 +73,3 @@ flowchart LR
 ## 5. 相关文档
 
 - [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [CLIENTS.md](./CLIENTS.md)
-

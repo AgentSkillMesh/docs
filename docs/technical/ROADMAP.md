@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -137,15 +137,17 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 
 | 客户端 | 交付 | 状态 |
 |--------|------|------|
-| **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · Escrow fund/release · **SIWE 任务写** · **dispute / refundTimedOut** · 驳回/修改 |
-| **worker** | 众包接单 / 交付 / 收款闭环；社交任务引导（无障碍辅助）；任务仅展示 `published` | 🟡 **Expo 大厅 + accept + deliverEscrow** · published 门禁 · Vault · 账本 · escrowId · **open dispute** |
-| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · **batch-approve** · auto-approval · tasks · governance · publishers · audit · disputes · alerts · KPI · commits · fees |
-| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；Escrow UX；测试网 gas 引导；**公开市场（无需平台登录）**；`use:sepolia` / `use:localhost` 链配置切换 |
-| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions；Indexer 分片 + **链头窗口**；health 含 indexer 游标；链 profile 与 web 对齐 |
+| **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · Escrow fund/release · **SIWE 任务写** · **dispute / refundTimedOut** · 驳回/修改 · **`submitted` 验收** · **发单说明 / 线下地点** · **客户端 en+zh** |
+| **worker** | 众包接单 / 交付 / 收款闭环；**社交任务（清单+截图）要做**；任务仅展示 `published` | 🟡 **Expo 大厅 + accept + deliverEscrow** · **相机/GPS/问卷 + proofCid** · **社交 Tab / 打开目标首页 / 清单 / 截图** · published 门禁 · Vault · 账本余额 · escrowId · **open dispute** · **en+zh** |
+| **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · **batch-approve** · auto-approval · tasks · **社交 App/步骤回显** · governance · publishers · audit · disputes · alerts · KPI · commits · fees · **en+zh-CN locale** |
+| **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；Escrow UX；测试网 gas 引导；**公开市场（无需平台登录）**；`use:sepolia` / `use:localhost` 链配置切换 · **en+zh locale** |
+| **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions；Indexer 分片 + **链头窗口**；health 含 indexer 游标；链 profile 与 web/wallet/worker 对齐；**`deliver` → `submitted`**；**`pnpm run smoke:m3`**（链下）· **`pnpm run smoke:escrow`**（Sepolia 真锁仓） |
 
 **验收**:
 
 > 发单方仅用 wallet、接单方仅用 worker、运营仅用 admin，可在测试网完成「发布 → 审批 → 接单 → 交付 → 放款」全流程，无需运维手工改库。
+
+**前期不做**：面向听障、视障、言语障碍等特殊人群的残障无障碍（读屏 / 字幕 / WCAG）。**社交任务本身是 M3 交付**（清单+截图）。Android Accessibility Service 打开目标 App 为 v0.4 可选项，与残障无障碍不是同一件事。
 
 **预计工期**: 8–10 周  
 **依赖**: M2 Vault/账本可用（充提与余额展示）  

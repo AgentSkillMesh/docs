@@ -18,11 +18,11 @@ VibeAgent 要求 **发包方明确任务内容并确认**，平台 **审批通�
 ## 状态流转（摘要）
 
 ```
-draft → pending_review → published → … → completed
+draft → pending_review → published → assigned → submitted → completed
               ↘ rejected
 ```
 
-未 `published` 的任务：**worker 不可见、不可接单、不结算**。
+未 `published` 的任务：**worker 不可见、不可接单、不结算**。须验收的任务在接单方 `deliver` 后进入 **`submitted`**，发单方在钱包收益页验收后再放款。
 
 ## 三类客户端分工
 
