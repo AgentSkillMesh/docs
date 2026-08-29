@@ -30,6 +30,8 @@ VibeAgent 采用 **Spec-Driven Development**：主规格维护在 MetaRepo 根�
 | [跨链 BRIDGE](/technical/BRIDGE) | 官方桥 + Omnichain；自建链桥延期 |
 | [法币 ONRAMP](/technical/ONRAMP) | 第三方合规 Widget |
 | [异步支付 ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) | **链下账本 + Merkle** · 弃联盟链/定制 L3 |
+| [开发者 SDK DEVELOPER](/technical/DEVELOPER) | Agent Trading SDK · Trading REST/WS（M4） |
+| [生产闸门 PRODUCTION](/technical/PRODUCTION) | 探针、Runbook、主网脚本（M5） |
 | [钱包规格 WALLET](/technical/WALLET) | 纯粹钱包（发任务） |
 | [综合端 WORKER](/technical/WORKER) | 众包 + 社交平台任务 |
 | [管理平台 ADMIN](/technical/ADMIN) | 运营审核控制台 |

@@ -10,9 +10,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 > **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
 > **定位**：The Liquidity Protocol for Autonomous Agents — 自主执行体的价值流动协议
 
-**版本**: v0.1.0-draft  
+**版本**: v0.4.0  
 **状态**: Draft  
-**最后更新**: 2026-08-25
+**最后更新**: 2026-08-29
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -205,7 +205,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - HTTP 入口为 **NestJS + Fastify**（禁止 Express）
 - `POST /payments/ledger/credit-batch` 单次最多 10000 笔链下入账（Sepolia / 本地吞吐打磨）
 - **M2 实验室验收（2026-08-25）**：1 万笔/分链下记账（零链上 tx）；≥10 万笔合成 **1 个 Merkle Root**；Hardhat 上任意存款账户可 `forceWithdraw`
-- 无 App 接入第一刀：`@vibe-agent/shared/payments` 的 `signReceipt` + `POST /payments/receipts`（完整 Agent Trading SDK 仍属 M4）
+- 无 App 接入：`@vibe-agent/shared/sdk`（`DoerFlowClient`）+ Python `doerflow`；底层仍为 `signReceipt` + `POST /payments/receipts`（[DEVELOPER.md](./DEVELOPER.md)）
 - 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
 #### FR-ST-006 交易场景覆盖
@@ -483,6 +483,8 @@ users           -- SIWE 用户映射
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
 | Storage | `/api/v1/storage` | 元数据 pin。默认本地目录；`STORAGE_BACKEND=pinata` 才用 Pinata。`backend: "local"` 均为成功 |
 | Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露 |
+| Trading | `/api/v1/trading` | M4 目录 / 报价 / 作业 / SSE / WebSocket；企业回调 HMAC |
+| Ready | `/api/v1/ready` · `/live` | M5 生产探针 |
 | Stats | `/api/v1/stats` | 市场统计 |
 
 ### 8.2 智能合约接口

@@ -4,18 +4,75 @@ title: Agent 交易 SDK
 
 # Agent 交易 SDK
 
-规范：[AGENT_CHAIN](/technical/AGENT_CHAIN) · [异步支付](/platform/async-payments)。
+规范源：[DEVELOPER.md](/technical/DEVELOPER) · [ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) · [PRODUCTION](/technical/PRODUCTION)。
 
-## 解决什么问题？
+第三方 **不必打开 wallet/worker App**：用 TypeScript 或 Python 完成发现、报价、链下微支付，并参与 Merkle 清算。
 
-很多 AI 开发者熟悉 **Python / 大模型**，不熟悉 Solidity。VibeAgent 提供：
+## 本机复现（验收）
 
-- **开源交易模板** — 发现任务、自动报价、接单、交付回调  
-- **预置合约包装** — Escrow、微额订阅、设备支付  
-- **链下 Receipt 签名** — 高频 API 微支付，批量上链清算（[异步支付](/platform/async-payments)）  
-- **测试网 + 水龙头** — 本地跑 Agent 即可产生链上收益  
+1. 启动 API：`pnpm run dev:api`（MetaRepo 根目录）  
+2. `pnpm run smoke:m4` — 发现 → 报价 → Session → 收据 → snapshot/proof  
+3. 人类发单接单：`pnpm run smoke:m3`  
+4. 生产工程闸门：`pnpm run smoke:m5`（**不** 等于外部审计或主网已上线）
 
-不必只做 App：**脚本、Cron、服务器上的 Agent** 都能接入。
+## TypeScript
+
+包：`@vibe-agent/shared/sdk`
+
+```ts
+import { DoerFlowClient } from '@vibe-agent/shared/sdk';
+import { privateKeyToAccount } from 'viem/accounts';
+
+const api = new DoerFlowClient({
+  baseUrl: 'http://localhost:13008/api/v1',
+  chainId: 84532,
+});
+const owner = privateKeyToAccount(process.env.OWNER_KEY);
+const session = privateKeyToAccount(process.env.SESSION_KEY);
+
+const quote = await api.quote({ skillId: '0', units: 1 });
+const job = await api.createJob({ skillId: quote.skillId, units: 1 });
+await api.authorizeSession({
+  owner,
+  session,
+  allowedPayees: [quote.payee],
+  maxAmountPerCall: quote.amount,
+  sessionBudget: quote.amount,
+});
+await api.payQuote({ session, quote, resourceId: job.resourceId });
+```
+
+底层收据仍可用 `@vibe-agent/shared/payments` 的 `signReceipt`。
+
+## Python
+
+```bash
+pip install -e sdk/python
+```
+
+```python
+from doerflow import DoerFlowClient
+
+client = DoerFlowClient('http://localhost:13008/api/v1')
+print(client.catalog()['skills'][0]['skillId'])
+print(client.quote('0', 1)['amount'])
+```
+
+EIP-712 签名：`pip install -e "sdk/python[sign]"` 后使用 `sign_receipt`，或直接用 TypeScript SDK。
+
+## REST / 实时
+
+| 方法 | 路径 |
+|------|------|
+| GET | `/api/v1/trading/catalog` |
+| POST | `/api/v1/trading/quote` |
+| POST | `/api/v1/trading/jobs` |
+| GET | `/api/v1/trading/jobs/:id` |
+| GET | `/api/v1/trading/events?jobId=`（SSE） |
+| WS | `/api/v1/trading/ws` |
+| POST | `/api/v1/payments/receipts` |
+
+企业回调：创建 job 时传 `callbackUrl`；结算后 POST JSON，头 `X-DoerFlow-Signature: sha256=<hmac>`。
 
 ## 与产品 App 的关系
 
@@ -23,49 +80,6 @@ title: Agent 交易 SDK
 |----------|------|
 | wallet / worker App | 人类发单、接单 |
 | web DApp | Creator 运营 Agent/Skill |
-| **Agent Trading SDK** | 无人值守自动化、IoT 网关、研究型 Bot |
+| **Agent Trading SDK** | 无人值守自动化、云 Agent、脚本 |
 
-## 经济模型
-
-- 高频微额走 **链下账本 + Merkle**，清算落在现成 L2（Base / Arbitrum）  
-- **Session Key + 链下收据**：执行异步，清算批量（非每笔上链）  
-- **MasterChef** 将部分协议费分给活跃开发者/Agent  
-- ERC-4337 **等级费率** 降低成熟账户成本  
-
-## 能力演进
-
-| 方向 | SDK 能力 |
-|------|----------|
-| 链下收据 | `@vibe-agent/shared/payments` — `signReceipt` / `verifyReceiptSignature` |
-| Session Key | Session Key 策略 |
-| 批量清算 | Vault / Merkle Root 对接 |
-| 现成 L2 | Base / Arbitrum 清算与 Bundler 可选优化 |
-
-见 [发展路线图](/vision/roadmap) · [ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS)。
-
-## 链下收据示例（TypeScript / viem）
-
-```typescript
-import { signReceipt } from '@vibe-agent/shared/payments';
-
-const signed = await signReceipt(
-  {
-    payer: sessionKeyAddress,
-    payee: skillProviderAddress,
-    amount: '10000', // 0.01 USDC
-    asset: 'USDC',
-    nonce: '42',
-    skillId: '1',
-    resourceId: 'translate/v1',
-    timestamp: String(Date.now()),
-    chainId: 84532,
-  },
-  (typedData) => walletClient.signTypedData(typedData),
-);
-
-await fetch('http://localhost:13008/api/v1/payments/receipts', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(signed),
-});
-```
+高频微额走 **链下账本 + Merkle**（Base / Arbitrum），不是每笔 `eth_sendTransaction`。

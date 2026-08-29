@@ -129,6 +129,8 @@ export default defineConfig({
             { text: '跨链 BRIDGE', link: '/technical/BRIDGE' },
             { text: '法币 ONRAMP', link: '/technical/ONRAMP' },
             { text: '链下账本 ASYNC_PAYMENTS', link: '/technical/ASYNC_PAYMENTS' },
+            { text: '开发者 SDK DEVELOPER', link: '/technical/DEVELOPER' },
+            { text: '生产闸门 PRODUCTION', link: '/technical/PRODUCTION' },
             { text: '品牌 Logo BRAND', link: '/technical/BRAND_LOGO' },
             { text: '钱包规格 WALLET', link: '/technical/WALLET' },
             { text: '综合端 WORKER', link: '/technical/WORKER' },

@@ -73,7 +73,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 ✅ |
 | FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
-| FR-PAY-009 | signReceipt SDK | shared, api | `@vibe-agent/shared/payments` + `POST /payments/receipts`（M4 第一刀） | **v0.3 / M4** 🟡 |
+| FR-PAY-009 | signReceipt SDK | shared, api, sdk/python | `@vibe-agent/shared/sdk` + `POST /payments/receipts` | **v0.4 / M4 ✅** |
+| FR-PAY-014 | Trading API + 作业回调 | api | `/trading/catalog|quote|jobs` · SSE/WS · HMAC webhook | **v0.4 / M4 ✅** |
+| FR-PAY-015 | 生产就绪探针与 Runbook | api, deploy, spec | `/ready` `/live` · `deploy/production.env.example` · PRODUCTION.md | **v1.0-rc / M5 ✅ 工程** |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot`；10 万笔 → 1 Root | **v0.2 / M2** ✅ |
 | FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
@@ -83,9 +85,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-013 | Merkle 强制提现 | contracts, shared | Hardhat 任意账户 `forceWithdraw`；Sepolia 已部署未重部 | **v0.2 / M2** ✅ |
 | FR-WLT-001 | wallet 账户与首页 | wallet | 首页平台会话/快速体验 · 链名 en+zh | **v0.3 / M3** 🟡 |
 | FR-WLT-002 | wallet ETH 转账（去演示化） | wallet | `/transfer` gas 估算 + 回执 + explorer · en+zh | **v0.3 / M3** 🟡 |
-| FR-WLT-003 | wallet 收益：Escrow 锁定/放款/争议 | wallet | `earnings` 文案 en+zh；Escrow 错误 locale；争议输入框；fund/confirm/refund；**`submitted` 验收** | **v0.3 / M3** 🟡 |
-| FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert · **说明 / 线下地点** · **社交须声明平台与步骤** · locale | **v0.3 / M3** 🟡 |
-| FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine（含交付 `submitted`）；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
+| FR-WLT-003 | wallet 收益：Escrow 锁定/放款/争议 | wallet | `earnings` 文案 en+zh；Escrow 错误 locale；争议输入框；fund/confirm/refund；**`submitted` 验收** · **进度只读 + 待办置顶** | **v0.3 / M3** 🟡 |
+| FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert · **说明 / 线下地点** · **社交须声明平台与步骤** · **published 接单进度** · locale | **v0.3 / M3** 🟡 |
+| FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine（**assigned** + 交付 `submitted`）；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
 | FR-WLT-006 / FR-ONRAMP-003 | wallet 买币 Onramp | wallet, api | `/onramp` + `POST /onramp/session` · en+zh | **v0.3 / M3** 🟡 |
 | FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm · **`pnpm run smoke:escrow`**（拒绝 Hardhat 公开钥 / EIP-7702；放款后余额断言） | **v0.3 / M3** 🟡 |
 | FR-WLT-008 | wallet Vault 充提 | wallet | `app/vault.tsx` + 入金 Tab · disclosure · en+zh | **v0.3 / M3** 🟡 |
@@ -120,8 +122,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | P2P Beacon | p2p | 未开始 |
 | IoT 设备支付 | contracts, sdk | v0.4 |
 | 链下账本 + Merkle（主线 M2） | api, contracts, shared | **v0.2** ✅ 实验室验收 |
-| 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3** |
-| 赚钱场景 SDK/API/人类任务（主线 M4） | shared, api, clients | **v0.4** |
-| 商业版上线（主线 M5） | 全仓 | **v1.0** |
+| 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3 ✅ AI smoke:m3** |
+| 赚钱场景 SDK/API/人类任务（主线 M4） | shared/sdk, api/trading, sdk/python | **v0.4 ✅ AI smoke:m4** |
+| 工程生产闸门（主线 M5-rc） | api, deploy, spec/PRODUCTION | **v1.0-rc ✅ smoke:m5** |
+| 商业宣布（审计/主网资金） | 全仓 | **v1.0** ⚪ |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。

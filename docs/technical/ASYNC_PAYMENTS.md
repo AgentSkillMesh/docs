@@ -1,12 +1,13 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # Agent 异步支付 · 链下账本 + Merkle 批量结算
 
-**版本**: v0.2.3-draft · **最后更新**: 2025-01-14  
+**版本**: v0.2.4 · **最后更新**: 2026-08-25  
 **关联**: [SPEC.md](./SPEC.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [IOT.md](./IOT.md) · [BRIDGE.md](./BRIDGE.md)
 
 ## 0. 架构决策（已定）
@@ -259,7 +260,7 @@ Vault 充值（链上）
 | Session Key 策略 UI | `wallet` / `web` | Agent 授权面板 |
 | Vault + Merkle 清算 | `contracts` | `settlement/MicroPaymentSettler.sol`（**v0.2 / M2**） |
 | AA + Session | `contracts` | `identity/SessionKeyRegistry.sol`（v0.3） |
-| Agent SDK 签名 | `shared` + SDK | Python/TS `signReceipt()` |
+| Agent SDK 签名 | `shared/sdk` + `sdk/python` | `DoerFlowClient` · `signReceipt()` |
 | 状态通道（拓展） | `contracts` / `p2p` | 规划 · v0.8+ |
 
 ### 6.1 api 端点（v0.2+）
@@ -275,12 +276,16 @@ Vault 充值（链上）
 | GET | `/api/v1/payments/receipts/stats?payer=0x…` | payer nonce / pending 数 |
 | GET | `/api/v1/payments/receipts/pending?limit=100` | 待批量清算列表 |
 | POST | `/api/v1/payments/ledger/credit` | 记入链下余额（PoC；镜像 Vault 充值） |
+| POST | `/api/v1/payments/ledger/credit-batch` | 批量入账，单次最多 10000 笔（PaymentServiceGuard） |
 | GET | `/api/v1/payments/ledger/balances?account=0x…` | 查询链下余额 |
-| POST | `/api/v1/payments/ledger/snapshot` | 余额快照 → Merkle Root；队列开启时入队 `commitRoot` |
+| POST | `/api/v1/payments/ledger/snapshot` | 余额快照 → Merkle Root；**PaymentServiceGuard**；`enqueue=0` 时只出 Root 不上链 |
 | GET | `/api/v1/payments/ledger/snapshots/latest` | 最新 Root / epoch |
 | GET | `/api/v1/payments/ledger/proof?account=&asset=&epoch=` | 强制提现用 Merkle proof |
 | GET | `/api/v1/payments/ledger/commits?status=pending` | Root 上链任务列表 |
-| GET | `/api/v1/payments/ledger/commits/:epoch` | 单 epoch 提交状态 / txHash |
+| POST | `/api/v1/trading/quote` | Skill 报价（M4） |
+| POST | `/api/v1/trading/jobs` | 计费作业 + 可选企业回调 |
+| GET | `/api/v1/trading/catalog` | 发现 Agent/Skill |
+| GET | `/api/v1/ready` | 生产就绪探针（M5） |
 
 ### 6.1.1 生产向存储与队列（M2）
 
@@ -314,10 +319,10 @@ import {
 
 | 版本 | 里程碑 | 交付 | 验收 |
 |------|--------|------|------|
-| **v0.2** | **M2（当前主焦点）** | Vault + 链下记账引擎 + `MicroPaymentSettler` Merkle Root + 强制提现 | 1 万笔/分链下记账；≥10 万笔 → 1 Root；强制提现 PoC |
-| **v0.3** | M3 | 客户端对接 Vault 充提 / 余额；Session Key UX | wallet/worker/admin 可用账本余额 |
-| **v0.4** | M4 | SDK `signReceipt` / 对外支付 API；场景联调 | 第三方 SDK 完成微支付并参与清算 |
-| **v1.0** | M5 | 主网 hardening、审计、生产 Root 值班 | 商业版可对外宣布 |
+| **v0.2** | **M2** | Vault + 链下记账引擎 + `MicroPaymentSettler` Merkle Root + 强制提现 | ✅ 实验室（2026-08-25）：1 万笔/分；≥10 万笔 → 1 Root；Hardhat `forceWithdraw` |
+| **v0.3** | M3 | 客户端对接 Vault 充提 / 余额；Session Key UX | ✅ `pnpm run smoke:m3`（2026-08-29） |
+| **v0.4** | M4 | SDK `signReceipt` / 对外支付 API；场景联调 | ✅ `pnpm run smoke:m4` |
+| **v1.0-rc** | M5 | 生产探针、Runbook、主网脚本 | ✅ `pnpm run smoke:m5`；商业宣布见 PRODUCTION §6 |
 | **v1.1+** | 支线 | 状态通道拓展；IoT 数据流规模化复用账本 | 可选 |
 | **远期** | — | 自建应用链（仅规模证明后） | 见 AGENT_CHAIN · **非微支付前置** |
 
@@ -332,14 +337,16 @@ import {
 | FR-PAY-003 | Receipt Vault 验签与 nonce 去重 | api | v0.2 |
 | FR-PAY-004 | Session Key scoped 授权 | contracts, wallet | v0.3 |
 | FR-PAY-005 | Session 预算与撤销 | contracts | v0.3 |
-| FR-PAY-006 | 账本快照 Merkle Root 清算 | contracts, api | **v0.2 / M2** |
+| FR-PAY-006 | Merkle Root 批量清算 | contracts, api | **v0.2 / M2 ✅** |
 | FR-PAY-007 | 双向轧差净额结算 | contracts | v0.2–v0.4 |
 | FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | v1.0 |
-| FR-PAY-009 | Agent SDK `signReceipt` / `settle` | shared, SDK | **v0.4 / M4** |
+| FR-PAY-009 | Agent SDK `signReceipt` / `settle` | shared/sdk, sdk/python, api | **v0.4 / M4 ✅** |
+| FR-PAY-014 | Trading 目录/报价/作业/WS | api | **v0.4 / M4 ✅** |
+| FR-PAY-015 | 生产探针 /ready /live + Runbook | api, spec/PRODUCTION | **v1.0-rc / M5 ✅ 工程** |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ |
 | FR-PAY-011 | **不做** 定制 L3 作为微支付主路径 | spec | **已定** |
-| FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | **v0.2 / M2** |
-| FR-PAY-013 | Merkle 证明强制提现（抗平台作恶/宕机） | contracts | **v0.2 / M2** |
+| FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | **v0.2 / M2 ✅** |
+| FR-PAY-013 | Merkle 证明强制提现（抗平台作恶/宕机） | contracts | **v0.2 / M2 ✅** |
 
 ---
 
@@ -367,4 +374,3 @@ import {
 ---
 
 *等级费率见 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md)；跨链资产见 [BRIDGE.md](./BRIDGE.md)；链经济延期见 [AGENT_CHAIN.md](./AGENT_CHAIN.md)。*
-

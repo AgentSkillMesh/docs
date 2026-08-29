@@ -54,7 +54,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - Escrow 收入/支出流水  
 - 按任务 ID 聚合  
 - **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`submitted` / `verifying` 验收前 `confirmDelivery` 放款；收益页对这两态均可点通过/驳回  
-- **本机自动测**：`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易，约锁定 0.008 ETH，并断言接单地址余额增加）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
+- **M3**：收益页按状态展示只读进度（上架等待接单 / 已接单待锁定 / 待交付 / 待验收）；需要发单方操作的任务（锁定、验收、再提交）置顶，不得把待验收埋在已完成列表里  
+- **本机自动测**：`pnpm run smoke:m3` 在接单/交付后断言 `GET /tasks/mine` 状态（`assigned` → `submitted`/`completed`）；`pnpm --dir repos/wallet test` 覆盖进度文案与通知差分。`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
 - **Sepolia demo 钥**：发单/接单不得使用公开 Hardhat 账户（`#0`/`#1` 等）；这些地址在公共测试网常被 EIP-7702 委托，放款会被转走。本地 `31337` 仍可用 Hardhat `#0`/`#1`。接单钥不安全时先 `pnpm run demo:worker:sepolia`。  
 - **M3**：收益页 `GET /escrows?consumer=` 展示预留/链上 Escrow 流水  
 - **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议（原因用输入框，不依赖 iOS `Alert.prompt`）；链上托管超时可 `refundTimedOut`  
@@ -69,12 +70,12 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - **发单方确认清单**（见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)）  
 - 提交 → `pending_review` → 展示审批状态  
 - 连接钱包后自动 **SIWE**（`GET /auth/nonce` + `POST /auth/siwe`），任务写接口带 Bearer；测试网不强制 Logto 钱包绑定  
-- `published` 后显示接单进度（只读）  
+- `published` 后显示接单进度（只读：大厅等待接单；`assigned` 显示接单地址；交付后待验收）  
 - **`rejected` 须展示驳回原因**（API：`alertReason` / `rejectReason`；运营驳回或违禁硬拒）  
 
 ### FR-WLT-005 通知
 - 审批通过/驳回、Escrow 锁定、任务完成结算  
-- **M3**：收益页可见驳回原因、社交任务的平台与步骤；接单方交付进入 `submitted` 时应用内通知「待验收」；系统推送（Push）见 v0.4  
+- **M3**：收益页可见驳回原因、社交任务的平台与步骤；worker 接单进入 `assigned` 时应用内通知；接单方交付进入 `submitted` 时应用内通知「待验收」；系统推送（Push）见 v0.4  
 
 ### FR-WLT-006 买币（Onramp）
 - 「买币」入口 → `/onramp` → `POST /onramp/session` → 第三方 Hosted URL  
@@ -106,7 +107,7 @@ React Native · Expo · expo-router · viem · Biome · 依赖 `api` 任务治�
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 钱包 + 发任务（含社交平台与步骤）+ 审批状态查询 + **买币 Onramp** + Base 桥引导 + **Vault 充提** |
+| v0.3 | 钱包 + 发任务（含社交平台与步骤）+ 审批状态查询 + **买币 Onramp** + Base 桥引导 + **Vault 充提** + **发单进度 / 待办置顶** |
 | v0.4 | WalletConnect、账单导出、Transak/Alchemy Pay |
 | v0.7 | Agent L2 原生桥 UI + 入金向导 |
 
