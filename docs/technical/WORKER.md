@@ -8,7 +8,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 # 综合端 App 规格（React Native）
 
 **版本**: v0.1-draft  
-**仓库**: `repos/worker` → `AgentSkillMesh/worker`（私有）
+**仓库**: `repos/worker` → `doerflow/worker`（私有）
 
 ---
 
@@ -65,6 +65,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 - 任务大厅（仅 `published`）  
 - 接单、交付说明、链上 `deliverEscrow`（已绑定 `onChainEscrowId` 时）；`deliver` 后任务为 `submitted`（待发单方验收）或直接 `completed`  
+- 任务详情须展示当前状态；仅 `published`/`open` 且无人接单时显示接单。已被他人接单须说明，不得再显示接单。已交付须标明待验收，不得只剩空白表单。未锁定链上 Escrow 时提示发单方尚未 fund；已锁定/已放款与收益页同一套标记  
 - 收益页  
 
 ### FR-WRK-003 v0.3 交付凭证
@@ -75,6 +76,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - **社交（M3，要做）**：详情走 `app/social/[id]`；展示发单方声明的 App 与步骤；**可打开目标 App 首页**（系统浏览器 / 已安装 App，不代操作）；须勾选清单后上传截图。Accessibility Service 自动打开 App 为 v0.4 可选项  
 - **API**：`verificationRequired` 或 `taskType=social` 的交付必须带 `proofCid`，否则 `PROOF_REQUIRED`  
 - 大厅 / 交付 / 收益 / Vault 用户文案走 en/zh locale  
+- 详情展示当前状态；仅 `published`/`open` 且无 `assigneeAddress` 时显示接单；已被他人接单须提示且不得再接；交付后标明待验收；未锁定 Escrow 时提示 `needFund`；已锁定/已放款与收益页同一套标记  
 - 收益页须展示 **原生 ETH 余额**（链上 `confirmDelivery` 打到此地址）；`onChainEscrowId` / `escrowReleaseTxHash` 的任务标明「链上已放款」或「已锁定」，不得只显示空的链下账本让人以为没收到钱  
 - 公共测试网（非 31337）**禁止**在代码里回退到 Hardhat `#0`/`#1`；缺 demo 钥须明确报错。已连接公开 Hardhat 地址时须警告（放款会被 EIP-7702 转走）  
 
@@ -86,7 +88,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 |----|------|
 | FR-WRK-001 | 绑定收款地址（只读展示，可从 wallet 导入同一助记词）。**Base Sepolia demo 钥必须是非公开密钥**；禁止用 Hardhat `#1`（公共测试网上会被 EIP-7702 转走放款）。本地 31337 仍可用 `#1`。`pnpm run demo:worker:sepolia` 可轮换并打 0.002 ETH Gas |
 | FR-WRK-002 | 任务大厅（human + social 分 Tab）；**仅 `published`/`open`** |
-| FR-WRK-003 | 众包交付（相机/GPS/问卷 + `proofCid`）→ `submitted`；接单前校验 published |
+| FR-WRK-003 | 众包交付（相机/GPS/问卷 + `proofCid`）→ `submitted`；详情展示状态；仅未接单可接；待验收 / 未 fund 提示 |
 | FR-WRK-004 | **社交任务（M3 要做）**：大厅 + 打开目标首页 + 清单 + 截图交付 |
 | FR-WRK-010 | Android Accessibility Service 社交步骤引导（v0.4；非残障无障碍） |
 | FR-WRK-011 | 社交步骤引导合规与授权（v0.4） |

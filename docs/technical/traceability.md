@@ -102,7 +102,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ADM-013 | admin 界面文案 locale | admin | `en` + `zh-CN`；禁止页面硬编码 fallback | **v0.3 / M3** 🟡 |
 | FR-ADM-007 | admin 支付 Commits 运维 | admin | `/payments/commits` | **v0.3 / M3** 🟡 |
 | FR-ADM-008 | admin 费率等级只读 | admin, api | `/payments/fees` ← `GET /fees/tiers` | **v0.3 / M3** 🟡 |
-| FR-WRK-002/003/005 | worker published 大厅 + 相机/GPS/问卷交付 + Vault/账本 | worker, api | Expo 大厅 · proof · GPS · 社交清单 · accept · deliver → **submitted** · deliverEscrow · earnings **原生 ETH + 链上放款标记** · **en+zh** | **v0.3 / M3** 🟡 |
+| FR-WRK-002/003/005 | worker published 大厅 + 相机/GPS/问卷交付 + Vault/账本 | worker, api | Expo 大厅 · proof · GPS · 社交清单 · accept **仅未接单** · 详情状态/待验收 · deliver → **submitted** · deliverEscrow · earnings **原生 ETH + 链上放款标记** · **en+zh** | **v0.3 / M3** 🟡 |
 | FR-WRK-004 | worker 社交任务（清单+截图） | worker, wallet | `social/[id]` · 打开目标首页 · wallet 声明平台与步骤 · 人工审后上架 | **v0.3 / M3 要做** 🟡 |
 | FR-WRK-010/011/012 | 社交步骤引导 Accessibility Service | worker | v0.4；**不是** 残障无障碍 | **v0.4** ⚪ |
 | FR-A11Y | 聋哑盲等残障无障碍（读屏/字幕/WCAG） | 全客户端 | **前期不做**（至商业 1.0 前；单独立项后再议） | **不做** |

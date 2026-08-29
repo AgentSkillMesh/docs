@@ -138,7 +138,7 @@ M5  v1.0  商业版本上线（主网 / 生产就绪）
 | 客户端 | 交付 | 状态 |
 |--------|------|------|
 | **wallet** | 发任务 UX 完整；转账 / 收益流水；Vault 充提；Onramp 买币；官方桥入金引导 | 🟡 transfer · vault · onramp · session · Escrow fund/release · **SIWE 任务写** · **dispute / refundTimedOut** · 驳回/修改 · **`submitted` 验收** · **发单说明 / 线下地点** · **客户端 en+zh** |
-| **worker** | 众包接单 / 交付 / 收款闭环；**社交任务（清单+截图）要做**；任务仅展示 `published` | 🟡 **Expo 大厅 + accept + deliverEscrow** · **相机/GPS/问卷 + proofCid** · **社交 Tab / 打开目标首页 / 清单 / 截图** · published 门禁 · Vault · 账本余额 · **收益页原生 ETH** · escrowId · **open dispute** · **en+zh** · **Sepolia 独立 demo 钥（非 Hardhat #1）** |
+| **worker** | 众包接单 / 交付 / 收款闭环；**社交任务（清单+截图）要做**；任务仅展示 `published` | 🟡 **Expo 大厅 + accept + deliverEscrow** · **相机/GPS/问卷 + proofCid** · **社交 Tab / 打开目标首页 / 清单 / 截图** · published 门禁 · **详情状态 / 已被接单 / 待验收** · Vault · 账本余额 · **收益页原生 ETH** · escrowId · **open dispute** · **en+zh** · **Sepolia 独立 demo 钥（非 Hardhat #1）** |
 | **admin** | 审批队列、L0–L3 风控、告警、费率与支付运维只读面板 | 🟡 review · **batch-approve** · auto-approval · tasks · **社交 App/步骤回显** · governance · publishers · audit · disputes · alerts · **仪表盘真实 GMV + 待审队列** · commits · fees · **CORS :13011** · **en+zh-CN locale** |
 | **web** | Creator 工作台与市场体验 hardening；与 Vault / Escrow 状态一致 | 🟡 `/payments` Vault + fees；Escrow UX；测试网 gas 引导；**公开市场（无需平台登录）**；`use:sepolia` / `use:localhost` 链配置切换 · **en+zh locale** |
 | **api** | 任务治理与客户端 API 稳定；推送 / WebSocket 通知（按需） | 🟡 治理 · publishers flag · onChainEscrowId · 预留 · ledger · fees · auto-decisions；Indexer 分片 + **链头窗口**；health 含 indexer 游标；链 profile 与 web/wallet/worker 对齐；**`deliver` → `submitted`**；**`pnpm run smoke:m3`**（链下）· **`pnpm run smoke:escrow`**（Sepolia 真锁仓） |
