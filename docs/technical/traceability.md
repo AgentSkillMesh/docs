@@ -114,6 +114,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-RT-001~003 | Agent Runtime 循环、Session、工具策略 | spec, api, scripts | `AGENT_RUNTIME.md` · `/mcp` · `example-agent-runner.mjs` | **v1.1-channels-lab** ✅ |
 | FR-A2A-001~002 | Agent Card + claim/complete 映射治理状态机 | api | `/a2a/*` · `POST /agent-tasks/:id/deliver` | **v1.1-channels-lab** ✅ |
 | FR-CLD-001 | Cloud adapter 执行 + Receipt | api, shared/sdk | `POST /trading/jobs/:id/execute` · job SQLite | **v1.1-channels-lab** ✅ |
+| FR-PRV-001 | 第三方 HTTP Skill 注册（SaaS/App） | api, shared/sdk, sdk/python | `POST /trading/providers/skills` | **v1.1-channels-lab** ✅ |
+| FR-PRV-002 | 付款后才 invoke 对方 endpoint | api | execute 校验 Receipt；CloudEvents `job.invoke` | **v1.1-channels-lab** ✅ |
+| FR-PRV-003 | 每 Skill HMAC + SSRF 限制 | api, shared/sdk | `verifyDoerFlowWebhook`；loopback HTTP / 公网 HTTPS | **v1.1-channels-lab** ✅ |
 | FR-EP-001~003 | Endpoint 注册/心跳/白名单执行 | api | `/endpoints` · `ENDPOINT.md` | **v1.1-channels-lab** ✅ |
 | FR-IOT-007 | 实验室 Device HTTP（非链上 Registry） | api | `/devices` 注册·心跳·telemetry | **v1.1-channels-lab** ✅ |
 

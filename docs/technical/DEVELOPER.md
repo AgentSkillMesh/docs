@@ -34,7 +34,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | GET | `/trading/catalog` | Agent + Skill 目录；无链上 Skill 时含 `demo` 技能 |
 | POST | `/trading/quote` | `{ skillId, units }` → 金额、资产、payee、`resourceId` |
 | POST | `/trading/jobs` | 创建计费作业；返回 `jobId` + 须写入收据的 `resourceId`（SQLite 持久化） |
-| POST | `/trading/jobs/:id/execute` | 云适配器执行（幂等）；写入 `execution.outputCid` |
+| POST | `/trading/providers/skills` | 注册 HTTP Skill；返回 `skillId` + **一次性** `webhookSecret` |
+| POST | `/trading/jobs/:id/execute` | 云适配器；HTTP Skill **须已有 Receipt** 才转发 |
 | GET | `/trading/jobs/:id` | 作业状态（`open` → `settled` 当收据 `resourceId` 匹配） |
 | GET | `/channels` | 五通道矩阵 |
 | GET | `/openapi.json` | OpenAPI 3.1 |
@@ -51,6 +52,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 企业回调：创建 job 时带 `callbackUrl`；结算后 POST **CloudEvents 1.0** JSON，头 `X-DoerFlow-Signature: sha256=<hmac>`（`TRADING_WEBHOOK_SECRET`）。信封含 `id` / `source` / `type` / `data`。
 
 五通道实验室（P0–P4）：`GET /channels` · `GET /openapi.json` · `POST /mcp` · `GET /a2a/agent-card` · `POST /trading/jobs/:id/execute` · `/endpoints` · `/devices`。验收：`pnpm run smoke:channels`。
+
+Provider SDK（第三方 App/SaaS **当卖家**）：`POST /trading/providers/skills` 注册 HTTP 端点；买家付款后 `execute` 才会 POST CloudEvents `com.doerflow.trading.job.invoke`；对方用返回的 `webhookSecret` 验 `X-DoerFlow-Signature`。
 
 ---
 
@@ -89,13 +92,48 @@ pip install -e sdk/python
 ```
 
 ```python
-from doerflow import DoerFlowClient
+from doerflow import DoerFlowClient, verify_webhook
 client = DoerFlowClient("http://localhost:13008/api/v1")
 print(client.catalog()["skills"][0]["skillId"])
 print(client.quote("0", 1)["amount"])
+# seller: client.register_provider_skill(name, endpoint_url, unit_price, payee)
+# then verify_webhook(raw_body, signature, webhook_secret)
 ```
 
 EIP-712 签名优先用 TS SDK；Python `eth-account` extra 提供 `sign_receipt`。
+
+---
+
+## 4.1 Provider SDK（SaaS / 第三方 App）
+
+第三方把自家 HTTP API 挂上 DoerFlow 出售（实验室，不写链上 SkillRegistry）：
+
+```ts
+import { DoerFlowClient, verifyDoerFlowWebhook } from "@vibe-agent/shared/sdk";
+
+const api = new DoerFlowClient({ baseUrl: "http://localhost:13008/api/v1" });
+const skill = await api.registerProviderSkill({
+  name: "Acme Summarize",
+  endpointUrl: "https://api.acme.example/doerflow",
+  unitPrice: "10000",
+  payee: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+});
+// 保存 skill.webhookSecret；列表/catalog 不再返回
+
+// 对方服务收到 POST 后：
+if (!verifyDoerFlowWebhook(rawBody, req.headers["x-doerflow-signature"], skill.webhookSecret)) {
+  throw new Error("bad hmac");
+}
+```
+
+规则：
+
+1. `endpointUrl`：本机可用 `http://127.0.0.1`；非 loopback **必须 HTTPS**。禁止 `file:`、链路本地元数据地址。  
+2. 买家 `payQuote` 成功后才 `executeJob`；未付款返回 `PAYMENT_REQUIRED`。  
+3. 调用信封为 CloudEvents `com.doerflow.trading.job.invoke`，签名密钥为该 Skill 的 `webhookSecret`（不是全局 `TRADING_WEBHOOK_SECRET`）。  
+4. 结算仍走 Receipt + 账本；对方 2xx 才标记 `execution.adapter=http-provider`。
+
+本机验收含在 `pnpm run smoke:channels`（P1b）。
 
 ---
 

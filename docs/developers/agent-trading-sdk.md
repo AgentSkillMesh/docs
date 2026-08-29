@@ -14,6 +14,7 @@ title: Agent 交易 SDK
 2. `pnpm run smoke:m4` — 发现 → 报价 → Session → 收据 → snapshot/proof  
 3. 人类发单接单：`pnpm run smoke:m3`  
 4. 生产工程闸门：`pnpm run smoke:m5`（**不** 等于外部审计或主网已上线）
+5. 五通道 + Provider SDK：`pnpm run smoke:channels`（含 P1b：注册 HTTP Skill → 付款后 invoke）
 
 ## TypeScript
 
@@ -58,7 +59,25 @@ print(client.catalog()['skills'][0]['skillId'])
 print(client.quote('0', 1)['amount'])
 ```
 
-EIP-712 签名：`pip install -e "sdk/python[sign]"` 后使用 `sign_receipt`，或直接用 TypeScript SDK。
+EIP-712 签名：`pip install -e "sdk/python[sign]"` 后使用 `sign_receipt`，或直接用 TypeScript SDK。卖家验签：`verify_webhook(raw_body, signature, webhook_secret)`。
+
+## Provider SDK（第三方 App / SaaS 当卖家）
+
+把自家 HTTP API 挂成可计费 Skill（实验室，不写链上 SkillRegistry）：
+
+```ts
+import { DoerFlowClient, verifyDoerFlowWebhook } from '@vibe-agent/shared/sdk';
+
+const skill = await api.registerProviderSkill({
+  name: 'Acme Summarize',
+  endpointUrl: 'https://api.acme.example/doerflow',
+  unitPrice: '10000',
+  payee: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+});
+// 保存 skill.webhookSecret；catalog 不再返回
+```
+
+买家 `payQuote` 之后才 `executeJob`。平台向 `endpointUrl` POST CloudEvents `com.doerflow.trading.job.invoke`，头 `X-DoerFlow-Signature` 用该 Skill 的 secret。Loopback 可用 `http://127.0.0.1`；公网必须 HTTPS。
 
 ## REST / 实时
 
@@ -67,6 +86,8 @@ EIP-712 签名：`pip install -e "sdk/python[sign]"` 后使用 `sign_receipt`，
 | GET | `/api/v1/trading/catalog` |
 | POST | `/api/v1/trading/quote` |
 | POST | `/api/v1/trading/jobs` |
+| POST | `/api/v1/trading/jobs/:id/execute` |
+| POST | `/api/v1/trading/providers/skills` |
 | GET | `/api/v1/trading/jobs/:id` |
 | GET | `/api/v1/trading/events?jobId=`（SSE） |
 | WS | `/api/v1/trading/ws` |
@@ -80,6 +101,7 @@ EIP-712 签名：`pip install -e "sdk/python[sign]"` 后使用 `sign_receipt`，
 |----------|------|
 | wallet / worker App | 人类发单、接单 |
 | web DApp | Creator 运营 Agent/Skill |
-| **Agent Trading SDK** | 无人值守自动化、云 Agent、脚本 |
+| **Agent Trading SDK（买家）** | 无人值守自动化、云 Agent、脚本 |
+| **Provider SDK（卖家）** | 第三方 App/SaaS 出售 HTTP API |
 
 高频微额走 **链下账本 + Merkle**（Base / Arbitrum），不是每笔 `eth_sendTransaction`。

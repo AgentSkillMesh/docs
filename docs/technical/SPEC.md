@@ -492,7 +492,7 @@ users           -- SIWE 用户映射
 | AgentTasks | `/api/v1/agent-tasks` | Agent 列表 / claim / deliver |
 | Storage | `/api/v1/storage` | 元数据 pin。默认本地目录；`STORAGE_BACKEND=pinata` 才用 Pinata。`backend: "local"` 均为成功 |
 | Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露 |
-| Trading | `/api/v1/trading` | 目录 / 报价 / 作业 / `execute` / SSE / WebSocket；CloudEvents + HMAC |
+| Trading | `/api/v1/trading` | 目录 / 报价 / 作业 / `execute` / Provider HTTP Skill / SSE / WebSocket；CloudEvents + HMAC |
 | Ready | `/api/v1/ready` · `/live` | M5 生产探针 |
 | Stats | `/api/v1/stats` | 市场统计 |
 

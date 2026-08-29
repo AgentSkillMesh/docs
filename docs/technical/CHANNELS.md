@@ -76,6 +76,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 |----|------|
 | P0 | `GET /channels` 返回五通道与 ID 约定 |
 | P1 | catalog → quote → job → execute → Receipt → job `settled`；webhook 为 CloudEvents |
+| **P1b Provider SDK** | SaaS 注册 HTTP Skill → 付款后 invoke 对方 URL（HMAC）→ 入账 |
 | P2 | A2A Agent Card → claim `published` agent 任务 → deliver → 账本入账 |
 | P3 | Endpoint 注册 / 心跳 / 白名单 `echo` 执行 |
 | P4 | Device 注册 / 心跳 / telemetry hash → 账本入账 |
