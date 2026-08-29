@@ -33,8 +33,11 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 |------|------|------|
 | GET | `/trading/catalog` | Agent + Skill 目录；无链上 Skill 时含 `demo` 技能 |
 | POST | `/trading/quote` | `{ skillId, units }` → 金额、资产、payee、`resourceId` |
-| POST | `/trading/jobs` | 创建计费作业；返回 `jobId` + 须写入收据的 `resourceId` |
+| POST | `/trading/jobs` | 创建计费作业；返回 `jobId` + 须写入收据的 `resourceId`（SQLite 持久化） |
+| POST | `/trading/jobs/:id/execute` | 云适配器执行（幂等）；写入 `execution.outputCid` |
 | GET | `/trading/jobs/:id` | 作业状态（`open` → `settled` 当收据 `resourceId` 匹配） |
+| GET | `/channels` | 五通道矩阵 |
+| GET | `/openapi.json` | OpenAPI 3.1 |
 | GET | `/trading/events?jobId=` | SSE 作业事件 |
 | WS | `/trading/ws` | WebSocket 作业事件（`{"jobId"}` 订阅） |
 | POST | `/payments/sessions` | 注册 Session Key（EIP-712 `SessionAuthorization`） |
@@ -45,7 +48,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | GET | `/ready` | 生产就绪探针（k8s） |
 | GET | `/live` | 存活探针 |
 
-企业回调：创建 job 时带 `callbackUrl`；结算后 POST JSON，头 `X-DoerFlow-Signature: sha256=<hmac>`（`TRADING_WEBHOOK_SECRET`）。
+企业回调：创建 job 时带 `callbackUrl`；结算后 POST **CloudEvents 1.0** JSON，头 `X-DoerFlow-Signature: sha256=<hmac>`（`TRADING_WEBHOOK_SECRET`）。信封含 `id` / `source` / `type` / `data`。
+
+五通道实验室（P0–P4）：`GET /channels` · `GET /openapi.json` · `POST /mcp` · `GET /a2a/agent-card` · `POST /trading/jobs/:id/execute` · `/endpoints` · `/devices`。验收：`pnpm run smoke:channels`。
 
 ---
 
@@ -72,7 +77,7 @@ const paid = await api.payQuote({ session, quote, resourceId: job.resourceId });
 const snap = await api.snapshot({ serviceToken: process.env.PAYMENT_SERVICE_JWT, enqueue: false });
 ```
 
-本机验收：`pnpm run smoke:m4`（API 须已启动）。
+本机验收：`pnpm run smoke:m4`（API 须已启动）。五通道实验室：`pnpm run smoke:channels`。示例 Runtime：`pnpm run example:agent`。
 
 ---
 

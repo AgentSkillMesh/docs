@@ -40,7 +40,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、上链回执 + 状态对齐；人类任务只读列表 · locale | **v0.3 / M3** 🟡 |
 | FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio `waitMined`、收入卡、`scripts/use-chain.mjs` · locale | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
-| FR-IOT-001 | 设备注册认证 | contracts + api | `DeviceRegistry` | v0.4 |
+| FR-IOT-001 | 设备注册认证 | contracts + api | 链上 `DeviceRegistry` 仍为 v1.2+；实验室 HTTP `/devices` 见 FR-IOT-007 | v1.2+ |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
 | FR-IOT-003 | IoT SDK BYOD | shared / iot-sdk | 设备 SDK | v0.4 |
 | FR-IOT-004 | 数据流微额 | contracts + api | `MicroPaymentStream` | v0.5 |
@@ -109,7 +109,13 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-WRK-010/011/012 | 社交步骤引导 Accessibility Service | worker | v0.4；**不是** 残障无障碍 | **v0.4** ⚪ |
 | FR-A11Y | 聋哑盲等残障无障碍（读屏/字幕/WCAG） | 全客户端 | **前期不做**（至商业 1.0 前；单独立项后再议） | **不做** |
 | FR-PAY-SETTLE | 任务完成链下放款 stub | api | `ledgerSettled` + LEDGER.credit(WETH wei) | **v0.3 / M3** 🟡 |
-| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS | **v0.2 / M2** 🟡 |
+| FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS · CHANNELS | **v0.2 / M2** · **v1.1-channels-lab** |
+| FR-CH-001~004 | 五通道、结算分流、统一 ID、交付凭证 | spec, api | `CHANNELS.md` · `GET /channels` · OpenAPI | **v1.1-channels-lab** ✅ |
+| FR-RT-001~003 | Agent Runtime 循环、Session、工具策略 | spec, api, scripts | `AGENT_RUNTIME.md` · `/mcp` · `example-agent-runner.mjs` | **v1.1-channels-lab** ✅ |
+| FR-A2A-001~002 | Agent Card + claim/complete 映射治理状态机 | api | `/a2a/*` · `POST /agent-tasks/:id/deliver` | **v1.1-channels-lab** ✅ |
+| FR-CLD-001 | Cloud adapter 执行 + Receipt | api, shared/sdk | `POST /trading/jobs/:id/execute` · job SQLite | **v1.1-channels-lab** ✅ |
+| FR-EP-001~003 | Endpoint 注册/心跳/白名单执行 | api | `/endpoints` · `ENDPOINT.md` | **v1.1-channels-lab** ✅ |
+| FR-IOT-007 | 实验室 Device HTTP（非链上 Registry） | api | `/devices` 注册·心跳·telemetry | **v1.1-channels-lab** ✅ |
 
 ## MVP v0.1 验收对照
 
@@ -125,6 +131,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | 客户端 wallet/worker/admin（主线 M3） | wallet, worker, admin, web | **v0.3 ✅ AI smoke:m3** |
 | 赚钱场景 SDK/API/人类任务（主线 M4） | shared/sdk, api/trading, sdk/python | **v0.4 ✅ AI smoke:m4** |
 | 工程生产闸门（主线 M5-rc） | api, deploy, spec/PRODUCTION | **v1.0-rc ✅ smoke:m5** |
+| 五通道实验室 P0–P4 | spec CHANNELS/RUNTIME/ENDPOINT, api, scripts | **v1.1-channels-lab ✅ smoke:channels** |
 | 商业宣布（审计/主网资金） | 全仓 | **v1.0** ⚪ |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。

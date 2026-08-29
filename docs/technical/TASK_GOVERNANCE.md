@@ -94,6 +94,8 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `POST /human-tasks/:id/proof` | 接单方上传交付照片，返回 `proofCid`（`local://…`） |
 | `POST /human-tasks/:id/deliver` | 人类交付 → `submitted`（须验收或已绑链上 Escrow）或 `completed`；`verificationRequired` 或社交任务须 `proofCid`；若已绑 `onChainEscrowId` 须带 `deliveryTxHash`（`deliverEscrow`） |
 | `POST /agent-tasks/:id/claim` | Agent 自动接单 |
+| `POST /agent-tasks/:id/deliver` | Agent 交付（默认免验收 → `completed` + 账本） |
+| `GET /a2a/agent-card` · `POST /a2a/tasks/:id/claim` · `complete` | A2A 适配（仅 `published`） |
 | `POST /admin/tasks/:id/approve` \| `reject` \| `request-revision` | 运营审批 |
 | `POST /admin/tasks/batch-approve` | 批量通过待审（默认 L0/L1；FR-ADM-002/003） |
 | `GET /admin/tasks/auto-decisions` | 自动审批决策日志（FR-ADM-004） |

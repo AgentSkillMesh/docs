@@ -1,13 +1,14 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 物联网交易与设备经济
 
-**版本**: v0.1-draft · **最后更新**: 2025-01-14  
-**路线图**: v0.4–v0.6（见 [ROADMAP.md](./ROADMAP.md)）
+**版本**: v0.2-lab · **最后更新**: 2026-08-29  
+**路线图**: 实验室 P4 = v1.1-channels-lab HTTP 设备；规模化车桩/能源/冷链 = **v1.2+**（见 [ROADMAP.md](./ROADMAP.md) · [CHANNELS.md](./CHANNELS.md)）
 
 ## 1. 愿景
 
@@ -19,7 +20,8 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 
 | 场景 | 版本 | 频率 | 单笔规模 | 平台收入 |
 |------|------|------|----------|----------|
-| **设备直连支付**（车↔充电桩） | v0.4 | 中 | 中（稳定币） | Gas + 市场服务费 |
+| **实验室 Device HTTP**（注册/心跳/遥测） | v1.1-channels-lab | 低 | 微额账本 | 本地验收 |
+| **设备直连支付**（车↔充电桩） | v1.2+ | 中 | 中（稳定币） | Gas + 市场服务费 |
 | **数据资产微市场**（传感器→Agent） | v0.5 | 极高 | 微额（$0.00001/次） | 海量调用 ×（Gas + 数据费抽成） |
 | **分布式能源交易**（光伏↔储能） | v0.6 | 高 | 高（按度电） | 清算手续费（链上结算比例） |
 | **供应链 IoT 契约**（冷链 SLA） | v0.6 | 中 | 企业级大单 | 复杂合约执行 Gas + 安全费 |
@@ -116,11 +118,16 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 | `IoTEscrow` / `MicroPaymentStream` | contracts | v0.4–v0.5 |
 | `EnergyMarket` | contracts | v0.6 |
 | `ConditionalFreight` | contracts | v0.6 |
-| Device REST / 流索引 | api | 各版本 |
+| Device REST `/devices`（实验室） | api | v1.1-channels-lab |
 
 ## 7. 验收（按版本）
 
-### v0.4
+### v1.1-channels-lab（P4）
+
+- [x] `POST /devices/register` + heartbeat + telemetry hash → 账本入账（`pnpm run smoke:channels`）
+- [ ] 链上 `DeviceRegistry` / 稳定币充电（仍为 v1.2+）
+
+### v1.2+ 车桩
 
 - [ ] 认证充电桩 + 模拟车载 Agent 完成一笔稳定币充电支付（测试网）  
 - [ ] SDK 样例：设备注册 + 单次收款  
@@ -138,4 +145,3 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ---
 
 *与 [TASK_SYSTEM.md](./TASK_SYSTEM.md)、[AGENT_CHAIN.md](./AGENT_CHAIN.md)、[ECOSYSTEM.md](./ECOSYSTEM.md) 协同演进。*
-

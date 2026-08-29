@@ -275,10 +275,31 @@ M2 实验室验收已通过（2026-08-25）。M3/M4 由 `pnpm run smoke:m3` / `s
 | **M5 工程 1.0-rc** | **v1.0-rc** | **✅ `pnpm run smoke:m5`** |
 | M5 商业宣布 1.0 | v1.0 | ⚪ 审计 · 主网资金 · Bounty · SRE |
 | 支线 MetaDEX | v0.15.x | 🟡 合约进度另计 |
-| 支线 IoT / 能源 / Omnichain | v1.1+ | ⚪ |
+| **五通道实验室** | **v1.1-channels-lab** | **✅ `pnpm run smoke:channels`（P0–P4）** |
+| 支线 IoT 规模化 / 能源 / Omnichain | v1.2+ | ⚪ P4 仅为单设备 HTTP PoC |
 
 *状态: ✅ 完成 | 🟡 进行中 | ⚪ 未开始 | 🔴 阻塞*
 
 ---
 
-*主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*
+## 8. 五通道实验室（P0–P4 · v1.1-channels-lab）
+
+商业 1.0 宣布仍待审计/主网。本段是工程实验室：把 FR-ST-006 做成可本地验证的五通道，**不新开 Git 仓**。
+
+规范：[CHANNELS.md](./CHANNELS.md) · [AGENT_RUNTIME.md](./AGENT_RUNTIME.md) · [ENDPOINT.md](./ENDPOINT.md)
+
+| 阶段 | 目标 | 落点 |
+|------|------|------|
+| **P0** | 统一 `channel` / `executorKind` / `settlementRail` / 关联 ID | spec + `GET /channels` + OpenAPI |
+| **P1** | Agent ↔ Cloud：发现→报价→执行适配器→Receipt | `trading` 持久化 job、`execute`、MCP、CloudEvents |
+| **P2** | Agent ↔ Agent：Card → claim → deliver | `/a2a/*` + `POST /agent-tasks/:id/deliver` |
+| **P3** | 电脑/手机 Endpoint 白名单执行 | `/endpoints` |
+| **P4** | 单设备 IoT 注册/心跳/遥测入账 | `/devices`（无 DeviceRegistry 合约） |
+
+验收：`pnpm run smoke:channels`。示例 Runtime：`scripts/example-agent-runner.mjs`。
+
+**明确不做**：Matter 收款、公网 MQTT 控制面、Rust SDK、完整 libp2p、用 MCP/A2A 替换任务状态机。
+
+---
+
+*主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CHANNELS.md](./CHANNELS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*

@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -17,7 +17,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | **综合端 App** | `worker` | 任务执行者 | Agent 众包 + **社交平台任务**（清单+截图） |
 | **Creator DApp** | `web` | Agent 运营者 | Agent/Skill、Escrow、市场；测试网 gas/水龙头引导 |
 | **管理平台** | `admin` | 平台运营 | 订单审核、风控告警、发布审批 |
-| **文档站** | `docs` | 所有人 | 公开说明 |
+| **Agent Trading SDK** | `shared/sdk` · `sdk/python` | 云 / Agent 开发者 | 发现、报价、`signReceipt`、Merkle（无 App） |
+| **Agent Runtime（示例）** | MetaRepo `scripts/example-agent-runner.mjs` | Agent 开发者 | 拉作业、调工具、交回执；非独立仓 |
+| **Endpoint Agent** | api `/endpoints` | 本机执行器 | Desktop 白名单能力；非 worker App |
+| **IoT Device HTTP** | api `/devices` | 设备 / 网关 | 注册、心跳、遥测；非 Matter |
 
 ```mermaid
 flowchart TB
@@ -62,6 +65,9 @@ flowchart TB
 | [WORKER.md](./WORKER.md) | 综合端 App（众包 + 社交） |
 | [ADMIN.md](./ADMIN.md) | 管理平台 |
 | [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md) | 审批分级、风控、状态机 |
+| [CHANNELS.md](./CHANNELS.md) | 五通道任务经济 |
+| [AGENT_RUNTIME.md](./AGENT_RUNTIME.md) | Agent 执行循环 |
+| [ENDPOINT.md](./ENDPOINT.md) | 电脑/手机执行面 |
 | [SPEC.md](./SPEC.md) | 协议总规格 |
 | [REPOS.md](./REPOS.md) | 仓库依赖 |
 

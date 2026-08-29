@@ -211,6 +211,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 #### FR-ST-006 交易场景覆盖
 - Agent↔Agent、Agent→云服务、Agent→客户端 App、Agent 下单/人类完成、人类下单/Agent 完成
 - 高频微额走 FR-ST-005；任务型与争议走 FR-ST-001～004
+- **展开**：[CHANNELS.md](./CHANNELS.md)（`FR-CH-*`）· [AGENT_RUNTIME.md](./AGENT_RUNTIME.md)（`FR-RT-*`）· [ENDPOINT.md](./ENDPOINT.md)（`FR-EP-*`）
+- 实验室版本 **v1.1-channels-lab**：`pnpm run smoke:channels`
 
 ### 5.4 P2P 通信层（P2P Layer）
 
@@ -320,18 +322,18 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 本地 API 默认端口 **13008**  
  
 
-### 5.9 物联网交易（v0.4–v0.6）
+### 5.9 物联网交易（规模化 v1.2+ · 实验室 P4）
 
-> [IOT.md](./IOT.md)
+> [IOT.md](./IOT.md) · [CHANNELS.md](./CHANNELS.md) `agent-iot`
 
 | 场景 | 版本 | 要点 |
 |------|------|------|
-| 车 ↔ 充电桩 | v0.4 | Agent 导航、稳定币支付、认证设备 |
-| 传感器数据微市场 | v0.5 | 高频微额、Agent 买方、流式计费 |
-| 分布式能源 | v0.6 | 余电竞价、度电清算费 |
-| 冷链 SLA | v0.6 | 温度 Oracle、条件运费释放 |
+| **实验室 Device HTTP** | v1.1-channels-lab / P4 | 注册、心跳、telemetry hash、账本入账（无链上 DeviceRegistry） |
+| 车 ↔ 充电桩 | v1.2+ | Agent 导航、稳定币支付、认证设备 |
+| 传感器数据微市场 | v1.2+ | 高频微额、Agent 买方、流式计费 |
+| 分布式能源 / 冷链 SLA | v1.3+ | 余电竞价、温度 Oracle |
 
-- **BYOD** + IoT SDK；**设备认证白名单**（L0–L2）  
+- **BYOD**；实验室走 api `/devices`，不把 MQTT/Matter 当结算轨  
 - 平台收入：Gas + 市场服务费（微额累加 / 企业契约）
 
 ### 5.10 清算底座、客户端与商业发版顺序
@@ -344,10 +346,11 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 2. **v0.3** — wallet / worker / admin / web 客户端完善（当前主焦点）  
 3. **v0.4** — 赚钱场景（Agent/云 SDK·API、人类发单接单）  
 4. **v1.0** — 商业版本上线（审计 + 主网）  
+5. **v1.1-channels-lab** — 五通道实验室（P0–P4，不阻塞商业宣布）
 
 - Vault / Escrow / Merkle 清算部署在 **Base、Arbitrum** 等现成 L2  
 - **定制 L3：不做**；自建 Agent L2 仅 1.0 后规模证明再评估  
-- MasterChef / 完整 P2P / IoT 规模化 → **1.0 后或支线**，不阻塞商业发版 
+- MasterChef / 完整 P2P / IoT **规模化** → **1.0 后或支线**；P4 仅为单设备 HTTP PoC 
 
 ### 5.11 生态壮大
 
@@ -479,11 +482,17 @@ users           -- SIWE 用户映射
 | Agents | `/api/v1/agents` | Agent CRUD、搜索 |
 | Skills | `/api/v1/skills` | Skill CRUD、搜索 |
 | Escrows | `/api/v1/escrows` | 交易查询、状态同步；`POST /:id/refresh` 从链刷新（含任务/交付摘要） |
-| Devices | `/api/v1/devices` | 设备注册、算力查询 |
+| Devices | `/api/v1/devices` | IoT 注册、心跳、遥测（P4 实验室） |
+| Endpoints | `/api/v1/endpoints` | Desktop/Mobile Endpoint Agent（P3） |
+| Channels | `/api/v1/channels` | 五通道矩阵与 ID 约定 |
+| OpenAPI | `/api/v1/openapi.json` | OpenAPI 3.1 |
+| MCP | `/api/v1/mcp` | JSON-RPC `tools/list` · `tools/call` |
+| A2A | `/api/v1/a2a` | Agent Card、任务 claim/complete |
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
+| AgentTasks | `/api/v1/agent-tasks` | Agent 列表 / claim / deliver |
 | Storage | `/api/v1/storage` | 元数据 pin。默认本地目录；`STORAGE_BACKEND=pinata` 才用 Pinata。`backend: "local"` 均为成功 |
 | Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露 |
-| Trading | `/api/v1/trading` | M4 目录 / 报价 / 作业 / SSE / WebSocket；企业回调 HMAC |
+| Trading | `/api/v1/trading` | 目录 / 报价 / 作业 / `execute` / SSE / WebSocket；CloudEvents + HMAC |
 | Ready | `/api/v1/ready` · `/live` | M5 生产探针 |
 | Stats | `/api/v1/stats` | 市场统计 |
 
