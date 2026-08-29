@@ -1,9 +1,10 @@
-﻿---
+---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
-> **瑙勮寖婧愭枃浠?*锛氱敱 MetaRepo `spec/` 鍚屾锛岃鍕跨洿鎺ョ紪杈戞湰椤点€?
+> **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
+
 # 本地开发端口
 
 **默认 API 端口 `13008`**（避免与多项目默认 3000 冲突）。各仓通过环境变量覆盖。
@@ -20,11 +21,13 @@ doNotEdit: 璇蜂慨鏀?MetaRepo spec/ 鍚庨噸鏂拌繍琛?scripts/sync-spec-t
 ```bash
 # API
 PORT=13008
+# 浏览器跨域：web + admin（逗号分隔）。`pnpm run use:sepolia|localhost` 须保留两端，不得只写 :5174
+CORS_ORIGIN=http://localhost:5174,http://localhost:13011
 
 # 客户端指向 API
 EXPO_PUBLIC_API_URL=http://localhost:13008/api/v1
 VITE_API_URL=http://localhost:13008
+NEXT_PUBLIC_API_URL=http://localhost:13008/api/v1
 ```
 
 真机调试时将 `localhost` 换为电脑局域网 IP。
-

@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -62,8 +62,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 - **实现（M3）**：`/risk-alerts` ← `GET /admin/tasks/alerts`；拦截 → `POST .../reject`（待审或未接单的 `published`）；升级人工 → `POST .../escalate`；加入黑名单/观察 → `POST /admin/publishers/flag`；标记已处理 → `POST .../clear-alert`  
 
 ### FR-ADM-006 仪表盘
-- 今日发布/完成/GMV、待审数量、告警数  
-- **实现（M3）**：KPI 条接 `GET /admin/stats/overview`  
+- 今日发布/完成/**GMV（已完成任务 `rewardEth` 合计，单位 ETH）**、待审数量、告警数  
+- 首页须可干活：待审队列预览（点进 `/review?id=`）、开放争议数、Indexer 健康（`GET /health` 的 `indexer.rpcOk` / `catchupPercent`）、最近审计  
+- 不得展示占位假金额（如固定 `$128,400 USDC`）  
+- **实现（M3）**：KPI 条接 `GET /admin/stats/overview`（含 `gmvSettledTodayEth`、`needsRevision`、`openDisputes`）  
 - **图表**：不做自建图表；后续嵌入 [DataLuminary](./DATALUMINARY.md) Dashboard（iframe / 外链）  
 
 ### FR-ADM-007 支付清算运维（M3）
@@ -131,7 +133,7 @@ admin → shared（类型）
 
 | 版本 | 交付 |
 |------|------|
-| v0.3 | 登录、待审列表、单条/批量审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志**、**争议工单**；仪表盘 KPI（图表 → DataLuminary）；**界面 en + zh-CN** |
+| v0.3 | 登录、待审列表、单条/批量审批、告警列表、**支付 Commits 运维**、**治理参数**、**任务总览**、**发单方治理**、**审计日志**、**争议工单**；仪表盘 KPI + 待审队列预览 + 真实 GMV（图表 → DataLuminary）；**界面 en + zh-CN** |
 | v0.4 | Webhook 告警、链上争议结算、DataLuminary 仪表盘嵌入 |
 | v1.0 | 完整 RBAC + 审计留存策略 |
 

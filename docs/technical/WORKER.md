@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -75,6 +75,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 - **社交（M3，要做）**：详情走 `app/social/[id]`；展示发单方声明的 App 与步骤；**可打开目标 App 首页**（系统浏览器 / 已安装 App，不代操作）；须勾选清单后上传截图。Accessibility Service 自动打开 App 为 v0.4 可选项  
 - **API**：`verificationRequired` 或 `taskType=social` 的交付必须带 `proofCid`，否则 `PROOF_REQUIRED`  
 - 大厅 / 交付 / 收益 / Vault 用户文案走 en/zh locale  
+- 收益页须展示 **原生 ETH 余额**（链上 `confirmDelivery` 打到此地址）；`onChainEscrowId` / `escrowReleaseTxHash` 的任务标明「链上已放款」或「已锁定」，不得只显示空的链下账本让人以为没收到钱  
+- 公共测试网（非 31337）**禁止**在代码里回退到 Hardhat `#0`/`#1`；缺 demo 钥须明确报错。已连接公开 Hardhat 地址时须警告（放款会被 EIP-7702 转走）  
 
 见 [用户文档 · 人类任务](../repos/docs/docs/users/human-tasks.md)。
 
@@ -82,14 +84,14 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 | ID | 内容 |
 |----|------|
-| FR-WRK-001 | 绑定收款地址（只读展示，可从 wallet 导入同一助记词） |
+| FR-WRK-001 | 绑定收款地址（只读展示，可从 wallet 导入同一助记词）。**Base Sepolia demo 钥必须是非公开密钥**；禁止用 Hardhat `#1`（公共测试网上会被 EIP-7702 转走放款）。本地 31337 仍可用 `#1`。`pnpm run demo:worker:sepolia` 可轮换并打 0.002 ETH Gas |
 | FR-WRK-002 | 任务大厅（human + social 分 Tab）；**仅 `published`/`open`** |
 | FR-WRK-003 | 众包交付（相机/GPS/问卷 + `proofCid`）→ `submitted`；接单前校验 published |
 | FR-WRK-004 | **社交任务（M3 要做）**：大厅 + 打开目标首页 + 清单 + 截图交付 |
 | FR-WRK-010 | Android Accessibility Service 社交步骤引导（v0.4；非残障无障碍） |
 | FR-WRK-011 | 社交步骤引导合规与授权（v0.4） |
 | FR-WRK-012 | 社交交付截图 / 可选事件 hash（v0.4） |
-| FR-WRK-005 | 收益与历史；Vault 提现；**任务完成账本余额**（`GET /payments/ledger/balances`） |
+| FR-WRK-005 | 收益与历史；Vault 提现；**原生 ETH（Escrow 放款）** + 任务完成账本余额（`GET /payments/ledger/balances`）；链上已放款任务须标明 |
 | FR-WRK-006 | 推送（v0.4） |
 | FR-WRK-007 | **M3** 争议：任务详情对 `assigned|submitted|verifying` 可 `POST /tasks/:id/dispute`（openedBy=worker） |
 | FR-WRK-008 | 可选 Logto 平台会话：只为平台门禁接单/交付调用附 token，并展示套餐/组织；不替代收款钱包 |

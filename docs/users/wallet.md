@@ -43,16 +43,17 @@ title: 钱包 App
 4. **worker**：连接接单钱包 → **众包** → 打开该任务 → **接单**。
 5. **wallet → 收益**：该任务变为已接单后点 **链上锁定报酬（fund Escrow）** → **确认锁定**。Basescan 应出现 `createEscrow` + `fundEscrow`。
 6. **worker**：拍照（须验收任务）→ **交付**（会先链上 `deliverEscrow` 再提交 API）。
-7. **wallet → 收益**：点 **验收并放款**。任务 `completed`，Escrow 放款到接单地址 `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`。
+7. **wallet → 收益**：点 **验收并放款**。任务 `completed`，Escrow 把报酬打到 **worker 当前 demo 地址**（连接 wallet 后首页可见；**不要**用公开 Hardhat `#1`，公共测试网上会被转走）。
 
 第一次不要走社交任务（须 Logto 人工审）。不要重部 Escrow。
 
 **自动测（推荐）**：wallet/worker 是 Expo，不用 Playwright 点 App。链上闭环用：
 
 ```bash
-pnpm run smoke:escrow:check   # 只检查合约与 demo 地址余额
-pnpm run dev:api              # 另开终端
-pnpm run smoke:escrow         # 真发 Sepolia 交易（约锁定 0.008 ETH）
+pnpm run demo:worker:sepolia   # 若接单钥仍是 Hardhat #1：轮换并打 0.002 ETH Gas
+pnpm run smoke:escrow:check    # 只检查合约与 demo 地址余额
+pnpm run dev:api               # 另开终端
+pnpm run smoke:escrow          # 真发 Sepolia 交易（约锁定 0.008 ETH）
 ```
 
 运营台网页登录才用 Playwright：`pnpm run e2e:admin`（需 `pnpm id:up`）。

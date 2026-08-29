@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -54,7 +54,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 - Escrow 收入/支出流水  
 - 按任务 ID 聚合  
 - **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`submitted` / `verifying` 验收前 `confirmDelivery` 放款；收益页对这两态均可点通过/驳回  
-- **本机自动测**：`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易，约锁定 0.008 ETH）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
+- **本机自动测**：`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易，约锁定 0.008 ETH，并断言接单地址余额增加）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
+- **Sepolia demo 钥**：发单/接单不得使用公开 Hardhat 账户（`#0`/`#1` 等）；这些地址在公共测试网常被 EIP-7702 委托，放款会被转走。本地 `31337` 仍可用 Hardhat `#0`/`#1`。接单钥不安全时先 `pnpm run demo:worker:sepolia`。  
 - **M3**：收益页 `GET /escrows?consumer=` 展示预留/链上 Escrow 流水  
 - **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议（原因用输入框，不依赖 iOS `Alert.prompt`）；链上托管超时可 `refundTimedOut`  
 - 收益页、发布页与 Tab 文案走 en/zh locale；Escrow 签名/配置错误同样走 locale  

@@ -1,6 +1,6 @@
 ---
 syncSource: VibeAgent MetaRepo spec/
-doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps1
+doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ---
 
 > **规范源文件**：由 MetaRepo `spec/` 同步，请勿直接编辑本页。
@@ -9,7 +9,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2026-08-25
+**最后更新**: 2026-08-29
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -87,7 +87,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert · **说明 / 线下地点** · **社交须声明平台与步骤** · locale | **v0.3 / M3** 🟡 |
 | FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine（含交付 `submitted`）；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
 | FR-WLT-006 / FR-ONRAMP-003 | wallet 买币 Onramp | wallet, api | `/onramp` + `POST /onramp/session` · en+zh | **v0.3 / M3** 🟡 |
-| FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm · **`pnpm run smoke:escrow`** | **v0.3 / M3** 🟡 |
+| FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm · **`pnpm run smoke:escrow`**（拒绝 Hardhat 公开钥 / EIP-7702；放款后余额断言） | **v0.3 / M3** 🟡 |
 | FR-WLT-008 | wallet Vault 充提 | wallet | `app/vault.tsx` + 入金 Tab · disclosure · en+zh | **v0.3 / M3** 🟡 |
 | FR-ADM-001 | admin Logto 登录 | admin, api | 本地 `pnpm id:up`；`doerflow_admin` → Casbin；禁止 SIWE 冒充运营 | **v0.3 / M3** 🟡 |
 | FR-ADM-003 | admin 审批工作台 | admin, api | approve 绑 Escrow 预留；request-revision → needs_revision · **社交展示 App/步骤** · locale | **v0.3 / M3** 🟡 |
@@ -98,11 +98,11 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.ps
 | FR-ADM-012 | admin 争议仲裁工单 | admin, api | `/disputes` ← list/claim/resolve；`POST /tasks/:id/dispute` | **v0.3 / M3** 🟡 |
 | FR-ADM-002 | admin 任务列表 | admin, api | `/tasks` ← GET /admin/tasks + 行内审批 · locale | **v0.3 / M3** 🟡 |
 | FR-ADM-005 | admin 风控告警 | admin, api | `/risk-alerts` ← alerts + clear-alert · locale | **v0.3 / M3** 🟡 |
-| FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` KPI；图表 → DataLuminary 嵌入 · locale | **v0.3 / M3** 🟡 |
+| FR-ADM-006 | admin 仪表盘 KPI | admin, api | `/dashboard` 真实 GMV ETH + 待审队列 + Indexer + 争议；图表 → DataLuminary · locale | **v0.3 / M3** 🟡 |
 | FR-ADM-013 | admin 界面文案 locale | admin | `en` + `zh-CN`；禁止页面硬编码 fallback | **v0.3 / M3** 🟡 |
 | FR-ADM-007 | admin 支付 Commits 运维 | admin | `/payments/commits` | **v0.3 / M3** 🟡 |
 | FR-ADM-008 | admin 费率等级只读 | admin, api | `/payments/fees` ← `GET /fees/tiers` | **v0.3 / M3** 🟡 |
-| FR-WRK-002/003/005 | worker published 大厅 + 相机/GPS/问卷交付 + Vault/账本 | worker, api | Expo 大厅 · proof · GPS · 社交清单 · accept · deliver → **submitted** · deliverEscrow · earnings · **en+zh** | **v0.3 / M3** 🟡 |
+| FR-WRK-002/003/005 | worker published 大厅 + 相机/GPS/问卷交付 + Vault/账本 | worker, api | Expo 大厅 · proof · GPS · 社交清单 · accept · deliver → **submitted** · deliverEscrow · earnings **原生 ETH + 链上放款标记** · **en+zh** | **v0.3 / M3** 🟡 |
 | FR-WRK-004 | worker 社交任务（清单+截图） | worker, wallet | `social/[id]` · 打开目标首页 · wallet 声明平台与步骤 · 人工审后上架 | **v0.3 / M3 要做** 🟡 |
 | FR-WRK-010/011/012 | 社交步骤引导 Accessibility Service | worker | v0.4；**不是** 残障无障碍 | **v0.4** ⚪ |
 | FR-A11Y | 聋哑盲等残障无障碍（读屏/字幕/WCAG） | 全客户端 | **前期不做**（至商业 1.0 前；单独立项后再议） | **不做** |
