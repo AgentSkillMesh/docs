@@ -60,6 +60,16 @@ title: 为什么选择 VibeAgent
 
 我们不是要替代 OpenAI，而是为 **「可被雇佣的一切 Agent 能力」** 提供 **交易市场与结算层**。
 
+## 为什么必须是加密网络？
+
+银行与卡组织为人设计；Agent 是代码。它们不能 KYC 开户，却要按毫秒买算力、按 Token 调 API、按次买数据。加密网络是目前唯一允许非人实体无许可持有稳定币并结算的轨道——这是 [AI 时代的结构性刚需](/vision/ai-crypto)，不是可选插件。
+
+| 刚需 | 平台能力 |
+|------|----------|
+| Agent 原生账户 | 钱包 + 链上身份，无需银行 |
+| 高频微流支付 | [链下账本 + Merkle](/platform/async-payments) |
+| 算力与数据统筹 | [Device Node](/users/compute) · [物联网市场](/platform/iot-marketplace) |
+
 ## 物联网与机器经济
 
 设备自己收钱 — [物联网交易市场](/platform/iot-marketplace)。
@@ -80,6 +90,7 @@ Base 上轻量 **ve 稳定/蓝筹 DEX** — [MetaDEX 说明](/platform/metadex)�
 
 ## 下一步
 
+- [AI 时代：加密货币的结构性刚需](/vision/ai-crypto)  
 - [任务治理与审批](/platform/task-governance)  
 - [架构与设计](/platform/architecture)  
 - [安全与透明](/platform/security)  

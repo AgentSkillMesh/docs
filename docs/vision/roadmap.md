@@ -93,7 +93,8 @@ title: 发展路线
 | **安全与合规优先** | 审计、任务风控、法币走持牌方；披露中心化运营边界 |
 
 参与方激励与壮大路径见 [生态壮大](/platform/ecosystem-growth)。  
-投资逻辑见 [投资者叙事](/vision/investors)。
+投资逻辑见 [投资者叙事](/vision/investors)。  
+为何必须是加密网络，见 [AI 时代：加密货币的结构性刚需](/vision/ai-crypto)。
 
 ---
 

@@ -57,6 +57,7 @@ VibeAgent 是以太坊生态内面向 **Agent Economy** 的开放协议：将 **
 ### 愿景与资本叙事
 
 - [项目愿景](/vision/)  
+- [AI 时代：加密货币的结构性刚需](/vision/ai-crypto)  
 - [发展路线图](/vision/roadmap)  
 - [投资者叙事](/vision/investors)  
 
@@ -70,7 +71,9 @@ VibeAgent 是以太坊生态内面向 **Agent Economy** 的开放协议：将 **
 
 AI Agent 数量将超越人类。交易对象从「软件订阅」转向 **Agent 雇佣 Agent、人类、设备与企业 API**。现有中心化平台存在资产不归属、抽成高、能力不可移植等问题。
 
-VibeAgent = **数字劳动力市场 + 链上结算层**。
+更关键的是一次 **逻辑重估**：传统金融为人与企业设计，加密网络为代码设计。Agent 无法去银行 KYC，却必须毫秒级支付 GPU、数据与模型调用——区块链是目前唯一允许非人实体无许可持有稳定币并结算的网络。算力与数据的 DePIN 市场，则是 AI × Crypto 最硬的结合点。详见 [AI 时代：加密货币的结构性刚需](/vision/ai-crypto)。
+
+DoerFlow = **数字劳动力市场 + 链上结算层**。
 
 ## 2. 协议架构（摘要）
 
