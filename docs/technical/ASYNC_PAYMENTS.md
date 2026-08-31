@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # Agent 异步支付 · 链下账本 + Merkle 批量结算
 
-**版本**: v0.2.4 · **最后更新**: 2026-08-25  
+**版本**: v0.2.6 · **最后更新**: 2026-08-31  
 **关联**: [SPEC.md](./SPEC.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [IOT.md](./IOT.md) · [BRIDGE.md](./BRIDGE.md)
 
 ## 0. 架构决策（已定）
@@ -291,13 +291,16 @@ Vault 充值（链上）
 
 | 组件 | 技术 | 环境变量 | 说明 |
 |------|------|----------|------|
-| 账本持久化 | **PostgreSQL** | `LEDGER_STORE=postgres` · `LEDGER_DATABASE_URL` | 余额 / 快照 / leaf / commit 审计表 |
+| 账本持久化 | **PostgreSQL** | `LEDGER_STORE=postgres`（**默认**）· `LEDGER_DATABASE_URL` | 余额 / 快照 / leaf / commit 审计表 |
+| Receipt Vault / Session | **PostgreSQL** | 同 `LEDGER_STORE=postgres` | 收据、payer nonce、Session 预算；重启不丢、防双花 |
 | 热缓存（可选） | **Redis** | `REDIS_URL` | 余额 write-through；未配置则直读 PG |
-| Root 上链队列 | **BullMQ** | `COMMIT_ROOT_QUEUE=bull` · `REDIS_URL` | 快照后异步 `MicroPaymentSettler.commitRoot` |
-| 本地回退 | memory | `LEDGER_STORE=memory`（默认）· `COMMIT_ROOT_QUEUE=off` | 无 Docker 时 PoC |
+| Root 上链队列 | **BullMQ** | `COMMIT_ROOT_QUEUE=bull`（**默认**）· `REDIS_URL` | 快照后异步 `MicroPaymentSettler.commitRoot` |
+| 无 Docker 回退 | memory | 显式 `LEDGER_STORE=memory` · `COMMIT_ROOT_QUEUE=off` | 仅 CI；账本 + Vault + Session 全部内存；**不是** 本地或生产默认 |
 | 操作员密钥 | — | `SETTLER_OPERATOR_KEY` | 仅 api 进程；对应 Settler `operator` |
 
-本地编排：`repos/api/docker-compose.ledger.yml`（Postgres 5433 + Redis 6379）。
+本地编排：`repos/api/docker-compose.ledger.yml`（Postgres **5439** + Redis **6379**）。`pnpm run dev:api` 会先 `docker compose up -d` 并等待健康检查。macOS 开发者默认使用 Docker Desktop。
+
+索引库仍是嵌入式 **SQLite**（任务 / Indexer）；**不要**把账本写进 SQLite，也**不要**用已废弃的 MySQL compose。
 
 ### 6.2 shared 包
 
@@ -334,9 +337,9 @@ import {
 |----|------|--------|------|
 | FR-PAY-001 | 放弃联盟链；公链/现成 L2 only | docs, spec | **已定** |
 | FR-PAY-002 | EIP-712 Off-chain Receipt schema | shared, api | v0.2 |
-| FR-PAY-003 | Receipt Vault 验签与 nonce 去重 | api | v0.2 |
-| FR-PAY-004 | Session Key scoped 授权 | contracts, wallet | v0.3 |
-| FR-PAY-005 | Session 预算与撤销 | contracts | v0.3 |
+| FR-PAY-003 | Receipt Vault 验签与 nonce 去重 | api | **默认 Postgres** | **v0.2 ✅** |
+| FR-PAY-004 | Session Key scoped 授权 | contracts, wallet, api | 链下策略默认 Postgres | v0.3 |
+| FR-PAY-005 | Session 预算与撤销 | contracts, api | 链下 spent 默认 Postgres | v0.3 |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api | **v0.2 / M2 ✅** |
 | FR-PAY-007 | 双向轧差净额结算 | contracts | v0.2–v0.4 |
 | FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | v1.0 |

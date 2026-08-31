@@ -457,7 +457,9 @@ Escrow {
 }
 ```
 
-### 7.2 链下索引（SQLite）
+### 7.2 链下索引（SQLite）与账本（PostgreSQL）
+
+索引 / 任务治理走嵌入式 SQLite。微支付账本（余额、Merkle 快照、leaf、commit 任务）走 **PostgreSQL**，与 SQLite 文件分离；见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) §6.1.1。
 
 ```
 agents          -- 链上 Agent 索引 + 扩展字段
@@ -511,7 +513,7 @@ users           -- SIWE 用户映射
 | 区块链 | Solidity 0.8.x, Hardhat/Foundry, OpenZeppelin |
 | L2 | Base Sepolia (testnet) → Base Mainnet |
 | 前端 | React 19, Ant Design 5, Zustand, wagmi/viem, Rsbuild |
-| 后端 | NestJS 10 + **Fastify**，TypeORM，**SQLite**（better-sqlite3） |
+| 后端 | NestJS 10 + **Fastify**，TypeORM；索引 **SQLite**（better-sqlite3）；账本 **PostgreSQL** + Redis/BullMQ（Docker；`LEDGER_STORE=memory` 仅无 Docker 回退） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
 | 存储 | **本地 IPFS 目录**（默认）；Pinata 仅显式 `STORAGE_BACKEND=pinata` |
 | 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标；公共网 RPC 可选用 thirdweb，见 FR-IDX-001） |

@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # 生产就绪（M5 工程闸门）
 
-**版本**: v1.0-rc · **最后更新**: 2026-08-29  
+**版本**: v1.0-rc · **最后更新**: 2026-08-30  
 **关联**: [ROADMAP.md](./ROADMAP.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [ONRAMP.md](./ONRAMP.md)
 
 本文件是 **AI 可自动验收** 的生产工程清单。  
@@ -20,7 +20,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | 路径 | 用途 |
 |------|------|
 | `GET /api/v1/live` | 进程存活 |
-| `GET /api/v1/ready` | SQLite / 账本 / 披露可读则 200；Indexer RPC 失败为 `degraded` 仍 200（依赖外部 RPC） |
+| `GET /api/v1/ready` | SQLite 索引 / Postgres 账本+Receipt Vault+Session / 披露可读则 200；Indexer RPC 失败为 `degraded` 仍 200 |
 | `GET /api/v1/health` | 链配置 + Indexer 游标 |
 | `GET /api/v1/payments/disclosure` | 异步支付模型与强制提现路径 |
 
@@ -38,8 +38,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | `DB_SYNCHRONIZE` | `false`（只跑 migration） |
 | `PAYMENT_SERVICE_JWT_SECRET` | 强随机；禁止 lab 默认 |
 | `SIWE_JWT_SECRET` / `PLATFORM_JWT_SECRET` | 非 `dev-*` |
-| `LEDGER_STORE` | 生产用 `postgres` + `LEDGER_DATABASE_URL` |
-| `COMMIT_ROOT_QUEUE` | `bull` + `REDIS_URL` + `SETTLER_OPERATOR_KEY` |
+| `LEDGER_STORE` | `postgres` + `LEDGER_DATABASE_URL`（与本地默认相同；禁止生产用 `memory`） |
+| `COMMIT_ROOT_QUEUE` | `bull` + `REDIS_URL` + `SETTLER_OPERATOR_KEY`（生产禁止 `off`） |
 | `CORS_ORIGIN` | 显式 allowlist，禁止 `*` |
 | `TRADING_WEBHOOK_SECRET` | 企业回调 HMAC |
 

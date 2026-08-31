@@ -70,9 +70,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-ONRAMP-007 | 入金向导 Onramp+Bridge | wallet | v0.7 | v0.7 |
 | FR-PAY-001 | 公链/现成 L2 only（弃联盟链） | spec, docs | **已定** | **已定** |
 | FR-PAY-002 | EIP-712 Receipt schema | shared, api | v0.2 | v0.2 |
-| FR-PAY-003 | Receipt Vault | api | `payments` | v0.2 ✅ |
-| FR-PAY-004 | Session Key 授权 | contracts, wallet, api | v0.3 ✅ |
-| FR-PAY-005 | Session 预算与撤销 | contracts, api | v0.3 ✅ |
+| FR-PAY-003 | Receipt Vault 验签与 nonce 去重 | api | **默认 Postgres**；`memory` 仅 `LEDGER_STORE=memory` | v0.2 ✅ |
+| FR-PAY-004 | Session Key scoped 授权 | contracts, wallet, api | 链下策略默认 Postgres（与账本同库） | v0.3 ✅ |
+| FR-PAY-005 | Session 预算与撤销 | contracts, api | 链下 spent 默认 Postgres | v0.3 ✅ |
 | FR-PAY-009 | signReceipt SDK | shared, api, sdk/python | `@vibe-agent/shared/sdk` + `POST /payments/receipts` | **v0.4 / M4 ✅** |
 | FR-PAY-014 | Trading API + 作业回调 | api | `/trading/catalog|quote|jobs` · SSE/WS · HMAC webhook | **v0.4 / M4 ✅** |
 | FR-PAY-015 | 生产就绪探针与 Runbook | api, deploy, spec | `/ready` `/live` · `deploy/production.env.example` · PRODUCTION.md | **v1.0-rc / M5 ✅ 工程** |
@@ -81,7 +81,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
-| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify；`credit-batch` ≤1 万；10 万笔实验室验收；PG + Redis/BullMQ 可选 | **v0.2 / M2** ✅ |
+| FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify；默认 `LEDGER_STORE=postgres` + BullMQ；10 万笔引擎单测仍用 memory；显式 `memory` 仅无 Docker | **v0.2 / M2** ✅ |
 | FR-PAY-013 | Merkle 强制提现 | contracts, shared | Hardhat 任意账户 `forceWithdraw`；Sepolia 已部署未重部 | **v0.2 / M2** ✅ |
 | FR-WLT-001 | wallet 账户与首页 | wallet | 首页平台会话/快速体验 · 链名 en+zh | **v0.3 / M3** 🟡 |
 | FR-WLT-002 | wallet ETH 转账（去演示化） | wallet | `/transfer` gas 估算 + 回执 + explorer · en+zh | **v0.3 / M3** 🟡 |

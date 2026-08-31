@@ -16,6 +16,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | Admin 运营台 | 13011 | `next dev --port` |
 | Web DApp | 5174 | Rsbuild dev |
 | Hardhat | 8545 | — |
+| **Ledger Postgres** | **5439** | `LEDGER_DATABASE_URL`（compose 映射，避开本机 5432 与 Identity :5433） |
+| **Ledger Redis** | **6379** | `REDIS_URL`（BullMQ + 账本缓存） |
 | Expo Metro | 8081+ | — |
 
 ```bash

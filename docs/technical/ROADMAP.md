@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # DoerFlow 版本规划与里程碑
 
-**最后更新**: 2026-08-29  
+**最后更新**: 2026-08-30  
 **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
@@ -98,7 +98,7 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 | 模块 | 交付 | 状态（2026-08-25） |
 |------|------|-------------------|
 | **contracts** | `PaymentVault` 充提；`MicroPaymentSettler` commitRoot + forceWithdraw | ✅ Hardhat 任意账户 `forceWithdraw`（含奇数叶）；**Base Sepolia 已部署**（未重部） |
-| **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | ✅ Fastify；`credit-batch` ≤1 万；**10 万笔 → 1 Root**（memory 实验室）；`POST /ledger/snapshot` 用 PaymentServiceGuard；PG + BullMQ 仍可选 |
+| **api** | 链下记账；Receipt 验签；周期快照与 Root；披露 | ✅ Fastify；`credit-batch` ≤1 万；**默认 Postgres + Redis**（Docker）；**10 万笔 → 1 Root**（`MemoryLedgerService` 单测，无 RPC）；`POST /ledger/snapshot` 用 PaymentServiceGuard |
 | **shared** | EIP-712 Receipt；`buildBalanceMerkle` / proof 工具 | ✅ Merkle leaf 与合约对齐 + 单测（含 256 叶任意下标） |
 | **链** | Base Sepolia → Base Mainnet 准备 | 🟡 Vault Sepolia ✅；主网仍属 M5 |
 | **披露** | `/payments/disclosure` | ✅ latestEpoch / forceWithdraw / `m2Acceptance` |
@@ -119,11 +119,11 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 
 | 条 | 证据 |
 |----|------|
-| 1 万笔/分、零链上 tx | `memory-ledger.m2-acceptance.spec.ts` / `creditMany`（无 RPC） |
+| 1 万笔/分、零链上 tx | `memory-ledger.m2-acceptance.spec.ts` / `creditMany`（引擎单测，无 RPC；运行时默认仍是 Postgres） |
 | ≥10 万笔 → 1 Root | 10×`credit-batch`(1 万) 后一次 `snapshot()`，`leafCount=100000`，单一 `root` |
 | 强制提现 | `PaymentVault.t.ts`：奇数叶 + 10 个存款人同一 Root，下标 0/4/9 `forceWithdraw` |
 
-未纳入本验收（不阻塞 M2 关闭）：`LEDGER_STORE=postgres` 作为默认、Sepolia 再发一笔真实 `commitRoot`/`forceWithdraw`、FR-PAY-007 轧差、主网。
+未纳入本验收（不阻塞 M2 关闭）：Sepolia 再发一笔真实 `commitRoot`/`forceWithdraw`、FR-PAY-007 轧差、主网。本地与生产账本默认均为 `LEDGER_STORE=postgres` + `COMMIT_ROOT_QUEUE=bull`（Docker Desktop）。
 
 **预计工期**: 8–10 周（实验室验收已完成）  
 **依赖**: M1 核心合约与 api 支付模块骨架  
