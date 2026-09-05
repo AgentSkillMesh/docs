@@ -186,8 +186,8 @@ flowchart TB
 |----|------|
 | 路径 | `repos/api` |
 | 实现 Spec | §8 REST、`FR-SK-004` 索引、Escrow 状态同步、账本 `credit-batch`、**CHANNELS P0–P4**（`/channels` `/mcp` `/a2a` `/endpoints` `/devices`） |
-| 依赖 | `shared`、`deployments.json`、索引 **SQLite**；账本 **Postgres + Redis**（`docker-compose.ledger.yml`，默认）；HTTP **Fastify**（禁止 Express） |
-| 端口 | **13008**（见 `PORTS.md`） |
+| 依赖 | `shared`、`deployments.json`、任务等 **SQLite**；账本与 **链上索引行** **Postgres + Redis**（`docker-compose.ledger.yml`，默认）；Indexer **独立 worker** + Redis 选主；游标 `indexer_cursors`；HTTP **Fastify**（禁止 Express） |
+| 端口 | **13008**（见 `PORTS.md`）；Indexer worker 无 HTTP |
 
 ### 3.6 web
 

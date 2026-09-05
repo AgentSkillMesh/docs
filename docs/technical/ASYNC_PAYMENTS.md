@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # Agent 异步支付 · 链下账本 + Merkle 批量结算
 
-**版本**: v0.2.6 · **最后更新**: 2026-08-31  
+**版本**: v0.2.7 · **最后更新**: 2026-09-02  
 **关联**: [SPEC.md](./SPEC.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [IOT.md](./IOT.md) · [BRIDGE.md](./BRIDGE.md)
 
 ## 0. 架构决策（已定）
@@ -215,7 +215,7 @@ sequenceDiagram
 |------|------|------|
 | **Escrow 终局结算** | 任务型雇佣（现有 `Escrow.sol`） | 交付确认 / 超时 |
 | **账本 Merkle 结算** | API 微调用、IoT 数据流、A2A 大厅 | 时间窗（如 1h）/ 笔数 / 金额阈值 |
-| **Credit Line 净额** | 高频买卖双方 | 双向轧差后单次链上转账 |
+| **Credit Line 净额**（FR-PAY-007） | 高频买卖双方 | 双向轧差后 **一次** Vault 内部划转 |
 | **状态通道终态**（拓展） | 1:1 流式计费 | 通道关闭时提交终态 |
 
 **批量路径（v0.2 / M2+）**：
@@ -225,9 +225,36 @@ Vault 充值（链上）
     → 链下账本累积 signed receipts / 余额变更
     → 构建 Merkle tree（余额快照或收据聚合）
     → 提交 Root Hash 至 L2（可选 Bundler UserOp）
-        → MicroPaymentSettler.commitRoot / batchSettle
+        → MicroPaymentSettler.commitRoot / CreditLineNetting.settleNetBatch
     → 事件索引；提现时 verify(proof) → Vault 放款
 ```
+
+#### 4.3.1 双向轧差（FR-PAY-007）
+
+高频 A↔B 不必按收据方向各打一笔链上转账。链下账本在 `applyReceipt` 时累计 **pair gross**（A→B 与 B→A）；轧差后只把 **净额** 写入 Vault：
+
+```
+gross(A→B) = 100,  gross(B→A) = 80
+    → net = 20, A 为债务人
+    → PaymentVault.internalTransfer(A, B, 20)  （一次）
+```
+
+- 合约：`CreditLineNetting.settleNet` / `settleNetBatch`（仅 operator）  
+- 地址序：`partyA < partyB`；`aOwesB` 表示净额从 A 划到 B  
+- 与 Merkle **互补**：轧差对齐 **Vault 内部余额** 与链下净额；Root 仍用于强制提现  
+- API：`GET /payments/ledger/nets` 预览；`POST /payments/ledger/net-settle` 上链并清零 pair gross
+
+#### 4.3.2 Bundler 微支付批次（FR-PAY-008 · v1.0）
+
+清算调用（`commitRoot`、`settleNetBatch`）打成 **一批** 上链，避免每对净额一笔 tx：
+
+| 组件 | 作用 |
+|------|------|
+| `SettlementBatcher` | operator 一次 `executeBatch`，目标仅 Settler / Netting |
+| `LabEntryPoint` | 实验室 ERC-4337 子集：`handleOps(UserOperation[])` |
+| `SettlementPaymaster` | 只赞助白名单 sender（Batcher / Settler / Netting）的 UserOp |
+
+生产可将同一 Paymaster 接到公共 Bundler（Pimlico 等）+ 官方 EntryPoint；本地默认 **Batcher 直发**（`BUNDLER_MODE=batcher`），不依赖外部 Bundler RPC。`BUNDLER_MODE=entrypoint` 时 api 把 calldata 封成 UserOp 经 `LabEntryPoint.handleOps`。
 
 链上成本与交互次数 **解耦**：1,000 万次链下交互仍可只对应 **一次** Root 提交。
 
@@ -259,6 +286,9 @@ Vault 充值（链上）
 | 链下账本、Receipt Vault、批量队列 | `api` | `modules/payments/` |
 | Session Key 策略 UI | `wallet` / `web` | Agent 授权面板 |
 | Vault + Merkle 清算 | `contracts` | `settlement/MicroPaymentSettler.sol`（**v0.2 / M2**） |
+| 双向轧差 | `contracts` | `settlement/CreditLineNetting.sol`（**FR-PAY-007**） |
+| Bundler 批次 | `contracts`, `api` | `SettlementBatcher` + `LabEntryPoint` + `SettlementPaymaster`（**FR-PAY-008**） |
+| 治理 | `contracts` | `SimpleMultisig` + `DoerFlowTimelock`（主网 admin，见 PRODUCTION） |
 | AA + Session | `contracts` | `identity/SessionKeyRegistry.sol`（v0.3） |
 | Agent SDK 签名 | `shared/sdk` + `sdk/python` | `DoerFlowClient` · `signReceipt()` |
 | 状态通道（拓展） | `contracts` / `p2p` | 规划 · v0.8+ |
@@ -282,6 +312,9 @@ Vault 充值（链上）
 | GET | `/api/v1/payments/ledger/snapshots/latest` | 最新 Root / epoch |
 | GET | `/api/v1/payments/ledger/proof?account=&asset=&epoch=` | 强制提现用 Merkle proof |
 | GET | `/api/v1/payments/ledger/commits?status=pending` | Root 上链任务列表 |
+| GET | `/api/v1/payments/ledger/nets` | 双向轧差预览（pair gross → 净额） |
+| POST | `/api/v1/payments/ledger/net-settle` | **PaymentServiceGuard**；轧差上链（Batcher / EntryPoint）并清零 pair gross |
+| POST | `/api/v1/payments/ledger/bundle` | **PaymentServiceGuard**；打包待轧差 + 可选 `commitRoot` 为一批 UserOp / Batcher 调用 |
 | POST | `/api/v1/trading/quote` | Skill 报价（M4） |
 | POST | `/api/v1/trading/jobs` | 计费作业 + 可选企业回调 |
 | GET | `/api/v1/trading/catalog` | 发现 Agent/Skill |
@@ -296,11 +329,12 @@ Vault 充值（链上）
 | 热缓存（可选） | **Redis** | `REDIS_URL` | 余额 write-through；未配置则直读 PG |
 | Root 上链队列 | **BullMQ** | `COMMIT_ROOT_QUEUE=bull`（**默认**）· `REDIS_URL` | 快照后异步 `MicroPaymentSettler.commitRoot` |
 | 无 Docker 回退 | memory | 显式 `LEDGER_STORE=memory` · `COMMIT_ROOT_QUEUE=off` | 仅 CI；账本 + Vault + Session 全部内存；**不是** 本地或生产默认 |
-| 操作员密钥 | — | `SETTLER_OPERATOR_KEY` | 仅 api 进程；对应 Settler `operator` |
+| 操作员密钥 | — | `SETTLER_OPERATOR_KEY` | 仅 api 进程；对应 Settler / Netting / Batcher `operator`（热钥；**admin** 在 Timelock） |
+| Bundler | Batcher 或实验室 EntryPoint | `BUNDLER_MODE=batcher\|entrypoint` | 默认 `batcher`；`entrypoint` 需 `LAB_ENTRY_POINT_ADDRESS` + `SETTLEMENT_PAYMASTER_ADDRESS` |
 
 本地编排：`repos/api/docker-compose.ledger.yml`（Postgres **5439** + Redis **6379**）。`pnpm run dev:api` 会先 `docker compose up -d` 并等待健康检查。macOS 开发者默认使用 Docker Desktop。
 
-索引库仍是嵌入式 **SQLite**（任务 / Indexer）；**不要**把账本写进 SQLite，也**不要**用已废弃的 MySQL compose。
+平台任务 / Casbin / 用户等仍是嵌入式 **SQLite**；**不要**把账本写进 SQLite，也**不要**用已废弃的 MySQL compose。Indexer **游标与 Agent/Skill/Escrow 行**写在账本 Postgres（见 FR-IDX-002）；选主用 Redis。`LEDGER_STORE=memory` 时索引行回退 SQLite。
 
 ### 6.2 shared 包
 
@@ -311,6 +345,8 @@ import {
   hashReceipt,
   buildBalanceMerkle,
   getMerkleProof,
+  netFromGross,
+  canonicalPair,
 } from '@vibe-agent/shared/payments';
 ```
 
@@ -341,11 +377,12 @@ import {
 | FR-PAY-004 | Session Key scoped 授权 | contracts, wallet, api | 链下策略默认 Postgres | v0.3 |
 | FR-PAY-005 | Session 预算与撤销 | contracts, api | 链下 spent 默认 Postgres | v0.3 |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api | **v0.2 / M2 ✅** |
-| FR-PAY-007 | 双向轧差净额结算 | contracts | v0.2–v0.4 |
-| FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | v1.0 |
+| FR-PAY-007 | 双向轧差净额结算 | contracts, api, shared | **✅** `CreditLineNetting` + `/ledger/nets` |
+| FR-PAY-008 | Bundler + Paymaster 微支付批次 | contracts, api | **v1.0 ✅** `SettlementBatcher` / `LabEntryPoint` / `SettlementPaymaster` |
 | FR-PAY-009 | Agent SDK `signReceipt` / `settle` | shared/sdk, sdk/python, api | **v0.4 / M4 ✅** |
 | FR-PAY-014 | Trading 目录/报价/作业/WS | api | **v0.4 / M4 ✅** |
 | FR-PAY-015 | 生产探针 /ready /live + Runbook | api, spec/PRODUCTION | **v1.0-rc / M5 ✅ 工程** |
+| FR-PAY-016 | 封闭 Beta：白名单 / 限额 / pause / 未审计披露 | api, contracts, web | **M5a** `COMMERCIAL_MODE`；主网 Vault = Base USDC |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ |
 | FR-PAY-011 | **不做** 定制 L3 作为微支付主路径 | spec | **已定** |
 | FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | **v0.2 / M2 ✅** |

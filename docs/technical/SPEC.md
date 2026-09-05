@@ -160,8 +160,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 铸造/注册完成后提供「下一步：绑定」入口，预填最近的 skillId 与 Owner 的 Agent
 
 #### FR-SK-004 Skill 搜索与发现
-- 链下索引（NestJS + **SQLite**）提供 `GET /skills?q=`：按名称、描述、`skillId` 子串过滤；市场首页展示 Skill 列表，与 Agent 列表共用搜索框
-- SQLite FTS / 分类分面为增强项，不阻塞 M1
+- 链下索引（NestJS + **Postgres** 索引表，见 FR-IDX-002；`LEDGER_STORE=memory` 时回退 SQLite）提供 `GET /skills?q=`：按名称、描述、`skillId` 子串过滤；市场首页展示 Skill 列表，与 Agent 列表共用搜索框
+- 全文检索 / 分类分面为增强项，不阻塞 M1
 - P2P Beacon 广播实时可用 Skill 及价格（v0.2+）
 
 ### 5.3 交易与结算层（Settlement Layer）
@@ -205,6 +205,9 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - HTTP 入口为 **NestJS + Fastify**（禁止 Express）
 - `POST /payments/ledger/credit-batch` 单次最多 10000 笔链下入账（Sepolia / 本地吞吐打磨）
 - **M2 实验室验收（2026-08-25）**：1 万笔/分链下记账（零链上 tx）；≥10 万笔合成 **1 个 Merkle Root**；Hardhat 上任意存款账户可 `forceWithdraw`
+- **FR-PAY-007**：买卖双方 pair gross 轧差后 `CreditLineNetting` 一次 `internalTransfer`
+- **FR-PAY-008**：`SettlementBatcher` / 实验室 EntryPoint + Paymaster 打包 `commitRoot` 与 `settleNetBatch`
+- **FR-PAY-016**：封闭 Beta / 公开 1.0 商业控制（`COMMERCIAL_MODE`、白名单、限额、充值暂停、未审计披露）；主网 Vault 资产为 Base 原生 USDC；见 [PRODUCTION.md](./PRODUCTION.md) M5a
 - 无 App 接入：`@vibe-agent/shared/sdk`（`DoerFlowClient`）+ Python `doerflow`；底层仍为 `signReceipt` + `POST /payments/receipts`（[DEVELOPER.md](./DEVELOPER.md)）
 - 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
@@ -282,9 +285,19 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - thirdweb gateway **连续失败**时整条索引回退 `RPC_URL`（若与 gateway 不同）；`GET /health` 报告 `rpcProvider` / `rpcFallback`
 - `GET /health` 的 `indexer.rpcUrl` **必须脱敏**（thirdweb URL 中的 secret/clientId 不得明文返回）
 - 启动从持久化游标、`INDEXER_START_BLOCK` 或近期 lookback 开始；禁止每次从创世块扫到 latest
-- `GET /health` 返回索引游标、是否追块、`rpcOk` / `lastError` / `rpcProvider`；RPC 不可达时市场须提示「链 RPC 未就绪」（如 Hardhat 未启动），不得伪装成「没有 Agent」；追块中展示进度百分比
+- `GET /health` 返回索引游标、是否追块、`rpcOk` / `lastError` / `rpcProvider` / `leader` / `role`；RPC 不可达时市场须提示「链 RPC 未就绪」（如 Hardhat 未启动），不得伪装成「没有 Agent」；追块中展示进度百分比
 - 历史追块期间须**同时扫描链头窗口**（`latest − INDEXER_MAX_BLOCK_RANGE`），使新铸造 / 新 Escrow 不必等整段 lookback 追完才可见
 - Indexer 在 RPC 连续失败时退避重试，避免刷屏日志
+
+#### FR-IDX-002 Indexer 选主与独立 worker
+- **角色**（`INDEXER_ROLE`）：`auto`（默认，HTTP 进程参与选主，便于单进程开发）· `http`（只做人机请求，不追块）· `worker`（只追块）
+- **生产**：≥1 个 `worker` + ≥2 个 `http` API；全局 **Redis 锁** `doerflow:indexer:leader:{chainId}`，同一时刻只允许一个 leader 调 `eth_getLogs`
+- Leader 把心跳写入 Redis（TTL）；`GET /health` / `/ready` 的 `indexer` 读心跳，HTTP 副本不得报告「本进程未跑 Indexer」当成整网已停
+- **游标**优先写入账本 Postgres 表 `indexer_cursors`（与 `LEDGER_STORE=postgres` 同库）；Redis 作缓存；无 Postgres 时回退 `INDEXER_CURSOR_FILE`
+- **索引行**（`agents` / `skills` / `agent_skills` / `escrows`）与游标同库 **Postgres**；多机 API / worker 只共享 `LEDGER_DATABASE_URL`。平台任务、Casbin、用户等仍在 SQLite。`LEDGER_STORE=memory` 时索引行回退 SQLite
+- 启动时若 Postgres 索引表为空且本地 SQLite 仍有旧行，则一次性拷贝（幂等，不覆盖已有 PK）
+- 独立进程：`pnpm --dir repos/api start:indexer`（`src/indexer.main.ts`）。`refreshEscrow` 写 Postgres 索引表
+- Redis 不可用：`auto` 回退为单进程追块（无锁，仅开发）；`NODE_ENV=production` 的 `worker` **拒绝启动**
 
 #### FR-UI-004 任务中心
 - 进行中的 Escrow 任务；默认突出「待我处理」，可切到全部
@@ -457,19 +470,23 @@ Escrow {
 }
 ```
 
-### 7.2 链下索引（SQLite）与账本（PostgreSQL）
+### 7.2 链下存储（Postgres 索引 + SQLite 任务）
 
-索引 / 任务治理走嵌入式 SQLite。微支付账本（余额、Merkle 快照、leaf、commit 任务）走 **PostgreSQL**，与 SQLite 文件分离；见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) §6.1.1。
+链上 **Agent / Skill / Escrow 索引行**（`agents` / `skills` / `agent_skills` / `escrows`）与 Indexer 游标、微支付账本同库 **PostgreSQL**，多机 API / worker 只共享 `LEDGER_DATABASE_URL`（见 FR-IDX-002）。平台任务、Casbin、用户、钱包绑定等走嵌入式 **SQLite**（同机或共享盘）。`LEDGER_STORE=memory` 时索引行回退 SQLite。账本表见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) §6.1.1。
 
 ```
-agents          -- 链上 Agent 索引 + 扩展字段
-skills          -- 链上 Skill 索引 + 分类/标签
-escrows         -- 交易记录索引
-devices         -- 设备节点注册
-human_tasks     -- 人类任务
-reviews         -- 评价
-beacon_cache    -- P2P Beacon 快照
-users           -- SIWE 用户映射
+-- PostgreSQL（账本库）
+agents / skills / agent_skills / escrows   -- 链上索引
+indexer_cursors
+ledger_*                                   -- 余额 / Merkle / receipt / session
+
+-- SQLite
+devices            -- 设备节点注册
+human_tasks        -- 人类任务（platform_tasks）
+reviews            -- 评价
+beacon_cache       -- P2P Beacon 快照
+users              -- SIWE / 平台用户
+wallet_links / casbin_policies
 ```
 
 ## 8. 接口规范概要
@@ -513,10 +530,10 @@ users           -- SIWE 用户映射
 | 区块链 | Solidity 0.8.x, Hardhat/Foundry, OpenZeppelin |
 | L2 | Base Sepolia (testnet) → Base Mainnet |
 | 前端 | React 19, Ant Design 5, Zustand, wagmi/viem, Rsbuild |
-| 后端 | NestJS 10 + **Fastify**，TypeORM；索引 **SQLite**（better-sqlite3）；账本 **PostgreSQL** + Redis/BullMQ（Docker；`LEDGER_STORE=memory` 仅无 Docker 回退） |
+| 后端 | NestJS 10 + **Fastify**，TypeORM；任务 **SQLite**；账本与链上索引行 **PostgreSQL** + Redis/BullMQ（Docker；`LEDGER_STORE=memory` 仅无 Docker 回退） |
 | P2P | libp2p (js-libp2p), WebRTC, IPFS (Helia) |
 | 存储 | **本地 IPFS 目录**（默认）；Pinata 仅显式 `STORAGE_BACKEND=pinata` |
-| 索引 | 自建 Indexer（NestJS；分片 `eth_getLogs` + 游标；公共网 RPC 可选用 thirdweb，见 FR-IDX-001） |
+| 索引 | 自建 Indexer worker（FR-IDX-002：Redis 选主；游标与 Agent/Skill/Escrow 行在 Postgres；分片 `eth_getLogs`；见 FR-IDX-001） |
 | 构建 | MetaRepo + Polyrepo, pnpm, TypeScript |
 | CI/CD | GitHub Actions |
 

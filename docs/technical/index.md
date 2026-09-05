@@ -35,6 +35,7 @@ VibeAgent 采用 **Spec-Driven Development**：主规格维护在 MetaRepo 根�
 | [Agent Runtime](/technical/AGENT_RUNTIME) | 拉作业、调工具、交回执 |
 | [Endpoint Agent](/technical/ENDPOINT) | 电脑/手机执行面 |
 | [生产闸门 PRODUCTION](/technical/PRODUCTION) | 探针、Runbook、主网脚本（M5） |
+| [商业收款 COMMERCIAL](/technical/COMMERCIAL) | 封闭 Beta / 公开 1.0（M5a / M5b） |
 | [钱包规格 WALLET](/technical/WALLET) | 纯粹钱包（发任务） |
 | [综合端 WORKER](/technical/WORKER) | 众包 + 社交平台任务 |
 | [管理平台 ADMIN](/technical/ADMIN) | 运营审核控制台 |

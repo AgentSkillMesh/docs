@@ -135,6 +135,7 @@ export default defineConfig({
             { text: 'Agent Runtime', link: '/technical/AGENT_RUNTIME' },
             { text: 'Endpoint Agent', link: '/technical/ENDPOINT' },
             { text: '生产闸门 PRODUCTION', link: '/technical/PRODUCTION' },
+            { text: '商业收款 COMMERCIAL', link: '/technical/COMMERCIAL' },
             { text: '品牌 Logo BRAND', link: '/technical/BRAND_LOGO' },
             { text: '钱包规格 WALLET', link: '/technical/WALLET' },
             { text: '综合端 WORKER', link: '/technical/WORKER' },

@@ -40,6 +40,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、上链回执 + 状态对齐；人类任务只读列表 · locale | **v0.3 / M3** 🟡 |
 | FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio `waitMined`、收入卡、`scripts/use-chain.mjs` · locale | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
+| FR-IDX-002 | Indexer worker + Redis 选主 + PG 游标与索引行 | api | `INDEXER_ROLE` · `indexer.main.ts` · leader 锁 · `indexer_cursors` · `agents`/`skills`/`escrows` 在账本 Postgres | **v1.0-rc / HA** |
 | FR-IOT-001 | 设备注册认证 | contracts + api | 链上 `DeviceRegistry` 仍为 v1.2+；实验室 HTTP `/devices` 见 FR-IOT-007 | v1.2+ |
 | FR-IOT-002 | 车桩支付 | contracts | `IoTEscrow` | v0.4 |
 | FR-IOT-003 | IoT SDK BYOD | shared / iot-sdk | 设备 SDK | v0.4 |
@@ -47,6 +48,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-IOT-005 | 能源市场 | contracts | `EnergyMarket` | v0.6 |
 | FR-IOT-006 | 冷链 SLA | contracts | `ConditionalFreight` | v0.6 |
 | FR-CHAIN-001~006 | 激励/SDK（现成 L2）；自建链延期 | contracts | 见 AGENT_CHAIN.md | v0.7 / 远期 |
+| FR-CHAIN-007 | Multisig + Timelock 持有合约 admin | contracts | `SimpleMultisig` · `DoerFlowTimelock` · `GOVERNANCE=1` | **v1.0 ✅** |
 | FR-ECO-* | 生态激励 | contracts + docs | MasterChef、Grant | v0.7+ |
 | FR-DEX-001a | AMM Factory/Pair/Router | contracts | `metadex/amm` | v0.15.0 ✅ |
 | FR-DEX-001b | ve VotingEscrow/Voter/Gauge | contracts | `metadex/ve` | v0.15.0 ✅ |
@@ -76,9 +78,10 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-009 | signReceipt SDK | shared, api, sdk/python | `@vibe-agent/shared/sdk` + `POST /payments/receipts` | **v0.4 / M4 ✅** |
 | FR-PAY-014 | Trading API + 作业回调 | api | `/trading/catalog|quote|jobs` · SSE/WS · HMAC webhook | **v0.4 / M4 ✅** |
 | FR-PAY-015 | 生产就绪探针与 Runbook | api, deploy, spec | `/ready` `/live` · `deploy/production.env.example` · PRODUCTION.md | **v1.0-rc / M5 ✅ 工程** |
+| FR-PAY-016 | 封闭 Beta 商业控制 | api, contracts, web, spec | `COMMERCIAL_MODE` · allowlist · 限额 · Vault `pause` · 未审计披露 · `use:base` · `smoke:vault` | **M5a ✅ 工程** |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot`；10 万笔 → 1 Root | **v0.2 / M2** ✅ |
-| FR-PAY-007 | 双向轧差净额 | contracts | v0.2–v0.4 | v0.2–v0.4 |
-| FR-PAY-008 | Bundler 微支付批次 | contracts, api | v1.0 | v1.0 |
+| FR-PAY-007 | 双向轧差净额 | contracts, api, shared | `CreditLineNetting` + `/ledger/nets` · Vault `internalTransfer` | **v1.0 ✅** |
+| FR-PAY-008 | Bundler 微支付批次 | contracts, api | `SettlementBatcher` + `LabEntryPoint` + `SettlementPaymaster` · `/ledger/bundle` | **v1.0 ✅** |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ | v1.1+ |
 | FR-PAY-011 | 不做定制 L3 作微支付主路径 | spec | **已定** | **已定** |
 | FR-PAY-012 | 链下记账引擎 + Vault 充提 | api, contracts | Fastify；默认 `LEDGER_STORE=postgres` + BullMQ；10 万笔引擎单测仍用 memory；显式 `memory` 仅无 Docker | **v0.2 / M2** ✅ |
@@ -135,6 +138,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | 赚钱场景 SDK/API/人类任务（主线 M4） | shared/sdk, api/trading, sdk/python | **v0.4 ✅ AI smoke:m4** |
 | 工程生产闸门（主线 M5-rc） | api, deploy, spec/PRODUCTION | **v1.0-rc ✅ smoke:m5** |
 | 五通道实验室 P0–P4 | spec CHANNELS/RUNTIME/ENDPOINT, api, scripts | **v1.1-channels-lab ✅ smoke:channels** |
-| 商业宣布（审计/主网资金） | 全仓 | **v1.0** ⚪ |
+| 封闭 Beta 商业控制（FR-PAY-016） | api, contracts, web, deploy | **M5a ✅ 工程** |
+| 商业宣布（审计/主网资金） | 全仓 | **v1.0 / M5b** ⚪ |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。

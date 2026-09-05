@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # DoerFlow 版本规划与里程碑
 
-**最后更新**: 2026-08-30  
+**最后更新**: 2026-09-05  
 **关联**: [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CLIENTS.md](./CLIENTS.md) · [SPEC.md](./SPEC.md)
 
 ---
@@ -29,7 +29,13 @@ M3  v0.3  客户端完善：wallet · worker · admin · web     ← AI 验收�
 M4  v0.4  赚钱场景：Agent/云 SDK·API · 人类发单接单闭环  ← AI 验收（smoke:m4）
       │
       ▼
-M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资金
+M5  v1.0  工程 1.0-rc（生产闸门）
+      │
+      ▼
+M5a 封闭 Beta   Base 主网白名单收款（Web/API）  ← 工程可关；资金/部署仍人工
+      │
+      ▼
+M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
 ```
 
 | 阶段 | 版本 | 一句话目标 |
@@ -38,6 +44,8 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 | **M3** | v0.3 | 发单 / 接单 / 运营审核客户端可日常使用 |
 | **M4** | v0.4 | 云与 Agent 可 SDK/API 接入；人类可发任务赚钱 |
 | **M5** | **v1.0-rc** | 生产探针、Runbook、主网脚本、披露；**对外宣布 1.0** 仍需审计与主网资金 |
+| **M5a** | closed-beta | 白名单 + 限额 + pause；Web/API 收真实 ETH/USDC；**不**称商业 1.0 |
+| **M5b** | v1.0 | 公开收款；审计报告与 Bounty 上线后才宣布 |
 
 **铁律**：
 
@@ -123,7 +131,7 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 | ≥10 万笔 → 1 Root | 10×`credit-batch`(1 万) 后一次 `snapshot()`，`leafCount=100000`，单一 `root` |
 | 强制提现 | `PaymentVault.t.ts`：奇数叶 + 10 个存款人同一 Root，下标 0/4/9 `forceWithdraw` |
 
-未纳入本验收（不阻塞 M2 关闭）：Sepolia 再发一笔真实 `commitRoot`/`forceWithdraw`、FR-PAY-007 轧差、主网。本地与生产账本默认均为 `LEDGER_STORE=postgres` + `COMMIT_ROOT_QUEUE=bull`（Docker Desktop）。
+未纳入本验收（不阻塞 M2 关闭）：Sepolia 再发一笔真实 `commitRoot`/`forceWithdraw`、主网。**FR-PAY-007 轧差** 与 **FR-PAY-008 Bundler 批次** 在 v1.0 工程闸门交付（见 ASYNC_PAYMENTS §4.3）。本地与生产账本默认均为 `LEDGER_STORE=postgres` + `COMMIT_ROOT_QUEUE=bull`（Docker Desktop）。
 
 **预计工期**: 8–10 周（实验室验收已完成）  
 **依赖**: M1 核心合约与 api 支付模块骨架  
@@ -191,7 +199,7 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 | 域 | 交付 | AI 工程 | 人类商业宣布 |
 |----|------|---------|--------------|
 | **安全** | 内部预审（合约单测 + M2 实验室）；审计/Bounty 模板 | ✅ | 外部报告与 Bounty 上线 |
-| **主网** | Hardhat `base`（8453）网络；deployments 待真实地址 | ✅ 脚本 | 资金 + 部署 + Indexer HA |
+| **主网** | Hardhat `base`（8453）网络；deployments 待真实地址；**Timelock + Multisig 持有 admin** | ✅ 脚本 + **Indexer HA** + **索引行 Postgres** + `GOVERNANCE=1` | 资金 + 部署 |
 | **运维** | `/live` `/ready`、Prometheus 告警、备份/Root/强制提现 Runbook | ✅ | 值班人员 |
 | **产品** | 生产 env 模板；Onramp/风险披露 | ✅ | 商店构建签名 |
 | **生态** | SDK + API 文档；Sepolia ABI/地址已发布 | ✅ | 主网地址页 |
@@ -203,6 +211,28 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 
 **预计工期**: 8–10 周  
 **依赖**: M2–M4 验收通过  
+
+---
+
+### M5a — closed-beta「封闭主网收款」🟡 工程清单 ✅ / 主网资金 ⚪
+
+**主题**: 邀请制在 Base 主网收真实 ETH（Escrow）与 USDC（Vault）；**不**对外宣布商业 1.0  
+**规范**: [PRODUCTION.md](./PRODUCTION.md) · [COMMERCIAL.md](./COMMERCIAL.md) · FR-PAY-016
+
+| 交付 | 状态 |
+|------|------|
+| `COMMERCIAL_MODE=beta` + 地址白名单；主网禁止 `off` | 工程 |
+| 单笔 / 地址 / 全局 TVL 限额；`PAYMENTS_PAUSED` + Vault `pause`（停充值、不停 `forceWithdraw`） | 工程 |
+| 未审计风险披露（web + `/payments/disclosure`） | 工程 |
+| 主网 Vault 资产 = Base 原生 USDC（禁止 Mock） | 脚本硬约束 |
+| `pnpm run use:base`（无 `"8453"` 地址则失败，不造假） | 工程 |
+| `deploy/docker-compose.prod.yml` | 工程 |
+| `pnpm run smoke:vault`（Sepolia 真 deposit → commitRoot → forceWithdraw） | 脚本；链上需测试 ETH |
+| 人类：主网部署钥、ETH/USDC、multisig、域名/TLS | ⚪ |
+
+默认限额（env 可覆盖）：单笔 Vault ≤ 100 USDC；地址净敞口 ≤ 500 USDC；全局 TVL ≤ 5,000 USDC；单笔 Escrow ≤ 0.05 ETH。
+
+**验收（工程）**：`smoke:m5` 含 M5a 文件与 env 键；`smoke:vault` 在 Sepolia 绿灯。主网首笔由白名单钱包完成，AI 不填写 `"8453"` 假地址。
 
 ---
 
@@ -261,7 +291,7 @@ M5  v1.0  工程 1.0-rc（生产闸门）· 商业宣布仍待审计/主网资�
 
 ## 7. 进度追踪
 
-**当前阶段: M5 — v1.0-rc 工程闸门（商业宣布仍待审计/主网）**
+**当前阶段: M5a — 封闭 Beta 工程清单（主网资金仍人工；公开 1.0 见 M5b）**
 
 M2 实验室验收已通过（2026-08-25）。M3/M4 由 `pnpm run smoke:m3` / `smoke:m4` AI 验收（2026-08-29）。顺序仍是 **清算底座 → 客户端 → 场景 → 生产闸门**；继续留在 Base Sepolia 打磨，**不伪造主网地址**。
 
@@ -273,7 +303,8 @@ M2 实验室验收已通过（2026-08-25）。M3/M4 由 `pnpm run smoke:m3` / `s
 | M3 客户端完善 | v0.3 | ✅ **AI：`pnpm run smoke:m3`** |
 | M4 赚钱场景落地 | v0.4 | ✅ **AI：`pnpm run smoke:m4`** |
 | **M5 工程 1.0-rc** | **v1.0-rc** | **✅ `pnpm run smoke:m5`** |
-| M5 商业宣布 1.0 | v1.0 | ⚪ 审计 · 主网资金 · Bounty · SRE |
+| **M5a 封闭 Beta** | closed-beta | **✅ 工程（白名单/限额/pause/`use:base`/`smoke:vault`）** · ⚪ 主网资金 |
+| M5b / 商业宣布 1.0 | v1.0 | ⚪ 审计 · 主网资金 · Bounty · SRE · 商店签名 |
 | 支线 MetaDEX | v0.15.x | 🟡 合约进度另计 |
 | **五通道实验室** | **v1.1-channels-lab** | **✅ `pnpm run smoke:channels`（P0–P4）** |
 | 支线 IoT 规模化 / 能源 / Omnichain | v1.2+ | ⚪ P4 仅为单设备 HTTP PoC |
