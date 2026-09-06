@@ -7,8 +7,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # 五通道任务经济（CHANNELS）
 
-**版本**: v1.1-channels-lab · **最后更新**: 2026-08-29  
-**关联**: [AGENT_RUNTIME.md](./AGENT_RUNTIME.md) · [ENDPOINT.md](./ENDPOINT.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)
+**版本**: v1.2-ecosystem-commerce · **最后更新**: 2026-09-05  
+**关联**: [AGENT_RUNTIME.md](./AGENT_RUNTIME.md) · [ENDPOINT.md](./ENDPOINT.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md) · [luminaryworks-ecosystem.md](./luminaryworks-ecosystem.md)
 
 本文件展开 `SPEC.md` **FR-ST-006**：Agent 与 Agent、人、云 API、电脑/手机、物联网都可以完成任务并获取报酬。内核是同一套作业与结算，通道只替换发现协议与执行器。
 
@@ -52,6 +52,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | `resourceId` | 收据绑定键，格式 `job:<jobId>` 或 `task:<taskId>` |
 | `escrowId` | 平台预留 / 链上 Escrow |
 | `receiptId` | 已验签 Receipt |
+| `eventId` | 入站 CloudEvents `id`（与 `sourceProduct` 去重） |
+| `sourceRef` / `sourceTenantId` | 源产品业务主键与租户 |
 | `endpointId` / `deviceId` | 执行面实例 |
 
 映射：A2A Task.id = `taskId`；MCP `create_job` 返回 `jobId` + `resourceId`；Endpoint/IoT 交付把输出 hash 写入 `deliverableNote` 或 Receipt `resourceId`。
@@ -82,3 +84,21 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | P4 | Device 注册 / 心跳 / telemetry hash → 账本入账 |
 
 规模化 IoT 车桩/能源/冷链、完整 P2P、Matter 收款 **不在本版**。
+
+---
+
+## 6. 生态商业通道（FR-ST-007 / FR-XPROD-*）
+
+`agent-cloud` 在兄弟产品上的约束：
+
+| 项 | 规则 |
+|----|------|
+| Provider invoke | `Content-Type: application/cloudevents+json` · `type=com.doerflow.trading.job.invoke` · `X-DoerFlow-Signature: sha256=…` |
+| 入站事件 | `POST /integrations/events` · CloudEvents 1.0 · 允许 VistaCast 告警与 SyncroBrain 事故/工单 |
+| Job 支付 | `awaiting_payment → authorized → running → succeeded → captured/settled`；5xx/超时 `voided`/`failed` |
+| 授权 vs 入账 | `authorize` 预留预算与 nonce，**不**给 payee 入账；仅 2xx+output hash 后 `capture` |
+| 回调 | durable outbox；签名 CloudEvents；**不**改源产品业务状态 |
+| 任务 | 创建 Agent/Human 任务服从治理门禁；否则 `dispatchStatus=correlated`，不得伪称已创建 |
+| 兼容 | 无 authorization 的实验室 Job 仍可用 `POST /payments/receipts` 后 `GET job` → `settled` |
+
+验收：`pnpm run smoke:ecosystem-commerce`（别名 `smoke:ecosystem`；内置模拟 provider，覆盖两 `productCode` 的 sell + event + snapshot/proof）。

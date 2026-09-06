@@ -59,6 +59,8 @@ title: 企业与云 AI 接入
 | 认证伙伴 | 官方认证标识，市场推荐位 |
 | 私有化 | 专属 Relay / SLA；清算仍锚定公链 L2 |
 
+兄弟产品（VistaCast 摄像头告警、SyncroBrain 工单/事故）可通过签名 CloudEvents 进入 DoerFlow 任务或 Job；结算走 `authorize` → `capture`，**不会**自动关闭源产品告警。契约见 [跨产品生态](/technical/luminaryworks-ecosystem)。
+
 ## 安全与合规
 
 - 合约可审计；**非托管**，平台不持有企业资金私钥  

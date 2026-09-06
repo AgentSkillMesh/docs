@@ -55,7 +55,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - 按任务 ID 聚合  
 - **M3**：`assigned` 任务可链上 `createEscrow` + `fundEscrow`（锁定报酬）；`submitted` / `verifying` 验收前 `confirmDelivery` 放款；收益页对这两态均可点通过/驳回  
 - **M3**：收益页按状态展示只读进度（上架等待接单 / 已接单待锁定 / 待交付 / 待验收）；需要发单方操作的任务（锁定、验收、再提交）置顶，不得把待验收埋在已完成列表里  
-- **本机自动测**：`pnpm run smoke:m3` 在接单/交付后断言 `GET /tasks/mine` 状态（`assigned` → `submitted`/`completed`）；`pnpm --dir repos/wallet test` 覆盖进度文案与通知差分。`pnpm run smoke:escrow:check`（只看余额/合约）→ `pnpm run smoke:escrow`（viem 真发 Sepolia 交易）。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
+- **本机自动测**：`pnpm run smoke:m3` 默认 `CHAIN_ID=31337`（勿默认 84532），接单/交付后断言 `GET /tasks/mine` 状态（`assigned` → `submitted`/`completed`）；`pnpm --dir repos/wallet test` 覆盖进度文案与通知差分。本地链上锁仓：`pnpm run smoke:escrow:local`（Hardhat 31337）。Sepolia 可选：`pnpm run smoke:escrow:check` → `pnpm run smoke:escrow`。Playwright 只覆盖 **admin 登录页**（`pnpm run e2e:admin`）；wallet/worker 是 Expo，不在浏览器里点。  
 - **Sepolia demo 钥**：发单/接单不得使用公开 Hardhat 账户（`#0`/`#1` 等）；这些地址在公共测试网常被 EIP-7702 委托，放款会被转走。本地 `31337` 仍可用 Hardhat `#0`/`#1`。接单钥不安全时先 `pnpm run demo:worker:sepolia`。  
 - **M3**：收益页 `GET /escrows?consumer=` 展示预留/链上 Escrow 流水  
 - **M3**：`assigned|submitted|verifying` 可 `POST /tasks/:id/dispute` 开争议（原因用输入框，不依赖 iOS `Alert.prompt`）；链上托管超时可 `refundTimedOut`  
@@ -81,6 +81,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - 「买币」入口 → `/onramp` → `POST /onramp/session` → 第三方 Hosted URL  
 - crypto 直达 **用户钱包地址**；平台不碰法币/KYC  
 - 买币页文案走 en/zh locale  
+- 无合作伙伴密钥时为 **stub**；课堂与本地默认 **不得** 打开真买币（无 Stripe/MoonPay 必做路径）  
 - 见 [ONRAMP.md](./ONRAMP.md)  
 
 ### FR-WLT-007 跨链充值
@@ -93,6 +94,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - Mock/测试 USDC mint（测试网）→ Approve → `PaymentVault.deposit`  
 - `withdraw`；可选同步链下账本 `POST /payments/ledger/credit`  
 - 展示 `GET /payments/disclosure`（引擎 / 队列 / latestEpoch）  
+- 首次连接钱包须勾选 [用户协议](https://docs.doerflow.dev/legal/terms)（含前期不予赔付）  
 - 环境：`EXPO_PUBLIC_PAYMENT_VAULT_ADDRESS` · `EXPO_PUBLIC_VAULT_ASSET_ADDRESS`  
 - 入金 Tab 与 Vault 页文案走 en/zh locale  
 - 见 [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)

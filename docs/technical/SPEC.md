@@ -10,9 +10,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 > **品牌**：[DoerFlow](https://doerflow.dev) · **组织**：[github.com/doerflow](https://github.com/doerflow)（原 AgentSkillMesh / VibeAgent）  
 > **定位**：The Liquidity Protocol for Autonomous Agents — 自主执行体的价值流动协议
 
-**版本**: v0.4.0  
+**版本**: v0.4.1  
 **状态**: Draft  
-**最后更新**: 2026-08-29
+**最后更新**: 2026-09-05
 
 > 历史名称 **VibeAgent** 在本文档中仍可能出现，含义同 **DoerFlow**。品牌决策见 [LuminaryWorks/spec/products/doerflow.md](https://github.com/LuminaryWorks/LuminaryWorks/blob/main/spec/products/doerflow.md)。
 
@@ -84,16 +84,17 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 ### 3.3 LuminaryWorks 跨产品生态（可选）
 
-DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五产品中的 **「赚」** 支柱；可与兄弟产品组合，**非单机部署前提**。跨产品仅 OIDC/REST，无运行时 import。
+DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 六产品中的 **「赚」** 支柱；可与兄弟产品组合，**非单机部署前提**。跨产品仅 OIDC/REST + 签名 CloudEvents，无运行时 import。
 
 | 兄弟产品 | 集成场景 |
 |----------|----------|
-| SyncroBrain | 设备 Agent、微额结算（[IOT.md](./IOT.md)） |
+| SyncroBrain | 设备 Agent、工单/事故事件 → 任务与微额结算（[IOT.md](./IOT.md)） |
 | DataLuminary | 交易可视化（[DATALUMINARY.md](./DATALUMINARY.md)） |
 | BlockyEdu | Agent / 合约课程 |
-| VistaCast | Worker 远程调试 |
+| VistaRemote | Worker / 设备**远程调试与控制**（[remote.vistacast.dev](https://remote.vistacast.dev)） |
+| VistaCast | **摄像头 AI 告警**（[vistacast.dev](https://vistacast.dev)）；告警进入 DoerFlow 任务与 Job 结算，**不是**远程调试 |
 
-详见 [luminaryworks-ecosystem.md](./luminaryworks-ecosystem.md) · 协议内激励见 [ECOSYSTEM.md](./ECOSYSTEM.md)。
+双向价值流、租户隔离与兼容合同见 [luminaryworks-ecosystem.md](./luminaryworks-ecosystem.md) · FR-ST-007 · FR-XPROD-* · 协议内激励见 [ECOSYSTEM.md](./ECOSYSTEM.md)。
 
 ## 4. 用户角色
 
@@ -207,7 +208,8 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - **M2 实验室验收（2026-08-25）**：1 万笔/分链下记账（零链上 tx）；≥10 万笔合成 **1 个 Merkle Root**；Hardhat 上任意存款账户可 `forceWithdraw`
 - **FR-PAY-007**：买卖双方 pair gross 轧差后 `CreditLineNetting` 一次 `internalTransfer`
 - **FR-PAY-008**：`SettlementBatcher` / 实验室 EntryPoint + Paymaster 打包 `commitRoot` 与 `settleNetBatch`
-- **FR-PAY-016**：封闭 Beta / 公开 1.0 商业控制（`COMMERCIAL_MODE`、白名单、限额、充值暂停、未审计披露）；主网 Vault 资产为 Base 原生 USDC；见 [PRODUCTION.md](./PRODUCTION.md) M5a
+- **FR-PAY-016**：封闭 Beta / 公开收款商业控制（`COMMERCIAL_MODE`、白名单、限额、充值暂停、未审计披露）；主网 Vault 资产为 Base 原生 USDC；见 [PRODUCTION.md](./PRODUCTION.md) M5a
+- **FR-PAY-017**：前期 **不予赔付**；知情入口为文档用户协议与注册/登录勾选，资金操作页不反复横幅；见 [COMMERCIAL.md](./COMMERCIAL.md)
 - 无 App 接入：`@vibe-agent/shared/sdk`（`DoerFlowClient`）+ Python `doerflow`；底层仍为 `signReceipt` + `POST /payments/receipts`（[DEVELOPER.md](./DEVELOPER.md)）
 - 细则与 FR-PAY-*：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md)
 
@@ -216,6 +218,17 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 高频微额走 FR-ST-005；任务型与争议走 FR-ST-001～004
 - **展开**：[CHANNELS.md](./CHANNELS.md)（`FR-CH-*`）· [AGENT_RUNTIME.md](./AGENT_RUNTIME.md)（`FR-RT-*`）· [ENDPOINT.md](./ENDPOINT.md)（`FR-EP-*`）
 - 实验室版本 **v1.1-channels-lab**：`pnpm run smoke:channels`
+
+#### FR-ST-007 跨产品商业作业与事件（生态变现）
+- Provider Skill / Trading Job 携带 `productCode`（`vistacast|syncrobrain|generic`）、`offeringCode`、`sourceTenantId`、`sourceRef`、`pricingUnit`、`readiness`（`production|lab`，可 `disabled`）、`idempotencyKey`
+- Job 状态机：`awaiting_payment` → `authorized` → `running` → `succeeded` → `captured`/`settled`；失败或超时 `voided`|`failed`。实验室旧值 `open` 视为 `awaiting_payment`
+- **Job 专用** signed receipt：`authorize` 验 EIP-712 / Session / 预算，**不得**给 payee 入账；provider **2xx 且输出 hash 已持久化**后**原子 capture**；**5xx / 超时 void**。禁止再把「Receipt Vault accepted + `applyReceipt` best-effort」当作 Job 结算
+- `POST /payments/receipts` 旧路径保持兼容（非 Job 微支付仍可入账）
+- `POST /integrations/events` 接收 CloudEvents 1.0：`com.vistacast.alert.v1`、`com.syncrobrain.incident.v1`、`com.syncrobrain.work-order.v1`；按 `sourceProduct+eventId` 去重；持久化 issuer/subject/org/sourceTenant 映射、`sourceRef`、callback
+- 由事件创建 Agent/Human 任务必须走 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md) 门禁；无法安全复用任务服务时只标记 `correlated`（**不得伪称已创建任务**）
+- 回调为签名 CloudEvents + durable outbox 重试；**不得**自动修改源产品业务状态
+- 生产默认 M2M bearer + Entitlement + Casbin；显式 `COMMERCE_AUTH_MODE=lab|off` 供 smoke。供应方 payee 必须关联**平台主体 + SIWE 钱包**；Logto 会话**不是**钱包证明；生产禁止开放注册 Provider
+- 验收：`pnpm run smoke:ecosystem-commerce`（别名 `smoke:ecosystem`）
 
 ### 5.4 P2P 通信层（P2P Layer）
 
@@ -308,7 +321,7 @@ DoerFlow 是 [LuminaryWorks](https://github.com/LuminaryWorks/LuminaryWorks) 五
 - 后台刷新不得整页转圈；刚创建的订单可用 `?id=` 高亮
 - 截止后仍为 FUNDED/DELIVERED 时，Consumer 可调用 `refundTimedOut`
 - 同一钱包同时为 consumer 与 provider 时（自雇演示），按状态机展示下一步（付款 → 交付 → 确认），不得因「雇主」角色优先而隐藏交付
-- 任务中心只读列出已发布人类任务（`GET /human-tasks`）；接单、交付、验收在 **worker**（见 [CLIENTS.md](./CLIENTS.md)），web 不提供 `accept`
+- 任务中心只读列出已发布人类任务（`GET /human-tasks`）；接单、交付、验收在 **worker**（见 [CLIENTS.md](./CLIENTS.md)），web 不提供 `accept`，须提供 CTA 指向 wallet（发单）与 worker（接单）
 
 #### FR-UI-005 设备管理
 - 注册/注销 Device Node
@@ -487,6 +500,8 @@ reviews            -- 评价
 beacon_cache       -- P2P Beacon 快照
 users              -- SIWE / 平台用户
 wallet_links / casbin_policies
+provider_skills / trading_jobs / payment_authorizations
+integration_events / outbox_callbacks
 ```
 
 ## 8. 接口规范概要
@@ -510,8 +525,9 @@ wallet_links / casbin_policies
 | HumanTasks | `/api/v1/human-tasks` | 人类任务 CRUD |
 | AgentTasks | `/api/v1/agent-tasks` | Agent 列表 / claim / deliver |
 | Storage | `/api/v1/storage` | 元数据 pin。默认本地目录；`STORAGE_BACKEND=pinata` 才用 Pinata。`backend: "local"` 均为成功 |
-| Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露 |
-| Trading | `/api/v1/trading` | 目录 / 报价 / 作业 / `execute` / Provider HTTP Skill / SSE / WebSocket；CloudEvents + HMAC |
+| Payments | `/api/v1/payments` | 收据、账本、`ledger/credit` / `ledger/credit-batch`、snapshot / proof、披露；Job 授权走 `/trading/jobs/:id/authorize|capture|void` |
+| Trading | `/api/v1/trading` | 目录 / 报价 / 作业 / `execute` / `authorize` / Provider HTTP Skill / SSE / WebSocket；CloudEvents + HMAC |
+| Integrations | `/api/v1/integrations` | CloudEvents inbox（`POST /events`）；按 sourceProduct+eventId 去重 |
 | Ready | `/api/v1/ready` · `/live` | M5 生产探针 |
 | Stats | `/api/v1/stats` | 市场统计 |
 

@@ -11,7 +11,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 **关联**: [ROADMAP.md](./ROADMAP.md) · [ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [COMMERCIAL.md](./COMMERCIAL.md) · [ONRAMP.md](./ONRAMP.md)
 
 本文件是 **AI 可自动验收** 的生产工程清单。  
-**不能** 用 Creator DApp 迭代代替：外部审计报告、主网真实资金、Bug Bounty 平台上线、SRE 值班排班属于 **人类商业宣布门槛**，见 §6。
+**不能** 用 Creator DApp 迭代代替：主网真实地址与资金须人类部署。  
+封闭 Beta **先运行**：不把审计、Bounty、商店签名、多人 SRE 当收款前置。前期 **明确不予赔付**（FR-PAY-017）。
 
 ---
 
@@ -52,6 +53,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | `MAX_ESCROW_ETH` | 单笔 Escrow；默认 **0.05** |
 | `PAYMENTS_PAUSED` | `true` 时拒绝 credit / credit-batch / receipts；snapshot、proof、健康检查仍可用 |
 | `COMMERCIAL_AUDITED` | 默认 false；审计报告公开后才可 `true`（M5b） |
+| `COMMERCIAL_COMPENSATION` | 默认 **`none`**（不予赔付）。仅当有可支付赏金池时改为 `bounty` |
 
 主网 Vault **资产必须是** Base 原生 USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`。部署脚本在 chainId 8453 **禁止**再部 MockERC20。
 
@@ -109,7 +111,8 @@ Hardhat 网络 `base`（chainId **8453**）。部署顺序与 Sepolia 相同：A
 ## 5. 产品与合规披露
 
 - Onramp：平台不碰法币/KYC，见 [ONRAMP.md](./ONRAMP.md)  
-- 链下 IOU：最终清算在公链稳定币；用户可 Merkle 强制提现  
+- 链下 IOU：最终清算在公链稳定币；用户可 Merkle 强制提现（自助退出，不是平台赔付）  
+- **前期不予赔付**（FR-PAY-017）：`COMMERCIAL_COMPENSATION=none`；disclosure `noCompensation=true`  
 - wallet / worker / admin / web：生产构建命令见 MetaRepo `package.json`（`build:wallet*`、各仓 `pnpm build`）  
 - ABI / 测试网地址：`repos/api/deployments.json` + ROADMAP Sepolia 表  
 
@@ -117,17 +120,19 @@ Hardhat 网络 `base`（chainId **8453**）。部署顺序与 Sepolia 相同：A
 
 ---
 
-## 6. 人类商业宣布门槛（AI 不伪造）
+## 6. 人类门槛（AI 不伪造）
 
-| 项 | 状态 |
-|----|------|
-| 外部审计报告（Vault / Settler / Escrow）公开 | 需审计机构 |
-| Bug Bounty 平台上线 | 需法务/安全预算 |
-| Base Mainnet 真实部署与资金 | 需部署钥与 ETH/USDC |
-| 24/7 SRE 值班表 | 需人员 |
+| 项 | M5a 封闭 Beta | 称「商业版 1.0」 |
+|----|----------------|------------------|
+| Base Mainnet 真实部署与资金 | **要** | 要 |
+| 邀请制 + 限额 + pause + 未审计披露 | **要** | 可放开白名单 |
+| **明确不予赔付**（FR-PAY-017） | **要**（默认） | 仍默认；有赏金池才改 `bounty` |
+| 创始人 on-call | **要** | 建议保留 |
+| 外部审计报告 | 不阻塞收款 | 建议有再称呼 1.0 |
+| Bug Bounty 平台 / 赏金池 | **不上**（赔付不起） | 有资金后再开 |
+| 24/7 多人 SRE / 商店签名 | **不要** | 可选 |
 
-工程 1.0-rc **不** 把上表标成已完成。对外宣布「商业版 1.0」须上表关闭（**M5b**）。  
-**M5a 封闭 Beta** 可以在审计/Bounty/商店签名未完成时收真金，但必须：邀请制、限额、未审计披露、可 pause。
+**M5a** 必须：邀请制、限额、未审计披露、可 pause、**不予赔付**文案。
 
 ---
 
@@ -149,8 +154,9 @@ pnpm run smoke:vault   # Sepolia；需测试 ETH / Mock USDC 与 operator 钥
 - [ ] 非白名单写路径 → `403 COMMERCIAL_NOT_ALLOWLISTED`  
 - [ ] 超额 → `403 COMMERCIAL_CAP_EXCEEDED`  
 - [ ] `PAYMENTS_PAUSED=true` 或 Vault `pause()` 后无法新充值；`forceWithdraw` 仍可用  
-- [ ] web `/payments` 与雇佣页展示未审计封闭测试文案  
-- [ ] `GET /payments/disclosure` 含 `commercialMode`、`unaudited`、限额  
+- [ ] web `/payments` 与雇佣页展示未审计封闭测试文案（限额 / 白名单 / pause；**不**反复展示不予赔付）  
+- [ ] 不予赔付仅出现在文档 `legal/terms` 与注册/登录勾选协议  
+- [ ] `GET /payments/disclosure` 含 `commercialMode`、`unaudited`、`compensationPolicy`/`noCompensation`、限额  
 - [ ] `pnpm run use:base` 在无 `"8453"` 时失败  
 - [ ] 未填写伪造主网地址  
 

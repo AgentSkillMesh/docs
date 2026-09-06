@@ -35,7 +35,7 @@ M5  v1.0  工程 1.0-rc（生产闸门）
 M5a 封闭 Beta   Base 主网白名单收款（Web/API）  ← 工程可关；资金/部署仍人工
       │
       ▼
-M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
+M5b 公开运行    取消邀请制；审计/Bounty 有资金再做；前期不予赔付
 ```
 
 | 阶段 | 版本 | 一句话目标 |
@@ -43,9 +43,9 @@ M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
 | **M2** | v0.2 | Vault + 链下记账引擎 + Merkle Root 上链 + 强制提现 |
 | **M3** | v0.3 | 发单 / 接单 / 运营审核客户端可日常使用 |
 | **M4** | v0.4 | 云与 Agent 可 SDK/API 接入；人类可发任务赚钱 |
-| **M5** | **v1.0-rc** | 生产探针、Runbook、主网脚本、披露；**对外宣布 1.0** 仍需审计与主网资金 |
-| **M5a** | closed-beta | 白名单 + 限额 + pause；Web/API 收真实 ETH/USDC；**不**称商业 1.0 |
-| **M5b** | v1.0 | 公开收款；审计报告与 Bounty 上线后才宣布 |
+| **M5** | **v1.0-rc** | 生产探针、Runbook、主网脚本、披露 |
+| **M5a** | closed-beta | 白名单 + 限额 + pause + **不予赔付**；Web/API 收真实 ETH/USDC |
+| **M5b** | v1.0 | 公开收款；**前期仍不予赔付**；审计与有资金的 Bounty 不阻塞运行 |
 
 **铁律**：
 
@@ -194,20 +194,20 @@ M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
 **主题**: 生产就绪与对外商业发布（主线终点）  
 **规范**: [PRODUCTION.md](./PRODUCTION.md)
 
-> **不能用 Creator DApp 迭代代替。** 外部审计、主网资金、Bug Bounty 平台、SRE 排班 **AI 不伪造完成**。工程侧 1.0-rc 由 `pnpm run smoke:m5` 关闭。
+> **不能用 Creator DApp 迭代代替。** 主网地址与资金 **AI 不伪造**。工程侧 1.0-rc 由 `pnpm run smoke:m5` 关闭。先上线再打磨；前期 **不予赔付**（FR-PAY-017）。
 
 | 域 | 交付 | AI 工程 | 人类商业宣布 |
 |----|------|---------|--------------|
-| **安全** | 内部预审（合约单测 + M2 实验室）；审计/Bounty 模板 | ✅ | 外部报告与 Bounty 上线 |
+| **安全** | 内部预审；`SECURITY.md` 收报告；**明确不予赔付** | ✅ | 有资金后再开 Bounty |
 | **主网** | Hardhat `base`（8453）网络；deployments 待真实地址；**Timelock + Multisig 持有 admin** | ✅ 脚本 + **Indexer HA** + **索引行 Postgres** + `GOVERNANCE=1` | 资金 + 部署 |
-| **运维** | `/live` `/ready`、Prometheus 告警、备份/Root/强制提现 Runbook | ✅ | 值班人员 |
-| **产品** | 生产 env 模板；Onramp/风险披露 | ✅ | 商店构建签名 |
-| **生态** | SDK + API 文档；Sepolia ABI/地址已发布 | ✅ | 主网地址页 |
+| **运维** | `/live` `/ready`、Prometheus 告警、备份/Root/强制提现 Runbook | ✅ | 创始人 on-call |
+| **产品** | 生产 env 模板；Onramp/风险/不赔付披露 | ✅ | 商店签名可选 |
+| **生态** | SDK + API 文档；Sepolia ABI/地址已发布 | ✅ | 主网地址页（部署后填） |
 
 **验收**:
 
 > **工程（AI）**：`pnpm run accept` = M3 + M4 + M5 闸门。实验室路径：账本充值镜像 → SDK 微支付 → Root → proof。人类任务全流程见 M3。  
-> **商业宣布（人类）**：主网真实 Vault 充提 + 审计报告公开后，才对外称 **商业版 1.0**。
+> **运行（人类）**：主网真实部署后即可封闭 Beta 收款。对外称 **商业版 1.0** 仍建议有审计；**不** 因未开 Bounty 而推迟运行。
 
 **预计工期**: 8–10 周  
 **依赖**: M2–M4 验收通过  
@@ -223,7 +223,7 @@ M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
 |------|------|
 | `COMMERCIAL_MODE=beta` + 地址白名单；主网禁止 `off` | 工程 |
 | 单笔 / 地址 / 全局 TVL 限额；`PAYMENTS_PAUSED` + Vault `pause`（停充值、不停 `forceWithdraw`） | 工程 |
-| 未审计风险披露（web + `/payments/disclosure`） | 工程 |
+| 未审计 + **不予赔付** 披露（web/wallet/worker + `/payments/disclosure`） | 工程 |
 | 主网 Vault 资产 = Base 原生 USDC（禁止 Mock） | 脚本硬约束 |
 | `pnpm run use:base`（无 `"8453"` 地址则失败，不造假） | 工程 |
 | `deploy/docker-compose.prod.yml` | 工程 |
@@ -270,7 +270,7 @@ M5b 公开 1.0    审计 · Bounty · 商店签名 · 取消邀请制
 | **M2** | 合约结算 + api 账本引擎（实验室已验收） |
 | **M3** | 移动端 + admin + 任务治理体验 | ✅ AI |
 | **M4** | SDK / 对外 API + 场景联调 | ✅ AI |
-| **M5** | 安全审计 + SRE + 发版 | 🟡 工程闸门已关；审计/主网资金待人类 |
+| **M5** | 安全披露 + 创始人值班 + 发版 | 🟡 工程闸门已关；主网资金待人类；前期不赔付 |
 
 建议规模：M2 起 5–8 人；M3–M4 扩至含移动端；M5 加安全与运维。
 
@@ -304,9 +304,10 @@ M2 实验室验收已通过（2026-08-25）。M3/M4 由 `pnpm run smoke:m3` / `s
 | M4 赚钱场景落地 | v0.4 | ✅ **AI：`pnpm run smoke:m4`** |
 | **M5 工程 1.0-rc** | **v1.0-rc** | **✅ `pnpm run smoke:m5`** |
 | **M5a 封闭 Beta** | closed-beta | **✅ 工程（白名单/限额/pause/`use:base`/`smoke:vault`）** · ⚪ 主网资金 |
-| M5b / 商业宣布 1.0 | v1.0 | ⚪ 审计 · 主网资金 · Bounty · SRE · 商店签名 |
+| M5b / 公开运行 | v1.0 | ⚪ 取消邀请制 · 主网地址页；审计/Bounty 有资金再做 |
 | 支线 MetaDEX | v0.15.x | 🟡 合约进度另计 |
 | **五通道实验室** | **v1.1-channels-lab** | **✅ `pnpm run smoke:channels`（P0–P4）** |
+| **生态商业实验室** | **v1.2-ecosystem-commerce** | **`pnpm run smoke:ecosystem-commerce`** |
 | 支线 IoT 规模化 / 能源 / Omnichain | v1.2+ | ⚪ P4 仅为单设备 HTTP PoC |
 
 *状态: ✅ 完成 | 🟡 进行中 | ⚪ 未开始 | 🔴 阻塞*
@@ -332,5 +333,17 @@ M2 实验室验收已通过（2026-08-25）。M3/M4 由 `pnpm run smoke:m3` / `s
 **明确不做**：Matter 收款、公网 MQTT 控制面、Rust SDK、完整 libp2p、用 MCP/A2A 替换任务状态机。
 
 ---
+
+## 9. 生态商业实验室（VistaCast / SyncroBrain）
+
+与五通道并行的工程实验室：[luminaryworks-ecosystem.md](./luminaryworks-ecosystem.md) · FR-ST-007 · FR-PAY-018。
+
+| 项 | 落点 |
+|----|------|
+| Job 授权结算 | `authorize` 不入账 → 2xx+hash 后 `capture`；5xx `void` |
+| Inbox | `POST /integrations/events` CloudEvents |
+| 回调 | durable outbox |
+| 鉴权 | 生产 M2M+Entitlement+Casbin；`COMMERCE_AUTH_MODE=lab\|off` |
+| 验收 | `pnpm run smoke:ecosystem-commerce`（别名 `smoke:ecosystem`） |
 
 *主线规范入口：[ASYNC_PAYMENTS.md](./ASYNC_PAYMENTS.md) · [CHANNELS.md](./CHANNELS.md) · [CLIENTS.md](./CLIENTS.md) · [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)*

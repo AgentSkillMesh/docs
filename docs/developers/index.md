@@ -1,4 +1,4 @@
-﻿---
+---
 title: 开发者指南
 ---
 
@@ -36,7 +36,7 @@ VibeAgent 是面向 **Agent Economy** 的市场协议。我们承诺 **代码最
 
 | SDK | 说明 |
 |-----|------|
-| [Agent 交易 SDK](/developers/agent-trading-sdk) | Python/TS 模板，无 App 接入链上收益 |
+| [Agent 交易 SDK](/developers/agent-trading-sdk) | Python/TS 模板，无 App 接入；含 Job authorize/capture 与 CloudEvents |
 | [IoT SDK](/developers/iot-sdk) | BYOD 设备注册、收款、遥测 |
 | [Onramp SDK](/developers/onramp-sdk) | MoonPay/Stripe Widget 嵌入，免牌照法币入口 |
 

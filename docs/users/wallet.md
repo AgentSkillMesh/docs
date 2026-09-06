@@ -12,8 +12,8 @@ title: 钱包 App
 |------|------|
 | **转账** | ETH / USDC 等收发 |
 | **收益与流水** | Escrow 支出、结算记录；上架后可见接单进度；待锁定 / 待验收会置顶；接单方交付后可在此 **验收** 或开争议 |
-| **发布任务** | 填写需求 → 确认清单 → **提交平台审核** |
-| **买币入金** | 合规 Onramp Widget（法币买加密资产） |
+| **发布任务** | 填写需求 → 确认清单 → **提交平台审核**；上架只建 `P…` 预留 |
+| **买币入金** | Onramp 目前为 **stub**（未配置合作伙伴密钥）。课堂 **不要** 买加密资产 |
 
 ## 发布任务怎么走
 
@@ -26,12 +26,32 @@ title: 钱包 App
 复杂任务：运营人工审核后上架
 危险 / 违规：告警拦截，不会自动发布
         ↓
-仅「已发布」任务对执行者可见，并锁定 Escrow
+仅「已发布」任务对执行者可见（`P…` 预留已创建，链上 ETH 尚未锁定）
 ```
 
 社交刷量、违禁等内容默认进入高危审核，详见 [任务治理与审批](/platform/task-governance)。
 
-## Base Sepolia 链上 Escrow（本机点击）
+## 本机 Hardhat（课堂默认 · 31337）
+
+不必走 Sepolia，也不必买币。Hardhat 账户自带测试 ETH。
+
+1. `pnpm run use:localhost` → 另开终端 `pnpm --dir repos/contracts node` → 若尚未部署：`pnpm --dir repos/contracts deploy:mvp`。
+2. `pnpm run dev:api` → `pnpm run dev:wallet` → `pnpm run dev:worker`。
+3. **wallet**：发远程人类任务，报酬 ≤ `0.01` ETH，关闭社交、可打开「发单方验收后再结算」→ 勾选确认 → 提交。L0 通常自动上架。此时任务带 `P…` 预留，**没有**锁链上 ETH。
+4. **worker**：众包大厅接单 → 拍照（须验收任务）→ 交付。
+5. **wallet → 收益**：验收。未做链上锁定时走账本结算。
+6. **选修链上锁仓**（接单进入 `assigned` 之后）：收益页 **链上锁定报酬**，再交付/验收。自动测：`pnpm run smoke:escrow:local`。
+
+第一次不要走社交任务（须 Logto 人工审）。不要启用 Onramp 买币。
+
+**自动测（课堂）**：
+
+```bash
+pnpm run smoke:m3              # 链下发单 / 接单 / 验收，默认 CHAIN_ID=31337
+pnpm run smoke:escrow:local    # Hardhat 真锁仓（须节点 + 已部署 Escrow）
+```
+
+## Base Sepolia 链上 Escrow（可选，非课堂必做）
 
 当前 Expo wallet **不会**连接 MetaMask，只使用 demo 发单地址  
 `0xa294bFF1c19Fc0CbbBC60F0b9d15e8EAFB81e359`。  
@@ -47,12 +67,19 @@ title: 钱包 App
 
 第一次不要走社交任务（须 Logto 人工审）。不要重部 Escrow。
 
-**自动测（推荐）**：wallet/worker 是 Expo，不用 Playwright 点 App。链上闭环用：
+**自动测**：wallet/worker 是 Expo，不用 Playwright 点 App。课堂默认本地链：
+
+```bash
+pnpm run use:localhost
+pnpm run smoke:m3              # 链下：上架 → 接单 → 验收（CHAIN_ID 默认 31337）
+pnpm run smoke:escrow:local    # Hardhat 真锁仓（须 node + deploy:mvp + API）
+```
+
+**Sepolia 自动测（可选）**：
 
 ```bash
 pnpm run demo:worker:sepolia   # 若接单钥仍是 Hardhat #1：轮换并打 0.002 ETH Gas
 pnpm run smoke:escrow:check    # 只检查合约与 demo 地址余额
-pnpm run dev:api               # 另开终端
 pnpm run smoke:escrow          # 真发 Sepolia 交易（约锁定 0.008 ETH）
 ```
 

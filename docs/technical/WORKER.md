@@ -76,6 +76,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 - **社交（M3，要做）**：详情走 `app/social/[id]`；展示发单方声明的 App 与步骤；**可打开目标 App 首页**（系统浏览器 / 已安装 App，不代操作）；须勾选清单后上传截图。Accessibility Service 自动打开 App 为 v0.4 可选项  
 - **API**：`verificationRequired` 或 `taskType=social` 的交付必须带 `proofCid`，否则 `PROOF_REQUIRED`  
 - 大厅 / 交付 / 收益 / Vault 用户文案走 en/zh locale  
+- 首次连接钱包须勾选用户协议（含前期不予赔付；全文在文档站 `legal/terms`）  
 - **本机自动测（不必点 Expo）**：API 已起时 `pnpm run smoke:m3` 走大厅可见 → 接单 → `GET /human-tasks/:id` 为 `assigned` → 第二钱包不可接 → 交付（`submitted`/`completed`）。按钮条件由 `repos/worker` 的 `pnpm test`（`task-state`）覆盖。Playwright 只覆盖 admin 登录页，不点 worker UI  
 - 详情展示当前状态；仅 `published`/`open` 且无 `assigneeAddress` 时显示接单；已被他人接单须提示且不得再接；交付后标明待验收；未锁定 Escrow 时提示 `needFund`；已锁定/已放款与收益页同一套标记  
 - 收益页须展示 **原生 ETH 余额**（链上 `confirmDelivery` 打到此地址）；`onChainEscrowId` / `escrowReleaseTxHash` 的任务标明「链上已放款」或「已锁定」，不得只显示空的链下账本让人以为没收到钱  

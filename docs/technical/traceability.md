@@ -9,7 +9,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 将 `SPEC.md` 中的需求 ID 映射到实现仓库与模块，用于 Spec 驱动开发与 Code Review。
 
-**最后更新**: 2026-08-29
+**最后更新**: 2026-09-05
 
 | 需求 ID | 简述 | 主仓库 | 模块/路径 | 版本 |
 |---------|------|--------|-----------|------|
@@ -37,7 +37,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-UI-* | DApp 页面 | web | `pages/*` | v0.1 |
 | FR-UI-001 | 公开市场（无需平台登录） | web | `pages/Home` 默认可雇佣 Agent + Skill 列表搜索、`/agents/:id` · en+zh | **v0.3 / M3** 🟡 |
 | FR-UI-002 | Agent 详情雇佣进度 + 未绑定引导 | web | `pages/AgentDetail`、托管历史、自雇提示、`MintFlowPanel` kind=hire | v0.1 |
-| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、上链回执 + 状态对齐；人类任务只读列表 · locale | **v0.3 / M3** 🟡 |
+| FR-UI-004 | 任务中心待办队列 + 超时退款 | web | `pages/Tasks`、上链回执 + 状态对齐；人类任务只读列表 + wallet/worker CTA · locale | **v0.3 / M3** 🟡 |
 | FR-UI-003 | Creator 工作台网络/gas 引导；托管收入 | web + MetaRepo | `NetworkGasAlert`、Studio `waitMined`、收入卡、`scripts/use-chain.mjs` · locale | **v0.3 / M3** 🟡 |
 | FR-IDX-001 | 索引分片与游标 + RPC 健康 | api, web | `indexer/` 历史追块可走 RPC_URL、链头可选 thirdweb；`catchupPercent` | **v0.3 / M3** 🟡 |
 | FR-IDX-002 | Indexer worker + Redis 选主 + PG 游标与索引行 | api | `INDEXER_ROLE` · `indexer.main.ts` · leader 锁 · `indexer_cursors` · `agents`/`skills`/`escrows` 在账本 Postgres | **v1.0-rc / HA** |
@@ -79,6 +79,18 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-PAY-014 | Trading API + 作业回调 | api | `/trading/catalog|quote|jobs` · SSE/WS · HMAC webhook | **v0.4 / M4 ✅** |
 | FR-PAY-015 | 生产就绪探针与 Runbook | api, deploy, spec | `/ready` `/live` · `deploy/production.env.example` · PRODUCTION.md | **v1.0-rc / M5 ✅ 工程** |
 | FR-PAY-016 | 封闭 Beta 商业控制 | api, contracts, web, spec | `COMMERCIAL_MODE` · allowlist · 限额 · Vault `pause` · 未审计披露 · `use:base` · `smoke:vault` | **M5a ✅ 工程** |
+| FR-PAY-017 | 前期不予赔付 | docs, web, wallet, worker | 文档 `legal/terms` · 注册/登录勾选；disclosure 字段保留、资金页不横幅 | **M5a** |
+| FR-PAY-018 | Job 授权收据 authorize/capture/void | api, shared | `/trading/jobs/:id/authorize|capture|void` · `payment_authorizations` · 5xx 不入账 | **生态商业** |
+| FR-PAY-019 | Durable outbox 回调 | api | `outbox_callbacks` 替换 trading fire-and-forget | **生态商业** |
+| FR-XPROD-001 | 双向价值流 VistaCast/SyncroBrain | spec, api | sell invoke + buy inbox CloudEvents | **生态商业** |
+| FR-XPROD-002 | 租户隔离 / 无 PII / 旧 API 兼容 | spec, api | `sourceTenantId` · `CROSS_TENANT` · receipts 旧路径 | **生态商业** |
+| FR-INT-001 | CloudEvents inbox | api | `POST /integrations/events` | **生态商业** |
+| FR-INT-002 | sourceProduct+eventId 去重与映射 | api | `integration_events` | **生态商业** |
+| FR-INT-003 | 治理门禁或 correlated（不得伪称已建任务） | api | TasksService 或 `dispatchStatus=correlated` | **生态商业** |
+| FR-PRV-004 | Provider 元数据 product/offering/tenant/readiness | api, shared/sdk | `POST /trading/providers/skills` | **生态商业** |
+| FR-PRV-005 | 生产 M2M+Entitlement+Casbin；lab/off smoke | api | `COMMERCE_AUTH_MODE` | **生态商业** |
+| FR-PRV-006 | payee=平台主体+SIWE；生产禁止开放注册 | api | wallet_links；Logto ≠ 钱包 | **生态商业** |
+| FR-UI-ECO-001 | Web 生态服务目录/来源/Job 结算 | web | `/ecosystem` · en+zh | **生态商业** |
 | FR-PAY-006 | Merkle Root 批量清算 | contracts, api, shared | `MicroPaymentSettler` + `/ledger/snapshot`；10 万笔 → 1 Root | **v0.2 / M2** ✅ |
 | FR-PAY-007 | 双向轧差净额 | contracts, api, shared | `CreditLineNetting` + `/ledger/nets` · Vault `internalTransfer` | **v1.0 ✅** |
 | FR-PAY-008 | Bundler 微支付批次 | contracts, api | `SettlementBatcher` + `LabEntryPoint` + `SettlementPaymaster` · `/ledger/bundle` | **v1.0 ✅** |
@@ -92,7 +104,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-WLT-004 | wallet 发任务 + 驳回原因回显 | wallet, api | `earnings` 展示 `alertReason`；发布即时 Alert · **说明 / 线下地点** · **社交须声明平台与步骤** · **published 接单进度** · locale | **v0.3 / M3** 🟡 |
 | FR-WLT-005 | 审批状态应用内通知 | wallet | `notifyStore` 轮询 mine（**assigned** + 交付 `submitted`）；系统 Push → v0.4 | **v0.3 / M3** 🟡 |
 | FR-WLT-006 / FR-ONRAMP-003 | wallet 买币 Onramp | wallet, api | `/onramp` + `POST /onramp/session` · en+zh | **v0.3 / M3** 🟡 |
-| FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm · **`pnpm run smoke:escrow`**（拒绝 Hardhat 公开钥 / EIP-7702；放款后余额断言） | **v0.3 / M3** 🟡 |
+| FR-ST-001/002 | 链上 Escrow fund/release（平台任务） | wallet, worker, api, contracts | bind-onchain-escrow · create/fund · deliver · confirm · **`pnpm run smoke:escrow:local`**（Hardhat 31337）· **`pnpm run smoke:escrow`**（Sepolia 可选；拒绝 Hardhat 公开钥 / EIP-7702） | **v0.3 / M3** 🟡 |
 | FR-WLT-008 | wallet Vault 充提 | wallet | `app/vault.tsx` + 入金 Tab · disclosure · en+zh | **v0.3 / M3** 🟡 |
 | FR-ADM-001 | admin Logto 登录 | admin, api | 本地 `pnpm id:up`；`doerflow_admin` → Casbin；禁止 SIWE 冒充运营 | **v0.3 / M3** 🟡 |
 | FR-ADM-003 | admin 审批工作台 | admin, api | approve 绑 Escrow 预留；request-revision → needs_revision · **社交展示 App/步骤** · locale | **v0.3 / M3** 🟡 |
@@ -113,6 +125,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | FR-A11Y | 聋哑盲等残障无障碍（读屏/字幕/WCAG） | 全客户端 | **前期不做**（至商业 1.0 前；单独立项后再议） | **不做** |
 | FR-PAY-SETTLE | 任务完成链下放款 stub | api | `ledgerSettled` + LEDGER.credit(WETH wei) | **v0.3 / M3** 🟡 |
 | FR-ST-005/006 | 账本清算主路径 + 场景矩阵 | spec, api, contracts | ASYNC_PAYMENTS · CHANNELS | **v0.2 / M2** · **v1.1-channels-lab** |
+| FR-ST-007 | 跨产品 Job 与 CloudEvents 变现 | spec, api, shared, web | luminaryworks-ecosystem · authorize/capture · `/integrations/events` | **v1.2-ecosystem-commerce** |
 | FR-CH-001~004 | 五通道、结算分流、统一 ID、交付凭证 | spec, api | `CHANNELS.md` · `GET /channels` · OpenAPI | **v1.1-channels-lab** ✅ |
 | FR-RT-001~003 | Agent Runtime 循环、Session、工具策略 | spec, api, scripts | `AGENT_RUNTIME.md` · `/mcp` · `example-agent-runner.mjs` | **v1.1-channels-lab** ✅ |
 | FR-A2A-001~002 | Agent Card + claim/complete 映射治理状态机 | api | `/a2a/*` · `POST /agent-tasks/:id/deliver` | **v1.1-channels-lab** ✅ |
@@ -139,6 +152,8 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 | 工程生产闸门（主线 M5-rc） | api, deploy, spec/PRODUCTION | **v1.0-rc ✅ smoke:m5** |
 | 五通道实验室 P0–P4 | spec CHANNELS/RUNTIME/ENDPOINT, api, scripts | **v1.1-channels-lab ✅ smoke:channels** |
 | 封闭 Beta 商业控制（FR-PAY-016） | api, contracts, web, deploy | **M5a ✅ 工程** |
-| 商业宣布（审计/主网资金） | 全仓 | **v1.0 / M5b** ⚪ |
+| 前期不予赔付（FR-PAY-017） | api, web, wallet, worker, docs | **M5a** |
+| 生态商业（FR-ST-007 / FR-PAY-018） | api, shared, sdk/python, web | **`pnpm run smoke:ecosystem-commerce`** |
+| 公开运行（取消邀请制） | 全仓 | **v1.0 / M5b** ⚪ 不阻塞于 Bounty |
 
 变更需求时：**先改 SPEC.md 与本表，再改代码**。

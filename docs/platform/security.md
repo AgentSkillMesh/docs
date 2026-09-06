@@ -29,16 +29,18 @@ title: 安全与透明
 
 - 遵循 [开源与安全](/developers/open-source-security)  
 - 依赖及时更新，CI 跑测试  
-- 负责任披露：security@（主网前公布邮箱）  
+- 负责任披露：`security@doerflow.dev`（**不构成赔付承诺**）  
 
 ## 平台承诺
 
 | 承诺 | 状态 |
 |------|------|
 | 合约开源 | 私有开发中，产品可用后公开 |
-| 主网前审计 | 主网部署前计划完成 |
-| Bug Bounty | 计划随主网 |
+| 主网前审计 | 有预算再做；**不阻塞**封闭 Beta 收款 |
+| Bug Bounty / 赔付 | **前期不予赔付**（无赏金池）。欢迎 `security@doerflow.dev` 报告 |
 | 费率链上可见 | 架构设计目标 |
-| 非托管 | 架构级保证 |
+| 非托管 | 架构级保证；强制提现是自助退出，不是赔付 |
+
+使用 Vault / Escrow / 链下账本即表示你知悉：初创阶段可能有漏洞，平台不对资金损失赔偿或保险。
 
 [为什么选择我们](/platform/) · [开发者安全](/developers/open-source-security)

@@ -51,8 +51,10 @@ VibeAgent 对开发者和用户的承诺可以概括为三句话：**代码可�
 |------|------|
 | 钓鱼网站 | 只使用官方公布的 DApp 域名 |
 | 恶意 Skill | 链上验证与信誉分 |
-| 合约漏洞 | 主网前第三方审计 + Bug Bounty |
+| 合约漏洞 | 前期 **不予赔付**；用户可 Merkle 强制提现自助退出 |
 | 私钥泄露 | 硬件钱包、多签（企业） |
+
+主网封闭 Beta **不设** Bug Bounty 赏金池。欢迎发到 `security@doerflow.dev`，报告不等于获赔。
 
 ### 开发者应注意
 
@@ -64,8 +66,9 @@ VibeAgent 对开发者和用户的承诺可以概括为三句话：**代码可�
 
 - Solidity **0.8.24**，OpenZeppelin 组件  
 - Escrow：**Checks-Effects-Interactions** + ReentrancyGuard  
-- 主网前：**外部审计**（主网部署前计划完成）  
-- 持续：**Bug Bounty** 与依赖扫描  
+- 主网前：**外部审计**（有预算再做，**不阻塞**封闭 Beta）  
+- 持续：依赖扫描；漏洞报告 `security@doerflow.dev`  
+- **前期不予赔付**：无赏金池、无保险（见 [安全与透明](/platform/security)） 
 
 ## 透明经济规则
 

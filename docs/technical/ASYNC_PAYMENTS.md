@@ -7,7 +7,7 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 
 # Agent 异步支付 · 链下账本 + Merkle 批量结算
 
-**版本**: v0.2.7 · **最后更新**: 2026-09-02  
+**版本**: v0.2.8 · **最后更新**: 2026-09-05  
 **关联**: [SPEC.md](./SPEC.md) · [AGENT_CHAIN.md](./AGENT_CHAIN.md) · [FEE_TIERS_AA.md](./FEE_TIERS_AA.md) · [IOT.md](./IOT.md) · [BRIDGE.md](./BRIDGE.md)
 
 ## 0. 架构决策（已定）
@@ -209,6 +209,20 @@ sequenceDiagram
 
 **双花防护**：会话 `nonce` 单调性 + 短期去重；批量清算时合约校验 Merkle 包含证明；超额 → 清算失败 + 会话撤销 + 争议。
 
+#### 4.2.1 Job 授权收据（FR-PAY-018）
+
+Trading Job **不得**在 `POST /payments/receipts` 被 Vault accept 后立刻 `applyReceipt`（该路径仅保留给非 Job 微支付与旧 SDK）。
+
+| 步骤 | 行为 |
+|------|------|
+| `authorize` | 验 EIP-712 + Session allowlist/预算/nonce；Receipt 以 `authorized` 落库（不进 `listPending`）；`recordSpend` 预留预算；写入 `payment_authorizations`；**payee 余额不变** |
+| `capture` | 要求 authorization=`authorized` 且 Job 已持久化 output hash；`applyReceipt` **一次**；Receipt → `pending`（进入 Merkle 管道）；authorization → `captured` |
+| `void` | 仅 `authorized`；`releaseSpend`；Receipt → `voided`；**不** `applyReceipt` |
+
+持久化实体：`payment_authorizations`（jobId、receiptId、idempotencyKey、sessionId、amount、status、ledgerApplied）。Nonce/幂等与 capture 一次性由该实体 + Vault nonce 共同保证。
+
+Job 状态：`awaiting_payment → authorized → running → succeeded → captured/settled`；失败/超时 `voided|failed`。
+
 ### 4.3 Vault 与 Merkle 批量清算
 
 | 模式 | 场景 | 触发 |
@@ -302,7 +316,12 @@ gross(A→B) = 100,  gross(B→A) = 80
 | POST | `/api/v1/payments/sessions` | 注册 Session Key 策略（v0.3） |
 | GET | `/api/v1/payments/sessions` | 列出会话 |
 | POST | `/api/v1/payments/sessions/:id/revoke` | 撤销会话 |
-| POST | `/api/v1/payments/receipts` | 提交签名收据（须已注册 Session） |
+| POST | `/api/v1/payments/receipts` | 提交签名收据（须已注册 Session）；**立即** `applyReceipt`（实验室/非 Job 兼容路径） |
+| POST | `/api/v1/trading/jobs/:id/authorize` | Job 专用：验签+Session+预算预留；Vault 记 `authorized`；**不**给 payee 入账 |
+| POST | `/api/v1/trading/jobs/:id/capture` | Job 专用：仅在 provider 2xx 且输出 hash 已持久化后原子入账（一次性） |
+| POST | `/api/v1/trading/jobs/:id/void` | Job 专用：释放预算预留；5xx/超时；**不**入账 |
+| POST | `/api/v1/integrations/events` | CloudEvents inbox（严格 data 白名单；拒绝视频/凭据） |
+| POST | `/api/v1/trading/providers/skills/:skillId/rotate-secret` | 轮换 HMAC webhook secret（只返回一次） |
 | GET | `/api/v1/payments/receipts/stats?payer=0x…` | payer nonce / pending 数 |
 | GET | `/api/v1/payments/receipts/pending?limit=100` | 待批量清算列表 |
 | POST | `/api/v1/payments/ledger/credit` | 记入链下余额（PoC；镜像 Vault 充值） |
@@ -383,6 +402,9 @@ import {
 | FR-PAY-014 | Trading 目录/报价/作业/WS | api | **v0.4 / M4 ✅** |
 | FR-PAY-015 | 生产探针 /ready /live + Runbook | api, spec/PRODUCTION | **v1.0-rc / M5 ✅ 工程** |
 | FR-PAY-016 | 封闭 Beta：白名单 / 限额 / pause / 未审计披露 | api, contracts, web | **M5a** `COMMERCIAL_MODE`；主网 Vault = Base USDC |
+| FR-PAY-017 | 前期不予赔付 | docs, web, wallet, worker | **M5a** 文档 `legal/terms` + 注册勾选 |
+| FR-PAY-018 | Job authorize/capture/void；capture 前不给 payee 入账 | api, shared | **生态商业** |
+| FR-PAY-019 | Trading/integration durable outbox 回调 | api | 替换 fire-and-forget |
 | FR-PAY-010 | 状态通道拓展（非大厅默认） | contracts, p2p | v1.1+ |
 | FR-PAY-011 | **不做** 定制 L3 作为微支付主路径 | spec | **已定** |
 | FR-PAY-012 | 链下记账引擎（NestJS + Redis/PG）+ Vault 充提 | api, contracts | **v0.2 / M2 ✅** |

@@ -15,6 +15,7 @@ title: Agent 交易 SDK
 3. 人类发单接单：`pnpm run smoke:m3`  
 4. 生产工程闸门：`pnpm run smoke:m5`（**不** 等于外部审计或主网已上线）
 5. 五通道 + Provider SDK：`pnpm run smoke:channels`（含 P1b：注册 HTTP Skill → 付款后 invoke）
+6. 生态商业（VistaCast / SyncroBrain CloudEvents + Job `authorize`/`capture`）：`pnpm run smoke:ecosystem-commerce`
 
 ## TypeScript
 

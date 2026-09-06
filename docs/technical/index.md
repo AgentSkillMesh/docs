@@ -1,4 +1,4 @@
-﻿---
+---
 title: 技术文档
 ---
 
@@ -23,18 +23,21 @@ VibeAgent 采用 **Spec-Driven Development**：主规格维护在 MetaRepo 根�
 | [物联网 IOT](/technical/IOT) | 车桩/数据/能源/冷链 |
 | [Agent 链策略 AGENT_CHAIN](/technical/AGENT_CHAIN) | 现成 L2 + MasterChef；自建链延期 |
 | [生态策略 ECOSYSTEM](/technical/ECOSYSTEM) | 参与方激励与收入 |
+| [跨产品生态 luminaryworks-ecosystem](/technical/luminaryworks-ecosystem) | VistaCast / SyncroBrain CloudEvents · Job 结算 |
 | [MetaDEX](/technical/METADEX) | ve 稳定/蓝筹 DEX |
 | [MetaDEX 合约计划](/technical/METADEX_CONTRACTS) | Fork 清单 · Phase A–D |
 | [MetaDEX 架构](/technical/METADEX_ARCHITECTURE) | Port/Adapter · TS→Rust |
 | [DataLuminary](/technical/DATALUMINARY) | TVL/历史分析外接 |
 | [跨链 BRIDGE](/technical/BRIDGE) | 官方桥 + Omnichain；自建链桥延期 |
 | [法币 ONRAMP](/technical/ONRAMP) | 第三方合规 Widget |
-| [异步支付 ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) | **链下账本 + Merkle** · 弃联盟链/定制 L3 |
+| [异步支付 ASYNC_PAYMENTS](/technical/ASYNC_PAYMENTS) | **链下账本 + Merkle** · Job `authorize`/`capture`/`void` |
 | [开发者 SDK DEVELOPER](/technical/DEVELOPER) | Agent Trading SDK · Trading REST/WS（M4） |
-| [五通道 CHANNELS](/technical/CHANNELS) | Agent↔Agent/人/云/端点/IoT |
+| [五通道 CHANNELS](/technical/CHANNELS) | Agent↔Agent/人/云/端点/IoT · 含 VistaCast/SyncroBrain CloudEvents |
 | [Agent Runtime](/technical/AGENT_RUNTIME) | 拉作业、调工具、交回执 |
 | [Endpoint Agent](/technical/ENDPOINT) | 电脑/手机执行面 |
 | [生产闸门 PRODUCTION](/technical/PRODUCTION) | 探针、Runbook、主网脚本（M5） |
+| [部署档位 DEPLOYMENT](/technical/DEPLOYMENT) | 独立部署 / 控制面 / Compose 叠加、`/version` `/capabilities` |
+| [smart-site SMART_SITE](/technical/SMART_SITE) | 工地场景最小契约：人工介入深链 · 导出事件（实验室） |
 | [商业收款 COMMERCIAL](/technical/COMMERCIAL) | 封闭 Beta / 公开 1.0（M5a / M5b） |
 | [钱包规格 WALLET](/technical/WALLET) | 纯粹钱包（发任务） |
 | [综合端 WORKER](/technical/WORKER) | 众包 + 社交平台任务 |

@@ -25,10 +25,9 @@ doNotEdit: 请修改 MetaRepo spec/ 后重新运行 scripts/sync-spec-to-docs.sh
 ```mermaid
 flowchart TB
   Publisher[发单方] -->|wallet 发布任务| Gov[任务治理 API]
-  Gov -->|简单自动过| Chain[Escrow 锁定]
-  Gov -->|复杂人工审| Admin[admin 管理平台]
-  Admin -->|通过| Chain
-  Worker[执行者] -->|worker 接单交付| Chain
+  Gov -->|L0 自动过 / 人工审| Published["published + P… 预留"]
+  Worker[执行者] -->|worker 接单 assigned| Published
+  Published -->|选修 createEscrow+fund| Chain[链上锁仓]
   Agent[AI Agent] -->|web/API 发单| Gov
 ```
 
@@ -50,10 +49,10 @@ flowchart TB
 
 > 详细流程见 [TASK_GOVERNANCE.md](./TASK_GOVERNANCE.md)
 
-1. 发单方在 **wallet** 填写任务模板并 **锁定 Escrow 预算**（或预授权额度）  
+1. 发单方在 **wallet** 填写任务模板并提交；`published` 时创建平台 Escrow 预留（`escrowId` 以 `P` 开头，status `Reserved`），**不会**立刻锁链上 ETH  
 2. 任务进入 **治理流水线**：风险评分 → 自动/人工审批  
 3. **仅 `published` 状态** 的任务对 worker 可见并可接单  
-4. 执行者 `deliver` → **`submitted`**（须验收）→ 发单方 `verify` → Escrow 放款；争议进 admin 仲裁队列  
+4. 接单进入 `assigned` 后，发单方可选修 `createEscrow` + `fundEscrow` 并绑定 `onChainEscrowId`；执行者 `deliver` → **`submitted`**（须验收）→ 发单方 `verify` → 已锁仓则合约放款，否则账本结算；争议进 admin 仲裁队列  
 
 **原则**：未通过平台确认的任务 **不得** 对执行端展示、不得扣款结算。
 

@@ -29,7 +29,7 @@ draft → pending_review → published → assigned → submitted → verifying 
 | `verifying` | 验收/自动核验进行中（与 `submitted` 同等可 `verify`） | 发单方 + 接单方 |
 | `completed` / `cancelled` | 已结算或已取消 | 相关方 |
 
-**交易约束**：`published` 时绑定平台 Escrow 预留（`escrowId`，status `Reserved`）；接单后写入 `provider`。  
+**交易约束**：`published` 时绑定平台 Escrow 预留（`escrowId` 形如 `P…`，status `Reserved`）。`P…` **不是**已锁 ETH；链上 `createEscrow` + `fundEscrow` 发生在 `assigned` 之后。接单后写入 `provider`。  
 **链上放款（M3）**：发单方（wallet）在 `assigned` 后 `createEscrow` + `fundEscrow`，并 `POST /tasks/:id/bind-onchain-escrow` 写入 `onChainEscrowId`；接单方（worker）交付时 `deliverEscrow`；发单方验收前 `confirmDelivery` 放款。有 `onChainEscrowId` 时不再走账本 stub 双付。结算费率见 [FEE_TIERS_AA.md](./FEE_TIERS_AA.md)。
 
 ## 2. 双受众（audience）
